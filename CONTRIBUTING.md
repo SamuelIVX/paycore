@@ -64,7 +64,6 @@ git push -u origin feat/your-task-name
 
 > [!IMPORTANT]  
 > All PRs must target the `main` branch.
-
 > [!NOTE]
 > Please refer to this section on [How To Create a PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request#creating-the-pull-request)
 
