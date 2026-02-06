@@ -19,17 +19,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
+  const handleLogin = (e: React.SubmitEvent) => {
+    e.preventDefault();
     // Simple authentication logic for demonstration purposes
     // Backend team, please replace this with better authentication (fetch from Supabase)
     // Also, implement proper error handling and security measures.
 
-    if (username.toLocaleLowerCase() === "manager" || username.toLocaleLowerCase().includes("manager")) {
-      router.push("components/manager-dashboard");
-    } else if (username.toLocaleLowerCase() === "employee" || username.toLocaleLowerCase().includes("employee")) {
-      router.push("components/employee-dashboard")
+    if (username.toLowerCase().includes("manager")) {
+      router.push("/components/manager-dashboard");
+    } else if (username.toLowerCase().includes("employee")) {
+      router.push("/components/employee-dashboard")
+    } else {
+      // Temporary error message display
+      alert("Invalid credentials. Use 'manager' or 'employee' as username.");
     }
-
   };
 
   return (
@@ -102,19 +105,17 @@ export default function LoginPage() {
                 </div>
               </div>
 
+              <Button
+                type="submit"
+                className="w-full"
+              >
+                Login
+              </Button>
+
             </div>
+
           </form>
         </CardContent>
-
-        <CardFooter className="flex-col gap-2">
-          <Button
-            type="submit"
-            className="w-full"
-            onClick={handleLogin}
-          >
-            Login
-          </Button>
-        </CardFooter>
 
         <div
           className="text-sm text-center p-4 bg-blue-100 rounded-md m-4"

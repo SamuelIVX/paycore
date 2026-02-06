@@ -2,7 +2,7 @@
 export default function ManagerDashboardPage() {
     return (
         <div>
-            ManagerDashboardPage
+            <h1>Manager Dashboard</h1>
         </div>
     )
 }
