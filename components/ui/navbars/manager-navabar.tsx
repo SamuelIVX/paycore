@@ -72,31 +72,31 @@ const HamburgerIcon = ({ className, ...props }: React.SVGAttributes<SVGElement>)
 )
 
 // Types
-export interface NavbarNavLink {
+export interface ManagerNavbarNavLink {
   href: string
   icon?: React.ReactNode
   label: string
   active?: boolean
 }
 
-export interface NavbarProps extends React.HTMLAttributes<HTMLElement> {
+export interface ManagerNavbarProps extends React.HTMLAttributes<HTMLElement> {
   logo?: React.ReactNode
   logoHref?: string
-  navigationLinks?: NavbarNavLink[]
+  navigationLinks?: ManagerNavbarNavLink[]
   logoutText?: string
   logoutHref?: string
   onLogoutClick?: () => void
 }
 
 // Default navigation links
-const defaultNavigationLinks: NavbarNavLink[] = [
+const defaultNavigationLinks: ManagerNavbarNavLink[] = [
   { href: "#", icon: <House />, label: "Home" },
   { href: "#features", icon: <Users />, label: "Employees" },
   { href: "#pricing", icon: <CreditCard />, label: "Payroll" },
   { href: "#about", icon: <FileText />, label: "Benefits" },
 ]
 
-export const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
+export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
   (
     {
       // TODO (Backend team) - fix navigation links and icons (via Next.js Link component)
@@ -267,6 +267,6 @@ export const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
   },
 )
 
-Navbar.displayName = "Navbar"
+ManagerNavbar.displayName = "ManagerNavbar"
 
 export { Logo, HamburgerIcon }
