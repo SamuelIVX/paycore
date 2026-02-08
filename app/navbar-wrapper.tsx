@@ -1,6 +1,7 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { Navbar } from "@/components/ui/navbar";
+import { ManagerNavbar } from "@/components/ui/navbars/manager-navbar";
+import { EmployeeNavbar } from "@/components/ui/navbars/employee-navbar";
 
 export function NavbarWrapper() {
     const pathname = usePathname();
@@ -8,5 +9,11 @@ export function NavbarWrapper() {
     // Hide the navbar on the login page ("/"), but show it on all other pages.
     if (pathname === "/") return null;
 
-    return <Navbar />;
+    // TODO (backend team): This is a temporary solution. We should ideally determine the user's role and render the appropriate navbar based on that,
+    // rather than relying on the URL path. 
+    if (pathname.startsWith("/manager")) {
+        return <ManagerNavbar />;
+    }
+
+    return <EmployeeNavbar />;
 }

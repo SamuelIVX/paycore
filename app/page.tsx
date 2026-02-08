@@ -25,9 +25,9 @@ export default function LoginPage() {
     // Also, implement proper error handling and security measures.
 
     if (username.toLowerCase().includes("manager")) {
-      router.push("/components/manager-dashboard");
+      router.push("/manager/dashboard");
     } else if (username.toLowerCase().includes("employee")) {
-      router.push("/components/employee-dashboard")
+      router.push("/employee/dashboard")
     } else {
       // Temporary error message display
       alert("Invalid credentials. Use 'manager' or 'employee' as username.");
