@@ -99,12 +99,11 @@ const defaultNavigationLinks: NavbarNavLink[] = [
 export const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
   (
     {
+      // TODO (Backend team) - fix navigation links and icons (via Next.js Link component)
       className,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       logoHref = "#",
       navigationLinks = defaultNavigationLinks,
       logoutText = "Log Out",
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       logoutHref = "#logout",
       onLogoutClick,
       ...props
@@ -176,8 +175,8 @@ export const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
                   <NavigationMenu className="max-w-none">
                     <NavigationMenuList className="flex-col items-start gap-1">
 
-                      {navigationLinks.map((link, index) => (
-                        <NavigationMenuItem className="w-full" key={index}>
+                      {navigationLinks.map((link) => (
+                        <NavigationMenuItem className="w-full" key={link.href}>
                           <button
                             type="button"
                             className={cn(
@@ -221,8 +220,8 @@ export const Navbar = React.forwardRef<HTMLElement, NavbarProps>(
               {!isMobile && (
                 <NavigationMenu className="flex">
                   <NavigationMenuList className="gap-1">
-                    {navigationLinks.map((link, index) => (
-                      <NavigationMenuItem key={index}>
+                    {navigationLinks.map((link) => (
+                      <NavigationMenuItem key={link.href}>
                         <button
                           type="button"
                           className={cn(
