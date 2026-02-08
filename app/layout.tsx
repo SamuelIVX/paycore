@@ -14,9 +14,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
 
-        <NavbarWrapper />
+        <Providers>
 
-        <Providers>{children}</Providers>
+          <NavbarWrapper />
+
+          {children}
+
+        </Providers>
 
       </body>
     </html >
