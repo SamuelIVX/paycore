@@ -34,10 +34,13 @@ export default function RecentActivityCard() {
                                     }`}>
                                     {record.status === "pending" ? (
                                         <Clock className="w-5 h-5 text-orange-600" />
-                                    ) : (
+                                    ) : record.status === "approved" ? (
                                         <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                    ) : (
+                                        < Clock className="w-5 h-5 text-blue-600" />
                                     )}
                                 </div>
+
                                 <div>
                                     <p className="font-medium">{record.employeeName}</p>
                                     <p className="text-sm text-gray-600">
