@@ -45,16 +45,16 @@ export default function EmployeeTable() {
                             </DialogHeader>
                             <div className="space-y-4 py-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="empName2">Full Name</Label>
-                                    <Input id="empName2" placeholder="John Doe" />
+                                    <Label htmlFor="empName">Full Name</Label>
+                                    <Input id="empName" placeholder="John Doe" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="empRole2">Role</Label>
-                                    <Input id="empRole2" placeholder="Software Engineer" />
+                                    <Label htmlFor="empRole">Role</Label>
+                                    <Input id="empRole" placeholder="Software Engineer" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="empSalary2">Annual Salary</Label>
-                                    <Input id="empSalary2" type="number" placeholder="75000" />
+                                    <Label htmlFor="empSalary">Annual Salary</Label>
+                                    <Input id="empSalary" type="number" placeholder="75000" />
                                 </div>
                             </div>
                             <DialogFooter>
@@ -81,7 +81,7 @@ export default function EmployeeTable() {
                             <TableRow key={employee.id}>
                                 <TableCell className="font-medium">{employee.name}</TableCell>
                                 <TableCell>{employee.role}</TableCell>
-                                <TableCell>{employee.payType.toLocaleString()}</TableCell>
+                                <TableCell>{employee.payType}</TableCell>
                                 <TableCell>${employee.pay.toLocaleString()}</TableCell>
                                 <TableCell>
                                     <Badge variant={employee.status === "active" ? "default" : "outline"}>
