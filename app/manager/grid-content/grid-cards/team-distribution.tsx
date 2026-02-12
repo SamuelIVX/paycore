@@ -51,25 +51,22 @@ const chartConfig = {
 
 export default function TeamDistributionPieChart() {
     return (
-        <div>
-            {/* Department Distribution */}
-            <Card className="flex flex-col">
-                <CardHeader className="items-center pb-0">
-                    <CardTitle>Team Distribution</CardTitle>
-                    <CardDescription>Employees by Department</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 pb-0">
-                    <ChartContainer
-                        config={chartConfig}
-                        className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square max-h-50 pb-0"
-                    >
-                        <PieChart>
-                            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                            <Pie data={chartData} dataKey="visitors" label nameKey="browser" />
-                        </PieChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
-        </div>
+        <Card className="flex flex-col">
+            <CardHeader className="items-center pb-0">
+                <CardTitle>Team Distribution</CardTitle>
+                <CardDescription>Employees by Department</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
+                <ChartContainer
+                    config={chartConfig}
+                    className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square max-h-50 pb-0"
+                >
+                    <PieChart>
+                        <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                        <Pie data={chartData} dataKey="visitors" label nameKey="browser" />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     )
 }
