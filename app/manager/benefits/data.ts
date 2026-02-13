@@ -1,12 +1,3 @@
-import type React from "react";
-
-export interface BenefitSummaryCardProps {
-    title: string
-    icon: React.ReactNode
-    count: number | string
-    description: string
-}
-
 export interface Benefit {
     id: string;
     name: string;
@@ -16,12 +7,6 @@ export interface Benefit {
     monthlyPrice: number;
     isCompanyProvided: boolean;
     coverage?: string;
-}
-
-export interface EmployeeBenefit {
-    benefitId: string;
-    enrolledDate: string;
-    status: "active" | "pending" | "cancelled";
 }
 
 // TEMPORARY SOLUTION. REMOVE THIS AFTER FETCHING FROM SUPABASE

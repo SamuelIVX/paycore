@@ -1,30 +1,11 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 //TODO (Backend): Remove all hardcoded data and fetch/display data from Supabase
-import { AVAILABLE_BENEFITS, type Benefit } from "../summary-cards/types";
-import { OptionalBenefitDetailsProps } from "./types";
-import {
-    Heart,
-    Sparkles,
-    Eye,
-    Wallet,
-    Shield,
-    Umbrella,
-    Info
-} from "lucide-react"
+import { AVAILABLE_BENEFITS } from "../data";
+import { BenefitDetailsProps } from "../types";
+import { BENEFIT_ICONS } from "../constant";
 
-const BENEFIT_ICONS: Record<Benefit["type"], any> = {
-    health: Heart,
-    dental: Sparkles,
-    vision: Eye,
-    retirement: Wallet,
-    life: Shield,
-    disability: Umbrella,
-    wellness: Heart,
-    other: Info
-};
-
-export function OptionalBenefitDetails({ title, value }: OptionalBenefitDetailsProps) {
+export function OptionalBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
         <div className="flex items-center justify-between">
             <span className="text-gray-600">{title}</span>
@@ -46,7 +27,7 @@ export default function OptionalBenefitsGrid() {
                     return (
                         <Card key={benefit.id} className="border-gray-200 hover:border-purple-300 transition-all">
 
-                            <CardContent className="p-5">
+                            <CardContent>
 
                                 <div className="flex items-start gap-4">
 
@@ -84,7 +65,7 @@ export default function OptionalBenefitsGrid() {
 
                                             <OptionalBenefitDetails
                                                 title="Type:"
-                                                value={benefit.type}
+                                                value={benefit.type.charAt(0).toUpperCase() + benefit.type.slice(1)}
                                             />
 
                                         </div>

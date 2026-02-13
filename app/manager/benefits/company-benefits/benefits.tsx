@@ -1,32 +1,13 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 //TODO (Backend): Remove all hardcoded data and fetch/display data from Supabase
-import { AVAILABLE_BENEFITS, type Benefit } from "../summary-cards/types";
-import { CompanyBenefitDetailsProps } from "./types";
+import { AVAILABLE_BENEFITS } from "../data";
+import { BenefitDetailsProps } from "../types";
+import { BENEFIT_ICONS } from "../constant";
 import { Badge } from "@/components/ui/badge";
-import {
-    CheckCircle2,
-    Heart,
-    Sparkles,
-    Eye,
-    Wallet,
-    Shield,
-    Umbrella,
-    Info
-} from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
-const BENEFIT_ICONS: Record<Benefit["type"], any> = {
-    health: Heart,
-    dental: Sparkles,
-    vision: Eye,
-    retirement: Wallet,
-    life: Shield,
-    disability: Umbrella,
-    wellness: Heart,
-    other: Info
-};
-
-export function CompanyBenefitDetails({ title, value }: CompanyBenefitDetailsProps) {
+export function CompanyBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
         <div className="flex items-center justify-between">
             <span className="text-gray-600">{title}</span>
@@ -48,7 +29,7 @@ export default function CompanyBenefitsGrid() {
                     return (
                         <Card key={benefit.id} className="border-blue-200 bg-blue-50">
 
-                            <CardContent className="p-5">
+                            <CardContent>
 
                                 <div className="flex items-start gap-4">
 
@@ -84,7 +65,7 @@ export default function CompanyBenefitsGrid() {
 
                                             <CompanyBenefitDetails
                                                 title="Type:"
-                                                value={benefit.type}
+                                                value={benefit.type.charAt(0).toUpperCase() + benefit.type.slice(1)}
                                             />
 
                                         </div>

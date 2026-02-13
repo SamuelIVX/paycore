@@ -1,8 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-    AVAILABLE_BENEFITS,
-    BenefitSummaryCardProps
-} from "./types";
+import { AVAILABLE_BENEFITS } from "../data";
+import { BenefitSummaryCardProps } from "../types";
 import {
     Heart,
     TrendingUp,
