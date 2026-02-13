@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, ArrowRight, CheckCircle2 } from "lucide-react";
 
-/* TODO (Backend): Removed all hardcoded from the payroll data table and replace with data fetched from Supabase  */
+/* TODO (Backend): Remove all hardcoded from the payroll data table and replace with data fetched from Supabase  */
 
 const payrollRecords = ([
     { id: "1", employeeName: "John Smith", grossPay: 7083.33, taxes: 1770.83, benefitDeductions: 32.00, netPay: 5280.50, status: "pending", date: "2026-02-01" },
@@ -49,7 +49,7 @@ export default function PayrollTable() {
                             </DialogHeader>
                             <div className="space-y-4 py-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="payPeriod2">Pay Period</Label>
+                                    <Label >Pay Period</Label>
                                     <Select>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select period" />
@@ -61,8 +61,8 @@ export default function PayrollTable() {
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="notes2">Notes (Optional)</Label>
-                                    <Textarea id="notes2" placeholder="Add any notes..." />
+                                    <Label >Notes (Optional)</Label>
+                                    <Textarea placeholder="Add any notes..." />
                                 </div>
                             </div>
                             <DialogFooter>
@@ -97,7 +97,7 @@ export default function PayrollTable() {
                                 <TableCell className="text-red-600">-${record.taxes.toFixed(2)}</TableCell>
                                 <TableCell className="text-red-600">-${record.benefitDeductions.toFixed(2)}</TableCell>
                                 <TableCell className="font-semibold text-green-600">${record.netPay.toFixed(2)}</TableCell>
-                                <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
+                                <TableCell>{new Date(record.date + "T00:00:00").toLocaleDateString()}</TableCell>
                                 <TableCell>
                                     <Badge
                                         variant={
