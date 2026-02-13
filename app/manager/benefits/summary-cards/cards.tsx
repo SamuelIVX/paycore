@@ -9,6 +9,7 @@ import {
     DollarSign,
 } from "lucide-react"
 
+// TODO (Backend): Remove all hardcoded and fetch/display data from Supabase
 const payrollRecords = ([
     { id: "1", employeeName: "John Smith", grossPay: 7083.33, taxes: 1770.83, benefitDeductions: 32.00, netPay: 5280.50, status: "pending", date: "2026-02-01" },
     { id: "2", employeeName: "Sarah Johnson", grossPay: 7916.67, taxes: 1979.17, benefitDeductions: 45.00, netPay: 5892.50, status: "pending", date: "2026-02-01" },
@@ -53,7 +54,7 @@ export default function SummaryCards() {
             <BenefitSummaryCard
                 title="Avg. Deductions"
                 icon={<DollarSign className="h-5 w-5 text-orange-600" />}
-                count={`$${(payrollRecords.reduce((sum, r) => sum + r.benefitDeductions, 0) / payrollRecords.length).toFixed(2)}`}
+                count={`$${payrollRecords.length > 0 ? (payrollRecords.reduce((sum, r) => sum + r.benefitDeductions, 0) / payrollRecords.length).toFixed(2) : "0.00"}`}
                 description="Per employee/month"
             />
 

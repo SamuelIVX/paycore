@@ -1,3 +1,5 @@
+import type React from "react";
+
 export interface BenefitSummaryCardProps {
     title: string
     icon: React.ReactNode
@@ -22,6 +24,7 @@ export interface EmployeeBenefit {
     status: "active" | "pending" | "cancelled";
 }
 
+// TEMPORARY SOLUTION. REMOVE THIS AFTER FETCHING FROM SUPABASE
 export const AVAILABLE_BENEFITS: Benefit[] = [
     // Company Provided Benefits (Free)
     {

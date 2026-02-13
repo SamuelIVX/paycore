@@ -1,4 +1,6 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+
+//TODO (Backend): Remove all hardcoded data and fetch/display data from Supabase
 import { AVAILABLE_BENEFITS, type Benefit } from "../summary-cards/types";
 import { CompanyBenefitDetailsProps } from "./types";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +71,7 @@ export default function CompanyBenefitsGrid() {
                                         <div className="space-y-1 text-sm">
 
                                             <CompanyBenefitDetails
-                                                title="Provider"
+                                                title="Provider:"
                                                 value={benefit.provider}
                                             />
 
