@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { UserPlus, Edit } from "lucide-react";
 
+/* TODO (Backend): Removed all hardcoded from the employee data table and replace with data fetched from Supabase  */
 const employees = ([
     { id: "1", name: "John Smith", role: "Software Engineer", payType: "Annual", pay: 85000, status: "active" },
     { id: "2", name: "Sarah Johnson", role: "Product Manager", payType: "Hourly", pay: 35, status: "offline" },
@@ -22,6 +23,7 @@ const employees = ([
     { id: "12", name: "Sarah Johnson", role: "Product Manager", payType: "Hourly", pay: 35, status: "offline" },
 ]);
 
+/* TODO (Backend): Add functionalities to the table (e.g., edit, delete, search, sort)  */
 export default function EmployeeTable() {
     return (
         <Card className="m-6">
