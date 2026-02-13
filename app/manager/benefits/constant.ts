@@ -1,5 +1,4 @@
 import type { LucideIcon } from "lucide-react";
-import type { Benefit } from "./data";
 import {
     Heart,
     Sparkles,
@@ -9,6 +8,17 @@ import {
     Umbrella,
     Info
 } from "lucide-react"
+
+export interface Benefit {
+    id: string;
+    name: string;
+    description: string;
+    type: "health" | "dental" | "vision" | "retirement" | "life" | "disability" | "wellness" | "other";
+    provider: string;
+    monthlyPrice: number;
+    isCompanyProvided: boolean;
+    coverage?: string;
+}
 
 export const BENEFIT_ICONS: Record<Benefit["type"], LucideIcon> = {
     health: Heart,
