@@ -27,7 +27,7 @@ export default function RecentActivityCard() {
             <CardContent>
                 <div className="space-y-3">
                     {payrollRecords.slice(0, 4).map(record => (
-                        <div key={record.id} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        <div key={record.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${record.status === "pending" ? "bg-orange-100" :
                                     record.status === "approved" ? "bg-green-100" : "bg-blue-100"
