@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, ArrowRight, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
 
 /* TODO (Backend): Remove all hardcoded from the payroll data table and replace with data fetched from Supabase  */
 
@@ -36,12 +37,14 @@ export default function PayrollTable() {
                         <CardDescription>Review and approve payroll records</CardDescription>
                     </div>
                     <Dialog >
+
                         <DialogTrigger asChild>
                             <Button>
                                 <DollarSign className="w-4 h-4 mr-2" />
                                 Run Payroll
                             </Button>
                         </DialogTrigger>
+
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>Run Payroll</DialogTitle>
@@ -66,12 +69,15 @@ export default function PayrollTable() {
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button >
-                                    Run Payroll
-                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                <Button asChild>
+                                    <Link href="/manager/payroll-status">
+                                        Run Payroll
+                                        <ArrowRight className="w-4 h-4 ml-2" />
+                                    </Link>
                                 </Button>
                             </DialogFooter>
                         </DialogContent>
+
                     </Dialog>
                 </div>
             </CardHeader>

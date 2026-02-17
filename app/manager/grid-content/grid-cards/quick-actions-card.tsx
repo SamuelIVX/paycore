@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import Link from "next/link"
 
 export default function QuickActionCard() {
     return (
@@ -81,17 +82,21 @@ export default function QuickActionCard() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button>
-                                Run Payroll
-                                <ArrowRight className="w-4 h-4 ml-2" />
+                            <Button asChild>
+                                <Link href="/manager/payroll-status">
+                                    Run Payroll
+                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                </Link>
                             </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
 
-                <Button className="h-24 flex flex-col gap-2" variant="outline" >
-                    <FileCheck className="w-8 h-8" />
-                    <span>Approve Payroll</span>
+                <Button className="h-24 flex flex-col gap-2" variant="outline" asChild>
+                    <Link href="/manager/payroll-records-table">
+                        <FileCheck className="w-8 h-8" />
+                        <span>Approve Payroll</span>
+                    </Link>
                 </Button>
 
                 <Button className="h-24 flex flex-col gap-2" variant="outline">
@@ -101,6 +106,6 @@ export default function QuickActionCard() {
 
             </CardContent>
 
-        </Card>
+        </Card >
     )
 }

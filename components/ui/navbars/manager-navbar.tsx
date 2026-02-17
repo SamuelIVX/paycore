@@ -92,7 +92,7 @@ export interface ManagerNavbarProps extends React.HTMLAttributes<HTMLElement> {
 const defaultNavigationLinks: ManagerNavbarNavLink[] = [
   { href: "/manager/dashboard", icon: <House />, label: "Home" },
   { href: "/manager/employee-table", icon: <Users />, label: "Employees" },
-  { href: "/manager/payroll-table", icon: <CreditCard />, label: "Payroll" },
+  { href: "/manager/payroll-records-table", icon: <CreditCard />, label: "Payroll" },
   { href: "/manager/benefits", icon: <FileText />, label: "Benefits" },
 ]
 
@@ -104,7 +104,7 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
       logoHref = "#",
       navigationLinks = defaultNavigationLinks,
       logoutText = "Log Out",
-      logoutHref = "#logout",
+      logoutHref = "/",
       onLogoutClick,
       ...props
     },
@@ -246,16 +246,18 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
             <Button
               className="text-sm font-medium hover:bg-accent hover:text-accent-foreground border border-border rounded-md cursor-pointer"
               onClick={e => {
-                e.preventDefault()
                 if (onLogoutClick) {
                   onLogoutClick()
                 }
               }}
               size="sm"
               variant="ghost"
+              asChild
             >
-              <LogOut className="mr-2" />
-              {logoutText}
+              <Link href={logoutHref}>
+                <LogOut className="mr-2" />
+                {logoutText}
+              </Link>
             </Button>
           </div>
 

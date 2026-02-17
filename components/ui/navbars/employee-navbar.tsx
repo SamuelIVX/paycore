@@ -16,8 +16,8 @@ import {
     House,
     HandCoins,
     FileText,
-}
-    from "lucide-react"
+} from "lucide-react"
+import Link from "next/link"
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -102,7 +102,7 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
             logoHref = "#",
             navigationLinks = defaultNavigationLinks,
             logoutText = "Log Out",
-            logoutHref = "#logout",
+            logoutHref = "/",
             onLogoutClick,
             ...props
         },
@@ -246,16 +246,18 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
                         <Button
                             className="text-sm font-medium hover:bg-accent hover:text-accent-foreground border border-border rounded-md cursor-pointer"
                             onClick={e => {
-                                e.preventDefault()
                                 if (onLogoutClick) {
                                     onLogoutClick()
                                 }
                             }}
                             size="sm"
                             variant="ghost"
+                            asChild
                         >
-                            <LogOut className="mr-2" />
-                            {logoutText}
+                            <Link href={logoutHref}>
+                                <LogOut className="mr-2" />
+                                {logoutText}
+                            </Link>
                         </Button>
                     </div>
 
