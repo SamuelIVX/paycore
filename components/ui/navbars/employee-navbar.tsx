@@ -246,7 +246,6 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
                         <Button
                             className="text-sm font-medium hover:bg-accent hover:text-accent-foreground border border-border rounded-md cursor-pointer"
                             onClick={e => {
-                                // e.preventDefault()
                                 if (onLogoutClick) {
                                     onLogoutClick()
                                 }

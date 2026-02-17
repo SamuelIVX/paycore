@@ -256,28 +256,3 @@ export const Spinner = ({ variant, ...props }: SpinnerProps) => {
       return <Default {...(props as any)} />
   }
 }
-
-// Demo
-export function Demo() {
-  const variants: SpinnerProps["variant"][] = [
-    "default",
-    "circle",
-    "pinwheel",
-    "circle-filled",
-    "ellipsis",
-    "ring",
-    "bars",
-    "infinite",
-  ]
-
-  return (
-    <div className="grid grid-cols-4 gap-8 p-8">
-      {variants.map(variant => (
-        <div key={variant} className="flex flex-col items-center gap-2">
-          <Spinner variant={variant} size={32} />
-          <span className="text-xs text-muted-foreground">{variant}</span>
-        </div>
-      ))}
-    </div>
-  )
-}

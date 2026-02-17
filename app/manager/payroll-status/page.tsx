@@ -76,7 +76,7 @@ export default function PayrollStatusPage() {
                             title: "Payroll is Processing...",
                             description: "Running calculations, applying deductions, and updating records..."
                         }}
-                        icon={<Spinner className="w-25 h-25" variant="bars" />}
+                        icon={<Spinner className="w-24 h-24" variant="bars" />}
                         color={{
                             border: "",
                             bg: "",
@@ -91,7 +91,7 @@ export default function PayrollStatusPage() {
                             title: "Payroll Has Finished Processing",
                             description: "All calculations and database interactions has completed successfully"
                         }}
-                        icon={<CircleCheck className="w-25 h-25 text-green-500" />}
+                        icon={<CircleCheck className="w-24 h-24 text-green-500" />}
                         color={{
                             border: "border-green-300",
                             bg: "bg-green-50",
@@ -117,7 +117,7 @@ export default function PayrollStatusPage() {
                                     />
 
                                     <PayrollSection
-                                        title="Total Deductions:"
+                                        title="Total Deductions"
                                         value="-$1,023"
                                         icon={<FileText className="w-4 h-4 text-gray-500" />}
                                         color="text-red-500"
@@ -126,7 +126,7 @@ export default function PayrollStatusPage() {
                                     <Separator className="col-span-2" />
 
                                     <PayrollSection
-                                        title="Total Net Pay:"
+                                        title="Total Net Pay"
                                         value="$13,784"
                                         icon={<DollarSign className="w-4 h-4 text-green-600" />}
                                         color="text-green-500"

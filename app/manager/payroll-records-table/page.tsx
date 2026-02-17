@@ -37,14 +37,14 @@ export default function PayrollTable() {
                         <CardDescription>Review and approve payroll records</CardDescription>
                     </div>
                     <Dialog >
+
                         <DialogTrigger asChild>
-                            <Button asChild>
-                                <Link href="./dashboard">
-                                    <DollarSign className="w-4 h-4 mr-2" />
-                                    Run Payroll
-                                </Link>
+                            <Button>
+                                <DollarSign className="w-4 h-4 mr-2" />
+                                Run Payroll
                             </Button>
                         </DialogTrigger>
+
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>Run Payroll</DialogTitle>
@@ -69,12 +69,15 @@ export default function PayrollTable() {
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button >
-                                    Run Payroll
-                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                <Button asChild>
+                                    <Link href="/manager/payroll-status">
+                                        Run Payroll
+                                        <ArrowRight className="w-4 h-4 ml-2" />
+                                    </Link>
                                 </Button>
                             </DialogFooter>
                         </DialogContent>
+
                     </Dialog>
                 </div>
             </CardHeader>

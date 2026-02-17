@@ -83,7 +83,7 @@ export default function QuickActionCard() {
                         </div>
                         <DialogFooter>
                             <Button asChild>
-                                <Link href="./payroll-status">
+                                <Link href="/manager/payroll-status">
                                     Run Payroll
                                     <ArrowRight className="w-4 h-4 ml-2" />
                                 </Link>
@@ -93,7 +93,7 @@ export default function QuickActionCard() {
                 </Dialog>
 
                 <Button className="h-24 flex flex-col gap-2" variant="outline" asChild>
-                    <Link href="./payroll-records-table">
+                    <Link href="/manager/payroll-records-table">
                         <FileCheck className="w-8 h-8" />
                         <span>Approve Payroll</span>
                     </Link>
