@@ -3,6 +3,18 @@
 import { LoaderCircleIcon, LoaderIcon, LoaderPinwheelIcon, type LucideProps } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+export type SpinnerProps = LucideProps & {
+  variant?:
+  | "default"
+  | "circle"
+  | "pinwheel"
+  | "circle-filled"
+  | "ellipsis"
+  | "ring"
+  | "bars"
+  | "infinite"
+}
+
 type SpinnerVariantProps = Omit<SpinnerProps, "variant">
 
 const Default = ({ className, ...props }: SpinnerVariantProps) => (
@@ -223,18 +235,6 @@ const Infinite = ({ size = 24, ...props }: SpinnerVariantProps) => (
     </path>
   </svg>
 )
-
-export type SpinnerProps = LucideProps & {
-  variant?:
-  | "default"
-  | "circle"
-  | "pinwheel"
-  | "circle-filled"
-  | "ellipsis"
-  | "ring"
-  | "bars"
-  | "infinite"
-}
 
 export const Spinner = ({ variant, ...props }: SpinnerProps) => {
   switch (variant) {

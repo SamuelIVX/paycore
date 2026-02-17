@@ -44,7 +44,7 @@ export function StatusCard({ text, icon, color, children }: StatusCardProps) {
                             </div>
 
                             <Button className="bg-black p-4" asChild>
-                                <Link href="./dashboard">
+                                <Link href="/manager/dashboard">
                                     <Home className="w-4 h-4" /> Back To Dashboard
                                 </Link>
                             </Button>
@@ -89,7 +89,7 @@ export default function PayrollStatusPage() {
                     <StatusCard
                         text={{
                             title: "Payroll Has Finished Processing",
-                            description: "All calculations and database interactions has completed successfully"
+                            description: "All calculations and database interactions have completed successfully"
                         }}
                         icon={<CircleCheck className="w-24 h-24 text-green-500" />}
                         color={{
