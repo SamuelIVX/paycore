@@ -12,6 +12,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { UserCircle2, Lock } from "lucide-react";
+import PayCoreLogo from "../public/logo.png";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -43,10 +45,15 @@ export default function LoginPage() {
 
         <CardHeader>
 
-          {/* This a temporary icon. Should be replaced by our logo. */}
-          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-2">
-            <UserCircle2 className="w-10 h-10 text-white" />
+          <div className="mx-auto relative size-32 bg-blue-600 rounded-full mb-2 overflow-hidden">
+            <Image
+              src={PayCoreLogo}
+              alt="PayCore Logo"
+              fill
+              className="object-cover"
+            />
           </div>
+
 
           <CardTitle
             className="text-center text-2xl font-bold"

@@ -11,13 +11,14 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import {
-    LayoutDashboard,
     LogOut,
     House,
     HandCoins,
     FileText,
 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
+import PayCoreLogo from "../../../public/logo.png";
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -205,7 +206,7 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
                                 onClick={e => e.preventDefault()}
                             >
                                 <div className="shrink-0">
-                                    <LayoutDashboard className="h-10 w-10" />
+                                    <Image src={PayCoreLogo} alt="PayCore Logo" className="size-15 rounded-full object-cover flex items-center justify-center" />
                                 </div>
 
                                 <div className="flex flex-col items-start justify-center">
