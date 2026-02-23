@@ -1,7 +1,7 @@
 'use client'
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import {
   Card,
   CardContent,
@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label"
 import { UserCircle2, Lock } from "lucide-react";
 import PayCoreLogo from "../public/logo.png";
 import Image from "next/image";
+
+import SplitText from "@/components/SplitText";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -45,7 +47,7 @@ export default function LoginPage() {
 
         <CardHeader>
 
-          <div className="mx-auto relative size-32 bg-blue-600 rounded-full mb-2 overflow-hidden">
+          <div className="mx-auto relative size-32 rounded-full mb-2 overflow-hidden">
             <Image
               src={PayCoreLogo}
               alt="PayCore Logo"
@@ -59,7 +61,18 @@ export default function LoginPage() {
             className="text-center text-2xl font-bold"
             style={{ color: "var(--foreground)" }}
           >
-            Payroll System Login
+            <SplitText
+              text="PayCore Login Form"
+              delay={50}
+              duration={1.25}
+              ease="power3.out"
+              splitType="chars"
+              from={{ opacity: 0, y: 40 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0.1}
+              rootMargin="-100px"
+              textAlign="center"
+            />
           </CardTitle>
 
           <CardDescription
@@ -111,6 +124,7 @@ export default function LoginPage() {
               </div>
 
               <Button
+                variant="default"
                 type="submit"
                 className="w-full"
               >

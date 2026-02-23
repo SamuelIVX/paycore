@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/animate-ui/components/buttons/button"
+import { useTheme } from "next-themes"
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -16,6 +17,8 @@ import {
   Users,
   CreditCard,
   FileText,
+  Moon,
+  Sun
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -114,6 +117,8 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
     const [isMobile, setIsMobile] = useState(false)
     const containerRef = useRef<HTMLElement>(null)
 
+    const { setTheme } = useTheme()
+
     useEffect(() => {
       const checkWidth = () => {
         if (containerRef.current) {
@@ -146,6 +151,11 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
       },
       [ref],
     )
+
+    // Toggle Between Themes
+    const switchTheme = () => {
+      setTheme((prev) => (prev === "light" ? "dark" : "light"))
+    }
 
     return (
       <header
@@ -207,7 +217,7 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
                 onClick={e => e.preventDefault()}
               >
                 <div className="shrink-0">
-                  <Image src={PayCoreLogo} alt="PayCore Logo" className="size-15 rounded-full object-cover flex items-center justify-center" />
+                  <Image src={PayCoreLogo} alt="PayCore Logo" className="size-15 rounded-full object-cover" />
                 </div>
 
                 <div className="flex flex-col items-start justify-center">
@@ -244,6 +254,12 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
 
           {/* Right side */}
           <div className="flex items-center gap-3">
+            <Button onClick={switchTheme} variant="outline" size="icon">
+              <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+              <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+
             <Button
               className="text-sm font-medium hover:bg-accent hover:text-accent-foreground border border-border rounded-md cursor-pointer"
               onClick={e => {
@@ -260,6 +276,7 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
                 {logoutText}
               </Link>
             </Button>
+
           </div>
 
         </div>
