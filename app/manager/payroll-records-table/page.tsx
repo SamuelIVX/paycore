@@ -103,26 +103,26 @@ export default function PayrollTable() {
                                 <TableCell>
                                     <Badge
                                         variant={
-                                            record.status === "pending" ? "destructive" :
-                                                record.status === "approved" ? "default" :
-                                                    "secondary"
+                                            record.status === "pending" ? "destructive"
+                                                : record.status === "approved" ? "default"
+                                                    : "secondary"
                                         }
                                     >
                                         {record.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {record.status === "pending" && (
+                                    {record.status === "pending" ? (
                                         <Button variant="ghost" size="sm">
                                             <CheckCircle2 className="w-4 h-4" />
                                             Approve?
                                         </Button>
-                                    ) || (
-                                            <Button variant="ghost" size="sm" className="text-green-500 hover:text-green-200">
-                                                <CheckCircle2 className="w-4 h-4" />
-                                                Approved
-                                            </Button>
-                                        )}
+                                    ) : record.status === "approved" ? (
+                                        <Button variant="ghost" size="sm" className="text-green-500 hover:text-green-200">
+                                            <CheckCircle2 className="w-4 h-4" />
+                                            Approved
+                                        </Button>
+                                    ) : null}
                                 </TableCell>
                             </TableRow>
                         ))}
