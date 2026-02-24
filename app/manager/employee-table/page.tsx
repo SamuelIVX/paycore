@@ -9,22 +9,19 @@ import {
     DialogHeader,
     DialogTitle,
     DialogDescription,
-    DialogFooter
+    DialogFooter,
+    DialogClose
 } from "@/components/ui/dialog";
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { UserPlus, Edit } from "lucide-react";
-import { useState } from "react";
 
 /* TODO (Backend): Remove all hardcoded from the employee data table and replace with data fetched from Supabase  */
 const employees = ([
@@ -66,24 +63,26 @@ export default function EmployeeTable() {
                             </DialogHeader>
                             <div className="space-y-4 py-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="empName">Full Name</Label>
-                                    <Input id="empName" placeholder="John Doe" />
+                                    <Label htmlFor="add-empName">Full Name</Label>
+                                    <Input id="add-empName" placeholder="John Doe" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="empRole">Role</Label>
-                                    <Input id="empRole" placeholder="Software Engineer" />
+                                    <Label htmlFor="add-empRole">Role</Label>
+                                    <Input id="add-empRole" placeholder="Software Engineer" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="payType">Pay Type</Label>
-                                    <Input id="payType" placeholder="Hourly/Salary" />
+                                    <Label htmlFor="add-payType">Pay Type</Label>
+                                    <Input id="add-payType" placeholder="Hourly/Salary" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="empPay">Pay</Label>
-                                    <Input id="empPay" type="number" placeholder="75000" />
+                                    <Label htmlFor="add-empPay">Pay</Label>
+                                    <Input id="add-empPay" type="number" placeholder="75000" />
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button>Add Employee</Button>
+                                <DialogClose asChild>
+                                    <Button>Add Employee</Button>
+                                </DialogClose>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
@@ -134,28 +133,52 @@ export default function EmployeeTable() {
                                                     </DialogHeader>
                                                     <div className="space-y-4 py-4">
                                                         <div className="space-y-2">
-                                                            <Label htmlFor="empName">Full Name</Label>
-                                                            <Input id="empName" placeholder="John Doe" />
+                                                            <Label htmlFor="edit-empName">Full Name</Label>
+                                                            <Input id="edit-empName" placeholder="John Doe" />
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <Label htmlFor="empRole">Role</Label>
-                                                            <Input id="empRole" placeholder="Software Engineer" />
+                                                            <Label htmlFor="edit-empRole">Role</Label>
+                                                            <Input id="edit-empRole" placeholder="Software Engineer" />
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <Label htmlFor="payType">Pay Type</Label>
-                                                            <Input id="payType" placeholder="Hourly/Salary" />
+                                                            <Label htmlFor="edit-payType">Pay Type</Label>
+                                                            <Input id="edit-payType" placeholder="Hourly/Salary" />
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <Label htmlFor="empPay">Pay</Label>
-                                                            <Input id="empPay" type="number" placeholder="75000" />
+                                                            <Label htmlFor="edit-empPay">Pay</Label>
+                                                            <Input id="edit-empPay" type="number" placeholder="75000" />
                                                         </div>
                                                     </div>
                                                     <DialogFooter>
-                                                        <Button> Edit Employee </Button>
+                                                        <DialogClose asChild>
+                                                            <Button> Edit Employee </Button>
+                                                        </DialogClose>
                                                     </DialogFooter>
                                                 </DialogContent>
                                             </Dialog>
-                                            <DropdownMenuItem>Delete Employee</DropdownMenuItem>
+
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                                        Delete Employee
+                                                    </DropdownMenuItem>
+                                                </DialogTrigger>
+                                                <DialogContent>
+                                                    <DialogHeader>
+                                                        <DialogTitle>Delete Employee</DialogTitle>
+                                                        <DialogDescription>Confirm deletion of employee from the system</DialogDescription>
+                                                    </DialogHeader>
+                                                    <DialogFooter>
+                                                        <DialogClose asChild>
+                                                            <Button variant="default">Cancel</Button>
+                                                        </DialogClose>
+                                                        <DialogClose asChild>
+                                                            <Button variant="destructive">Delete</Button>
+                                                        </DialogClose>
+                                                    </DialogFooter>
+                                                </DialogContent>
+                                            </Dialog>
+
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>

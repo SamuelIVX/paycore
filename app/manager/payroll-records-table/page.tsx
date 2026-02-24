@@ -3,7 +3,6 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, ArrowRight, CheckCircle2 } from "lucide-react";
@@ -28,7 +27,6 @@ const payrollRecords = ([
 
 /* TODO (Backend): Add functionalities to the table (e.g., run payroll, approve or decline payroll, etc) */
 export default function PayrollTable() {
-    const isApproved = false;
 
     return (
         <Card className="m-6">
