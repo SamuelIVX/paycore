@@ -28,6 +28,8 @@ const payrollRecords = ([
 
 /* TODO (Backend): Add functionalities to the table (e.g., run payroll, approve or decline payroll, etc) */
 export default function PayrollTable() {
+    const isApproved = false;
+
     return (
         <Card className="m-6">
             <CardHeader>
@@ -62,10 +64,6 @@ export default function PayrollTable() {
                                             <SelectItem value="previous">Previous Period (Jan 16-31, 2026)</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label >Notes (Optional)</Label>
-                                    <Textarea placeholder="Add any notes..." />
                                 </div>
                             </div>
                             <DialogFooter>
@@ -107,7 +105,7 @@ export default function PayrollTable() {
                                 <TableCell>
                                     <Badge
                                         variant={
-                                            record.status === "pending" ? "outline" :
+                                            record.status === "pending" ? "destructive" :
                                                 record.status === "approved" ? "default" :
                                                     "secondary"
                                         }
@@ -117,14 +115,16 @@ export default function PayrollTable() {
                                 </TableCell>
                                 <TableCell className="text-right">
                                     {record.status === "pending" && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                        >
-                                            <CheckCircle2 className="w-4 h-4 mr-2" />
-                                            Approve
+                                        <Button variant="ghost" size="sm">
+                                            <CheckCircle2 className="w-4 h-4" />
+                                            Approve?
                                         </Button>
-                                    )}
+                                    ) || (
+                                            <Button variant="ghost" size="sm" className="text-green-500 hover:text-green-200">
+                                                <CheckCircle2 className="w-4 h-4" />
+                                                Approved
+                                            </Button>
+                                        )}
                                 </TableCell>
                             </TableRow>
                         ))}

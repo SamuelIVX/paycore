@@ -58,6 +58,7 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
   const isInView = useInView(ref, { once: true });
 
   const [revealCount, setRevealCount] = useState<number>(0);
+  const [, setFlipTick] = useState<number>(0);
   const animationFrameRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
   const lastFlipTimeRef = useRef<number>(0);
@@ -109,6 +110,7 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
           }
         }
         lastFlipTimeRef.current = now;
+        setFlipTick((tick) => tick + 1);
       }
 
       animationFrameRef.current = requestAnimationFrame(update);
@@ -144,7 +146,7 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
 
         return (
           <span
-            key={index}
+            key={`${index}-${char}`}
             className={cn(isRevealed ? revealedClassName : encryptedClassName)}
           >
             {displayChar}
