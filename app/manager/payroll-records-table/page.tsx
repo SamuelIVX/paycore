@@ -1,9 +1,8 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, ArrowRight, CheckCircle2 } from "lucide-react";
@@ -28,6 +27,7 @@ const payrollRecords = ([
 
 /* TODO (Backend): Add functionalities to the table (e.g., run payroll, approve or decline payroll, etc) */
 export default function PayrollTable() {
+
     return (
         <Card className="m-6">
             <CardHeader>
@@ -62,10 +62,6 @@ export default function PayrollTable() {
                                             <SelectItem value="previous">Previous Period (Jan 16-31, 2026)</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label >Notes (Optional)</Label>
-                                    <Textarea placeholder="Add any notes..." />
                                 </div>
                             </div>
                             <DialogFooter>
@@ -107,24 +103,26 @@ export default function PayrollTable() {
                                 <TableCell>
                                     <Badge
                                         variant={
-                                            record.status === "pending" ? "outline" :
-                                                record.status === "approved" ? "default" :
-                                                    "secondary"
+                                            record.status === "pending" ? "destructive"
+                                                : record.status === "approved" ? "default"
+                                                    : "secondary"
                                         }
                                     >
                                         {record.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {record.status === "pending" && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                        >
-                                            <CheckCircle2 className="w-4 h-4 mr-2" />
-                                            Approve
+                                    {record.status === "pending" ? (
+                                        <Button variant="ghost" size="sm">
+                                            <CheckCircle2 className="w-4 h-4" />
+                                            Approve?
                                         </Button>
-                                    )}
+                                    ) : record.status === "approved" ? (
+                                        <Button variant="ghost" size="sm" className="text-green-500 hover:text-green-200">
+                                            <CheckCircle2 className="w-4 h-4" />
+                                            Approved
+                                        </Button>
+                                    ) : null}
                                 </TableCell>
                             </TableRow>
                         ))}

@@ -1,5 +1,5 @@
 import { ArrowRight, DollarSign, FileCheck, Heart, UserPlus } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/animate-ui/components/buttons/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -21,7 +21,9 @@ export default function QuickActionCard() {
 
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button className="h-24 flex flex-col gap-2" variant="outline">
+                        <Button
+                            className="h-24 flex flex-col gap-2"
+                            variant="outline">
                             <UserPlus className="w-8 h-8" />
                             <span>Add Employee</span>
                         </Button>
@@ -99,9 +101,11 @@ export default function QuickActionCard() {
                     </Link>
                 </Button>
 
-                <Button className="h-24 flex flex-col gap-2" variant="outline">
-                    <Heart className="w-8 h-8" />
-                    <span>View Benefits</span>
+                <Button className="h-24 flex flex-col gap-2" variant="outline" asChild>
+                    <Link href="/manager/benefits">
+                        <Heart className="w-8 h-8" />
+                        <span>View Benefits</span>
+                    </Link>
                 </Button>
 
             </CardContent>

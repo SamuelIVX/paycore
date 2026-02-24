@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Providers from "./providers";
 import { NavbarWrapper } from "./navbar-wrapper";
+import { ThemeProvider } from "./theme-provider";
 
 export const metadata: Metadata = {
   title: "PayCore",
@@ -11,16 +12,23 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
 
-        <Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Providers>
 
-          <NavbarWrapper />
+            <NavbarWrapper />
 
-          {children}
+            {children}
 
-        </Providers>
+          </Providers>
+        </ThemeProvider>
 
       </body>
     </html >

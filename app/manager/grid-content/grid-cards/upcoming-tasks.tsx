@@ -4,7 +4,7 @@ import { TaskCardProps } from "./types"
 
 export function TaskCard({ title, description, icon, color }: TaskCardProps) {
     return (
-        <div className={`flex items-start gap-3 p-3 rounded-lg border ${color.bg} ${color.border}`}>
+        <div className={`flex items-start gap-3 p-3 rounded-lg border ${color.bg} ${color.border} transition-colors`}>
             {icon}
             <div className="flex-1">
                 <p className={`font-medium ${color.text}`}>{title}</p>
@@ -31,7 +31,7 @@ export default function UpcomingTasksCard() {
                         icon={<Calendar className="w-5 h-5 text-blue-600 mt-0.5" />}
                         color={{
                             bg: "bg-blue-50",
-                            border: "border-blue-200",
+                            border: "border-blue-200 hover:border-blue-500",
                             text: "text-blue-900"
                         }}
                     />
@@ -41,7 +41,7 @@ export default function UpcomingTasksCard() {
                         icon={<FileCheck className="w-5 h-5 text-purple-600 mt-0.5" />}
                         color={{
                             bg: "bg-purple-50",
-                            border: "border-purple-200",
+                            border: "border-purple-200 hover:border-purple-500",
                             text: "text-purple-900"
                         }}
                     />
@@ -51,7 +51,7 @@ export default function UpcomingTasksCard() {
                         icon={<Heart className="w-5 h-5 text-green-600 mt-0.5" />}
                         color={{
                             bg: "bg-green-50",
-                            border: "border-green-200",
+                            border: "border-green-200 hover:border-green-500",
                             text: "text-green-900"
                         }}
                     />

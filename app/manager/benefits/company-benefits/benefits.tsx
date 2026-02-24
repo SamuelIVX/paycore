@@ -27,7 +27,7 @@ export default function CompanyBenefitsGrid() {
                 {AVAILABLE_BENEFITS.filter(b => b.isCompanyProvided).map(benefit => {
                     const Icon = BENEFIT_ICONS[benefit.type];
                     return (
-                        <Card key={benefit.id} className="border-blue-200 bg-blue-50">
+                        <Card key={benefit.id} className="hover:border-blue-300 hover:bg-blue-50">
 
                             <CardContent>
 

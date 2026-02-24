@@ -1,7 +1,23 @@
+'use client'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/animate-ui/components/buttons/button";
+import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+    DialogClose
+} from "@/components/ui/dialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -47,20 +63,26 @@ export default function EmployeeTable() {
                             </DialogHeader>
                             <div className="space-y-4 py-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="empName">Full Name</Label>
-                                    <Input id="empName" placeholder="John Doe" />
+                                    <Label htmlFor="add-empName">Full Name</Label>
+                                    <Input id="add-empName" placeholder="John Doe" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="empRole">Role</Label>
-                                    <Input id="empRole" placeholder="Software Engineer" />
+                                    <Label htmlFor="add-empRole">Role</Label>
+                                    <Input id="add-empRole" placeholder="Software Engineer" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="empSalary">Annual Salary</Label>
-                                    <Input id="empSalary" type="number" placeholder="75000" />
+                                    <Label htmlFor="add-payType">Pay Type</Label>
+                                    <Input id="add-payType" placeholder="Hourly/Salary" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="add-empPay">Pay</Label>
+                                    <Input id="add-empPay" type="number" placeholder="75000" />
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button>Add Employee</Button>
+                                <DialogClose asChild>
+                                    <Button>Add Employee</Button>
+                                </DialogClose>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
@@ -86,20 +108,85 @@ export default function EmployeeTable() {
                                 <TableCell>{employee.payType}</TableCell>
                                 <TableCell>${employee.pay.toLocaleString()}</TableCell>
                                 <TableCell>
-                                    <Badge variant={employee.status === "active" ? "default" : "outline"}>
+                                    <Badge variant={employee.status === "active" ? "default" : employee.status === "offline" ? "destructive" : "outline"}>
                                         {employee.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="ghost" size="sm">
-                                        <Edit className="w-4 h-4" />
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="sm">
+                                                <Edit className="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                                        Edit Employee
+                                                    </DropdownMenuItem>
+                                                </DialogTrigger>
+                                                <DialogContent>
+                                                    <DialogHeader>
+                                                        <DialogTitle>Edit Employee</DialogTitle>
+                                                        <DialogDescription>Update employee details in the system</DialogDescription>
+                                                    </DialogHeader>
+                                                    <div className="space-y-4 py-4">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="edit-empName">Full Name</Label>
+                                                            <Input id="edit-empName" placeholder="John Doe" />
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="edit-empRole">Role</Label>
+                                                            <Input id="edit-empRole" placeholder="Software Engineer" />
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="edit-payType">Pay Type</Label>
+                                                            <Input id="edit-payType" placeholder="Hourly/Salary" />
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="edit-empPay">Pay</Label>
+                                                            <Input id="edit-empPay" type="number" placeholder="75000" />
+                                                        </div>
+                                                    </div>
+                                                    <DialogFooter>
+                                                        <DialogClose asChild>
+                                                            <Button> Edit Employee </Button>
+                                                        </DialogClose>
+                                                    </DialogFooter>
+                                                </DialogContent>
+                                            </Dialog>
+
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                                        Delete Employee
+                                                    </DropdownMenuItem>
+                                                </DialogTrigger>
+                                                <DialogContent>
+                                                    <DialogHeader>
+                                                        <DialogTitle>Delete Employee</DialogTitle>
+                                                        <DialogDescription>Confirm deletion of employee from the system</DialogDescription>
+                                                    </DialogHeader>
+                                                    <DialogFooter>
+                                                        <DialogClose asChild>
+                                                            <Button variant="default">Cancel</Button>
+                                                        </DialogClose>
+                                                        <DialogClose asChild>
+                                                            <Button variant="destructive">Delete</Button>
+                                                        </DialogClose>
+                                                    </DialogFooter>
+                                                </DialogContent>
+                                            </Dialog>
+
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </CardContent>
-        </Card>
+        </Card >
     )
 }
