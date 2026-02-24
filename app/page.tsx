@@ -16,6 +16,7 @@ import PayCoreLogo from "../public/logo.png";
 import Image from "next/image";
 
 import SplitText from "@/components/SplitText";
+import { EncryptedText } from "@/components/ui/encrypted-text";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -62,7 +63,7 @@ export default function LoginPage() {
             style={{ color: "var(--foreground)" }}
           >
             <SplitText
-              text="PayCore Login Form"
+              text="PayCore Login"
               delay={50}
               duration={1.25}
               ease="power3.out"
@@ -79,7 +80,10 @@ export default function LoginPage() {
             className="text-center"
             style={{ color: "var(--muted-foreground)" }}
           >
-            Enter your credentials to access your account.
+            <EncryptedText
+              text="Enter your credentials to access your account."
+              revealDelayMs={50}
+            />
           </CardDescription>
 
         </CardHeader>
