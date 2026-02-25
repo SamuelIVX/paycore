@@ -28,15 +28,12 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 
 const hoursThisWeek = 0
 const weeklyTarget = 40
-const weeklyProgressPct = Math.round((hoursThisWeek / weeklyTarget) * 100)
 
 const hoursByDay = [
   { day: "Mon", hours: 8.0 },
@@ -160,225 +157,203 @@ export default function EmployeeDashboardPage() {
           </Card>
         </div>
 
-        {/* Tabs */}
-        <div className="mt-6">
-          
-              <div className="grid gap-4 lg:grid-cols-2">
-                {/* LEFT COLUMN */}
-                <div className="space-y-4">
-                  
+        {/* Main Uniform Grid */}
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          {/* Row 1 */}
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">This Week&apos;s Hours</CardTitle>
+              <CardDescription>Daily breakdown of hours worked</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={hoursByDay}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="day" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} width={28} />
+                  <Tooltip
+                    cursor={{ fill: "transparent" }}
+                    contentStyle={{
+                      borderRadius: 12,
+                      border: "1px solid hsl(var(--border))",
+                      background: "hsl(var(--background))",
+                    }}
+                  />
+                  <Bar dataKey="hours" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-                  {/* This Week's Hours (Bar) */}
-                  <Card className="shadow-sm">
-                    <CardHeader>
-                      <CardTitle className="text-base">This Week&apos;s Hours</CardTitle>
-                      <CardDescription>Daily breakdown of hours worked</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-[220px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={hoursByDay}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="day" tickLine={false} axisLine={false} />
-                          <YAxis tickLine={false} axisLine={false} width={28} />
-                          <Tooltip
-                            cursor={{ fill: "transparent" }}
-                            contentStyle={{
-                              borderRadius: 12,
-                              border: "1px solid hsl(var(--border))",
-                              background: "hsl(var(--background))",
-                            }}
-                          />
-                          <Bar dataKey="hours" radius={[8, 8, 0, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
+          <Card className="shadow-sm">
+            <CardHeader className="flex flex-row items-start justify-between space-y-0">
+              <div>
+                <CardTitle className="text-base">Year-to-Date Earnings</CardTitle>
+                <CardDescription>Total earnings in 2026</CardDescription>
+              </div>
+              <div className="h-11 w-11 rounded-full bg-green-100 flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-green-700" />
+              </div>
+            </CardHeader>
 
-                  {/* Recent Timesheets */}
-                  <Card className="shadow-sm">
-                    <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                      <div>
-                        <CardTitle className="text-base">Recent Timesheets</CardTitle>
-                        <CardDescription>Your latest time entries</CardDescription>
-                      </div>
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        Add Hours
-                      </Button>
-                    </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <div className="text-3xl font-bold text-green-700">$9,375</div>
+                <div className="text-xs text-muted-foreground">Net earnings</div>
+              </div>
 
-                    <CardContent className="space-y-3">
-                      {timesheets.map((t, idx) => (
-                        <div key={t.date}>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
-                                <CalendarDays className="h-4 w-4 text-blue-600" />
-                              </div>
-                              <div className="leading-tight">
-                                <div className="text-sm font-medium">{t.date}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {t.hours} hours
-                                </div>
-                              </div>
-                            </div>
+              <Separator />
 
-                            <StatusBadge status={t.status} />
-                          </div>
-                          {idx !== timesheets.length - 1 && <Separator className="my-3" />}
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-xs text-muted-foreground">Paychecks</div>
+                  <div className="text-lg font-semibold">3</div>
                 </div>
-
-                {/* RIGHT COLUMN */}
-                <div className="space-y-4">
-                  {/* YTD Earnings */}
-                  <Card className="shadow-sm">
-                    <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                      <div>
-                        <CardTitle className="text-base">Year-to-Date Earnings</CardTitle>
-                        <CardDescription>Your total earnings in 2026</CardDescription>
-                      </div>
-                      <div className="h-11 w-11 rounded-full bg-green-100 flex items-center justify-center">
-                        <TrendingUp className="h-5 w-5 text-green-700" />
-                      </div>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-                      <div>
-                        <div className="text-3xl font-bold text-green-700">$9,375</div>
-                        <div className="text-xs text-muted-foreground">Net earnings</div>
-                      </div>
-
-                      <Separator />
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <div className="text-xs text-muted-foreground">Paychecks</div>
-                          <div className="text-lg font-semibold">3</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-muted-foreground">Avg. Per Check</div>
-                          <div className="text-lg font-semibold">$3125</div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Earnings Trend (Area) */}
-                  <Card className="shadow-sm">
-                    <CardHeader>
-                      <CardTitle className="text-base">Earnings Trend</CardTitle>
-                      <CardDescription>Net pay over last 6 months</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-[220px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={earningsTrend}>
-                          <defs>
-                            <linearGradient id="fillNet" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stopOpacity={0.25} />
-                              <stop offset="100%" stopOpacity={0.03} />
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="month" tickLine={false} axisLine={false} />
-                          <YAxis tickLine={false} axisLine={false} width={40} />
-                          <Tooltip
-                            contentStyle={{
-                              borderRadius: 12,
-                              border: "1px solid hsl(var(--border))",
-                              background: "hsl(var(--background))",
-                            }}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="net"
-                            strokeWidth={2}
-                            fill="url(#fillNet)"
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-
-                  {/* Quick Stats */}
-                  <Card className="shadow-sm">
-                    <CardHeader>
-                      <CardTitle className="text-base">Quick Stats</CardTitle>
-                      <CardDescription>Your employment overview</CardDescription>
-                    </CardHeader>
-
-                    <CardContent className="space-y-3">
-                      <div className="flex items-center gap-3 rounded-xl bg-blue-50/70 p-3">
-                        <div className="h-9 w-9 rounded-lg bg-blue-100 flex items-center justify-center">
-                          <User className="h-4 w-4 text-blue-700" />
-                        </div>
-                        <div className="leading-tight">
-                          <div className="text-xs text-muted-foreground">Position</div>
-                          <div className="text-sm font-semibold">Software Engineer</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 rounded-xl bg-purple-50/70 p-3">
-                        <div className="h-9 w-9 rounded-lg bg-purple-100 flex items-center justify-center">
-                          <Shield className="h-4 w-4 text-purple-700" />
-                        </div>
-                        <div className="leading-tight">
-                          <div className="text-xs text-muted-foreground">Tenure</div>
-                          <div className="text-sm font-semibold">2 years, 1 month</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 rounded-xl bg-pink-50/70 p-3">
-                        <div className="h-9 w-9 rounded-lg bg-pink-100 flex items-center justify-center">
-                          <Heart className="h-4 w-4 text-pink-700" />
-                        </div>
-                        <div className="leading-tight">
-                          <div className="text-xs text-muted-foreground">Benefits Enrolled</div>
-                          <div className="text-sm font-semibold">2 optional plans</div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Actions */}
-                  <Card className="shadow-sm border-green-200 bg-green-50/40">
-                    <CardHeader>
-                      <CardTitle className="text-base">Actions</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start gap-2 bg-background"
-                        onClick={() => router.push("/employee/timesheets/new")}
-                      >
-                        <Clock className="h-4 w-4" />
-                        Submit Hours
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start gap-2 bg-background"
-                        onClick={() => router.push("/employee/benefits")}
-                      >
-                        <Heart className="h-4 w-4" />
-                        Manage Benefits
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start gap-2 bg-background"
-                        onClick={() => router.push("/employee/paystubs")}
-                      >
-                        <ArrowUpRight className="h-4 w-4" />
-                        View Pay Stubs
-                      </Button>
-                    </CardContent>
-                  </Card>
+                <div>
+                  <div className="text-xs text-muted-foreground">Avg. Per Check</div>
+                  <div className="text-lg font-semibold">$3125</div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Row 2 */}
+          <Card className="shadow-sm">
+            <CardHeader className="flex flex-row items-start justify-between space-y-0">
+              <div>
+                <CardTitle className="text-base">Recent Timesheets</CardTitle>
+                <CardDescription>Latest time entries</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Plus className="h-4 w-4" />
+                Add Hours
+              </Button>
+            </CardHeader>
+
+            <CardContent className="space-y-3">
+              {timesheets.map((t, idx) => (
+                <div key={t.date}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
+                        <CalendarDays className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="leading-tight">
+                        <div className="text-sm font-medium">{t.date}</div>
+                        <div className="text-xs text-muted-foreground">{t.hours} hours</div>
+                      </div>
+                    </div>
+                    <StatusBadge status={t.status} />
+                  </div>
+                  {idx !== timesheets.length - 1 && <Separator className="my-3" />}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Earnings Trend</CardTitle>
+              <CardDescription>Net pay over last 6 months</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={earningsTrend}>
+                  <defs>
+                    <linearGradient id="fillNet" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopOpacity={0.25} />
+                      <stop offset="100%" stopOpacity={0.03} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} width={40} />
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: 12,
+                      border: "1px solid hsl(var(--border))",
+                      background: "hsl(var(--background))",
+                    }}
+                  />
+                  <Area type="monotone" dataKey="net" strokeWidth={2} fill="url(#fillNet)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Row 3 */}
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Quick Stats</CardTitle>
+              <CardDescription>Employment overview</CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-3 rounded-xl bg-blue-50/70 p-3">
+                <div className="h-9 w-9 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <User className="h-4 w-4 text-blue-700" />
+                </div>
+                <div className="leading-tight">
+                  <div className="text-xs text-muted-foreground">Position</div>
+                  <div className="text-sm font-semibold">Software Engineer</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 rounded-xl bg-purple-50/70 p-3">
+                <div className="h-9 w-9 rounded-lg bg-purple-100 flex items-center justify-center">
+                  <Shield className="h-4 w-4 text-purple-700" />
+                </div>
+                <div className="leading-tight">
+                  <div className="text-xs text-muted-foreground">Tenure</div>
+                  <div className="text-sm font-semibold">2 years, 1 month</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 rounded-xl bg-pink-50/70 p-3">
+                <div className="h-9 w-9 rounded-lg bg-pink-100 flex items-center justify-center">
+                  <Heart className="h-4 w-4 text-pink-700" />
+                </div>
+                <div className="leading-tight">
+                  <div className="text-xs text-muted-foreground">Benefits Enrolled</div>
+                  <div className="text-sm font-semibold">2 optional plans</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm border-green-200 bg-green-50/40">
+            <CardHeader>
+              <CardTitle className="text-base">Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 bg-background"
+                onClick={() => router.push("/employee/timesheets/new")}
+              >
+                <Clock className="h-4 w-4" />
+                Submit Hours
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 bg-background"
+                onClick={() => router.push("/employee/benefits")}
+              >
+                <Heart className="h-4 w-4" />
+                Manage Benefits
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 bg-background"
+                onClick={() => router.push("/employee/paystubs")}
+              >
+                <ArrowUpRight className="h-4 w-4" />
+                View Pay Stubs
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
