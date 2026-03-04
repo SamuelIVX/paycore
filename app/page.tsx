@@ -14,28 +14,49 @@ import { Label } from "@/components/ui/label"
 import { UserCircle2, Lock } from "lucide-react";
 import PayCoreLogo from "../public/logo.png";
 import Image from "next/image";
-
+import { createClient } from "@/utils/supabase/client";
 import SplitText from "@/components/SplitText";
 import { EncryptedText } from "@/components/ui/encrypted-text";
 
 export default function LoginPage() {
+  const supabase = createClient();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = (e: React.SubmitEvent) => {
+  const handleLogin = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    // Simple authentication logic for demonstration purposes
-    // Backend team, please replace this with better authentication (fetch from Supabase)
-    // Also, implement proper error handling and security measures.
 
-    if (username.toLowerCase().includes("manager")) {
+    // Authenticate with Supabase Auth (using signInWithPassword for simplicity)
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+      email: username,
+      password: password,
+    });
+
+    if (authError || !data.user) {
+      alert("Invalid credentials.");
+      return;
+    }
+
+    // Fetch user profile to determine role
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+
+    if (profileError) {
+      alert("Error fetching user profile.");
+      return;
+    }
+
+    const role = profile.role;
+
+    if (role === "MANAGER") {
       router.push("/manager/dashboard");
-    } else if (username.toLowerCase().includes("employee")) {
-      router.push("/employee/dashboard")
     } else {
-      // Temporary error message display
-      alert("Invalid credentials. Use 'manager' or 'employee' as username.");
+      router.push("/employee/dashboard");
     }
   };
 
@@ -145,8 +166,8 @@ export default function LoginPage() {
           style={{ color: "var(--muted-foreground)" }}
         >
           <p className="font-medium mb-1">Demo Credentials:</p>
-          <p>Username: <span className="font-mono">manager</span> or <span className="font-mono">employee</span></p>
-          <p>Password: <span className="font-mono">any</span></p>
+          <p>Manager: <span className="font-mono">johnsmith@paycore.com</span></p>
+          <p>Employee: <span className="font-mono">emilydavis@paycore.com</span></p>
         </div>
 
       </Card>

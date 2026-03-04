@@ -1,4 +1,5 @@
 'use client'
+import { useState } from "react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/animate-ui/components/buttons/button";
@@ -22,6 +23,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { UserPlus, Edit } from "lucide-react";
+import { addEmployee as addEmployeeToDB } from "@/lib/employee";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 /* TODO (Backend): Remove all hardcoded from the employee data table and replace with data fetched from Supabase  */
 const employees = ([
@@ -41,6 +44,24 @@ const employees = ([
 
 /* TODO (Backend): Add functionalities to the table (e.g., edit, delete, search, sort)  */
 export default function EmployeeTable() {
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [position, setPosition] = useState("");
+    const [payFrequency, setPayFrequency] = useState("");
+    const [payRate, setPayRate] = useState(0);
+
+    const handleAddEmployee = async () => {
+        await addEmployeeToDB({
+            employee_number: `EMP-${Date.now()}`,
+            hire_date: new Date().toISOString().split("T")[0],
+            first_name: firstName,
+            last_name: lastName,
+            position,
+            pay_frequency: payFrequency,
+            pay_rate: payRate
+        })
+    }
+
     return (
         <Card className="m-6">
             <CardHeader>
@@ -52,7 +73,7 @@ export default function EmployeeTable() {
                     <Dialog >
                         <DialogTrigger asChild>
                             <Button>
-                                <UserPlus className="w-4 h-4 mr-2" />
+                                <UserPlus className="w-4 h-4" />
                                 Add Employee
                             </Button>
                         </DialogTrigger>
@@ -63,25 +84,56 @@ export default function EmployeeTable() {
                             </DialogHeader>
                             <div className="space-y-4 py-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="add-empName">Full Name</Label>
-                                    <Input id="add-empName" placeholder="John Doe" />
+                                    <Label >First Name</Label>
+                                    <Input
+                                        placeholder="John"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="add-empRole">Role</Label>
-                                    <Input id="add-empRole" placeholder="Software Engineer" />
+                                    <Label >Last Name</Label>
+                                    <Input
+                                        placeholder="Smith"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="add-payType">Pay Type</Label>
-                                    <Input id="add-payType" placeholder="Hourly/Salary" />
+                                    <Label >Position</Label>
+                                    <Input
+                                        placeholder="Software Engineer"
+                                        value={position}
+                                        onChange={(e) => setPosition(e.target.value)}
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="add-empPay">Pay</Label>
-                                    <Input id="add-empPay" type="number" placeholder="75000" />
+                                    <Label >Pay Frequency</Label>
+                                    <Select value={payFrequency} onValueChange={setPayFrequency}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Choose..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="HOURLY">Hourly</SelectItem>
+                                            <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
+                                            <SelectItem value="MONTHLY">Monthly</SelectItem>
+                                            <SelectItem value="SALARY">Salary</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label >Pay Rate</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="75000"
+                                        value={payRate}
+                                        onChange={(e) => setPayRate(Number(e.target.value))}
+                                    />
                                 </div>
                             </div>
                             <DialogFooter>
                                 <DialogClose asChild>
-                                    <Button>Add Employee</Button>
+                                    <Button onClick={handleAddEmployee}>Add Employee</Button>
                                 </DialogClose>
                             </DialogFooter>
                         </DialogContent>

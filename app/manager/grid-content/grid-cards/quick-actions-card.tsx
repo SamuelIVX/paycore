@@ -1,14 +1,38 @@
+'use client'
+
+import { useState } from "react"
 import { ArrowRight, DollarSign, FileCheck, Heart, UserPlus } from "lucide-react"
 import { Button } from "@/components/animate-ui/components/buttons/button"
+import { Button as BaseButton } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
+import { addEmployee as addEmployeeToDB } from "@/lib/employee"
 
 export default function QuickActionCard() {
+
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [position, setPosition] = useState("");
+    const [payFrequency, setPayFrequency] = useState("");
+    const [payRate, setPayRate] = useState(0);
+
+    const handleAddEmployee = async () => {
+        await addEmployeeToDB({
+            employee_number: `EMP-${Date.now()}`,
+            hire_date: new Date().toISOString().split("T")[0],
+            first_name: firstName,
+            last_name: lastName,
+            position,
+            pay_frequency: payFrequency,
+            pay_rate: payRate
+        })
+    }
+
     return (
         <Card>
 
@@ -25,7 +49,7 @@ export default function QuickActionCard() {
                             className="h-24 flex flex-col gap-2"
                             variant="outline">
                             <UserPlus className="w-8 h-8" />
-                            <span>Add Employee</span>
+                            Add Employee
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -35,20 +59,57 @@ export default function QuickActionCard() {
                         </DialogHeader>
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
-                                <Label htmlFor="empName">Full Name</Label>
-                                <Input id="empName" placeholder="John Doe" />
+                                <Label >First Name</Label>
+                                <Input
+                                    placeholder="John"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="empRole">Role</Label>
-                                <Input id="empRole" placeholder="Software Engineer" />
+                                <Label >Last Name</Label>
+                                <Input
+                                    placeholder="Smith"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="empSalary">Annual Salary</Label>
-                                <Input id="empSalary" type="number" placeholder="75000" />
+                                <Label >Position</Label>
+                                <Input
+                                    placeholder="Software Engineer"
+                                    value={position}
+                                    onChange={(e) => setPosition(e.target.value)}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label >Pay Frequency</Label>
+                                <Select value={payFrequency} onValueChange={setPayFrequency}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Choose..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="HOURLY">Hourly</SelectItem>
+                                        <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
+                                        <SelectItem value="MONTHLY">Monthly</SelectItem>
+                                        <SelectItem value="SALARY">Salary</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label >Pay Rate</Label>
+                                <Input
+                                    type="number"
+                                    placeholder="75000"
+                                    value={payRate}
+                                    onChange={(e) => setPayRate(Number(e.target.value))}
+                                />
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button >Add Employee</Button>
+                            <DialogClose asChild>
+                                <Button onClick={handleAddEmployee}>Add Employee</Button>
+                            </DialogClose>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
@@ -84,29 +145,29 @@ export default function QuickActionCard() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button asChild>
+                            <BaseButton asChild>
                                 <Link href="/manager/payroll-status">
                                     Run Payroll
                                     <ArrowRight className="w-4 h-4 ml-2" />
                                 </Link>
-                            </Button>
+                            </BaseButton>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
 
-                <Button className="h-24 flex flex-col gap-2" variant="outline" asChild>
+                <BaseButton className="h-24 flex flex-col gap-2" variant="outline" asChild>
                     <Link href="/manager/payroll-records-table">
                         <FileCheck className="w-8 h-8" />
                         <span>Approve Payroll</span>
                     </Link>
-                </Button>
+                </BaseButton>
 
-                <Button className="h-24 flex flex-col gap-2" variant="outline" asChild>
+                <BaseButton className="h-24 flex flex-col gap-2" variant="outline" asChild>
                     <Link href="/manager/benefits">
                         <Heart className="w-8 h-8" />
                         <span>View Benefits</span>
                     </Link>
-                </Button>
+                </BaseButton>
 
             </CardContent>
 
