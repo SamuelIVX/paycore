@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
 import {
   Area,
   AreaChart,
@@ -76,12 +77,18 @@ function StatusBadge({ status }: { status: "submitted" | "approved" }) {
 
 export default function EmployeeDashboardPage() {
   const router = useRouter()
+  const pathname = usePathname()
+  const navLinks = [
+    { href: "/employee/dashboard", label: "Dashboard" },
+    { href: "/employee/dashboard/benefits", label: "Benefits" },
+    { href: "/employee/paystubs", label: "Pay Stubs" },
+  ]
 
   return (
     <div className="min-h-screen bg-background">
       {/* Top Bar */}
       <div className="border-b">
-        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-9 w-9">
               <AvatarFallback className="bg-green-600 text-white">
@@ -95,15 +102,30 @@ export default function EmployeeDashboardPage() {
             </div>
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={() => router.push("/")}
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </Button>
+          <div className="flex items-center gap-2">
+            <nav className="hidden md:flex items-center gap-2">
+              {navLinks.map((item) => (
+                <Button
+                  key={item.href}
+                  variant={pathname === item.href ? "default" : "ghost"}
+                  size="sm"
+                  asChild
+                >
+                  <Link href={item.href}>{item.label}</Link>
+                </Button>
+              ))}
+            </nav>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => router.push("/")}
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -339,7 +361,7 @@ export default function EmployeeDashboardPage() {
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2 bg-background"
-                onClick={() => router.push("/employee/benefits")}
+                onClick={() => router.push("/employee/dashboard/benefits")}
               >
                 <Heart className="h-4 w-4" />
                 Manage Benefits
