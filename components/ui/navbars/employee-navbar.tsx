@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/animate-ui/components/buttons/button"
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -11,13 +11,17 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import {
-    LayoutDashboard,
     LogOut,
     House,
     HandCoins,
     FileText,
-}
-    from "lucide-react"
+    Moon,
+    Sun
+} from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import PayCoreLogo from "../../../public/logo.png";
+import { useTheme } from "next-themes"
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -102,7 +106,7 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
             logoHref = "#",
             navigationLinks = defaultNavigationLinks,
             logoutText = "Log Out",
-            logoutHref = "#logout",
+            logoutHref = "/",
             onLogoutClick,
             ...props
         },
@@ -110,6 +114,7 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
     ) => {
         const [isMobile, setIsMobile] = useState(false)
         const containerRef = useRef<HTMLElement>(null)
+        const { setTheme } = useTheme()
 
         useEffect(() => {
             const checkWidth = () => {
@@ -143,6 +148,12 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
             },
             [ref],
         )
+
+
+        // Toggle Between Themes
+        const switchTheme = () => {
+            setTheme((prev) => (prev === "light" ? "dark" : "light"))
+        }
 
         return (
             <header
@@ -205,7 +216,7 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
                                 onClick={e => e.preventDefault()}
                             >
                                 <div className="shrink-0">
-                                    <LayoutDashboard className="h-10 w-10" />
+                                    <Image src={PayCoreLogo} alt="PayCore Logo" className="size-15 rounded-full object-cover" />
                                 </div>
 
                                 <div className="flex flex-col items-start justify-center">
@@ -242,20 +253,28 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
                     </div>
 
                     {/* Right side */}
+                    <Button onClick={switchTheme} variant="outline" size="icon">
+                        <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                        <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                        <span className="sr-only">Toggle theme</span>
+                    </Button>
+
                     <div className="flex items-center gap-3">
                         <Button
                             className="text-sm font-medium hover:bg-accent hover:text-accent-foreground border border-border rounded-md cursor-pointer"
                             onClick={e => {
-                                e.preventDefault()
                                 if (onLogoutClick) {
                                     onLogoutClick()
                                 }
                             }}
                             size="sm"
                             variant="ghost"
+                            asChild
                         >
-                            <LogOut className="mr-2" />
-                            {logoutText}
+                            <Link href={logoutHref}>
+                                <LogOut className="mr-2" />
+                                {logoutText}
+                            </Link>
                         </Button>
                     </div>
 

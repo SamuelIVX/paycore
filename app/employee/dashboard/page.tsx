@@ -26,10 +26,10 @@ import {
   User,
 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 
 const hoursThisWeek = 0
@@ -66,6 +66,7 @@ function StatusBadge({ status }: { status: "submitted" | "approved" }) {
       </Badge>
     )
   }
+
   return (
     <Badge variant="secondary" className="rounded-full px-3 py-1">
       submitted

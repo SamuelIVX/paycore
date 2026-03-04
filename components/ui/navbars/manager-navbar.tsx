@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/animate-ui/components/buttons/button"
+import { useTheme } from "next-themes"
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -11,14 +12,17 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import {
-  LayoutDashboard,
   LogOut,
   House,
   Users,
   CreditCard,
   FileText,
-}
-  from "lucide-react"
+  Moon,
+  Sun
+} from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import PayCoreLogo from "../../../public/logo.png";
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -90,21 +94,21 @@ export interface ManagerNavbarProps extends React.HTMLAttributes<HTMLElement> {
 
 // Default navigation links
 const defaultNavigationLinks: ManagerNavbarNavLink[] = [
-  { href: "#", icon: <House />, label: "Home" },
-  { href: "#features", icon: <Users />, label: "Employees" },
-  { href: "#pricing", icon: <CreditCard />, label: "Payroll" },
-  { href: "#about", icon: <FileText />, label: "Benefits" },
+  { href: "/manager/dashboard", icon: <House />, label: "Home" },
+  { href: "/manager/employee-table", icon: <Users />, label: "Employees" },
+  { href: "/manager/payroll-records-table", icon: <CreditCard />, label: "Payroll" },
+  { href: "/manager/benefits", icon: <FileText />, label: "Benefits" },
 ]
 
 export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
   (
     {
-      // TODO (Backend team) - fix navigation links and icons (via Next.js Link component)
+      // TODO (Backend team) - fix navigation links for logout button and icons (via Next.js Link component)
       className,
       logoHref = "#",
       navigationLinks = defaultNavigationLinks,
       logoutText = "Log Out",
-      logoutHref = "#logout",
+      logoutHref = "/",
       onLogoutClick,
       ...props
     },
@@ -112,6 +116,8 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
   ) => {
     const [isMobile, setIsMobile] = useState(false)
     const containerRef = useRef<HTMLElement>(null)
+
+    const { setTheme } = useTheme()
 
     useEffect(() => {
       const checkWidth = () => {
@@ -146,6 +152,11 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
       [ref],
     )
 
+    // Toggle Between Themes
+    const switchTheme = () => {
+      setTheme((prev) => (prev === "light" ? "dark" : "light"))
+    }
+
     return (
       <header
         className={cn(
@@ -177,19 +188,18 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
 
                       {navigationLinks.map((link) => (
                         <NavigationMenuItem className="w-full" key={link.href}>
-                          <button
-                            type="button"
+                          <Link
+                            href={link.href}
                             className={cn(
                               "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer no-underline",
                               link.active
                                 ? "bg-accent text-accent-foreground"
                                 : "text-foreground/80",
                             )}
-                            onClick={e => e.preventDefault()}
                           >
                             {link.icon && <span className="mr-2 h-4 w-4 items-center flex ">{link.icon}</span>}
                             {link.label}
-                          </button>
+                          </Link>
                         </NavigationMenuItem>
                       ))}
 
@@ -207,7 +217,7 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
                 onClick={e => e.preventDefault()}
               >
                 <div className="shrink-0">
-                  <LayoutDashboard className="h-10 w-10" />
+                  <Image src={PayCoreLogo} alt="PayCore Logo" className="size-15 rounded-full object-cover" />
                 </div>
 
                 <div className="flex flex-col items-start justify-center">
@@ -222,19 +232,18 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
                   <NavigationMenuList className="gap-1">
                     {navigationLinks.map((link) => (
                       <NavigationMenuItem key={link.href}>
-                        <button
-                          type="button"
+                        <Link
+                          href={link.href}
                           className={cn(
-                            "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer no-underline",
+                            "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer no-underline",
                             link.active
                               ? "bg-accent text-accent-foreground"
-                              : "text-foreground/80 hover:text-foreground",
+                              : "text-foreground/80",
                           )}
-                          onClick={e => e.preventDefault()}
                         >
                           {link.icon && <span className="mr-2 h-5 w-5 items-center flex ">{link.icon}</span>}
                           {link.label}
-                        </button>
+                        </Link>
                       </NavigationMenuItem>
                     ))}
                   </NavigationMenuList>
@@ -245,24 +254,33 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
 
           {/* Right side */}
           <div className="flex items-center gap-3">
+            <Button onClick={switchTheme} variant="outline" size="icon">
+              <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+              <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+
             <Button
               className="text-sm font-medium hover:bg-accent hover:text-accent-foreground border border-border rounded-md cursor-pointer"
               onClick={e => {
-                e.preventDefault()
                 if (onLogoutClick) {
                   onLogoutClick()
                 }
               }}
               size="sm"
               variant="ghost"
+              asChild
             >
-              <LogOut className="mr-2" />
-              {logoutText}
+              <Link href={logoutHref}>
+                <LogOut className="mr-2" />
+                {logoutText}
+              </Link>
             </Button>
+
           </div>
 
         </div>
-      </header>
+      </header >
     )
   },
 )

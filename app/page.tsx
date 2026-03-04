@@ -1,7 +1,7 @@
 'use client'
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import {
   Card,
   CardContent,
@@ -12,6 +12,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { UserCircle2, Lock } from "lucide-react";
+import PayCoreLogo from "../public/logo.png";
+import Image from "next/image";
+
+import SplitText from "@/components/SplitText";
+import { EncryptedText } from "@/components/ui/encrypted-text";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -43,23 +48,42 @@ export default function LoginPage() {
 
         <CardHeader>
 
-          {/* This a temporary icon. Should be replaced by our logo. */}
-          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-2">
-            <UserCircle2 className="w-10 h-10 text-white" />
+          <div className="mx-auto relative size-32 rounded-full mb-2 overflow-hidden">
+            <Image
+              src={PayCoreLogo}
+              alt="PayCore Logo"
+              fill
+              className="object-cover"
+            />
           </div>
+
 
           <CardTitle
             className="text-center text-2xl font-bold"
             style={{ color: "var(--foreground)" }}
           >
-            Payroll System Login
+            <SplitText
+              text="PayCore Login"
+              delay={50}
+              duration={1.25}
+              ease="power3.out"
+              splitType="chars"
+              from={{ opacity: 0, y: 40 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0.1}
+              rootMargin="-100px"
+              textAlign="center"
+            />
           </CardTitle>
 
           <CardDescription
             className="text-center"
             style={{ color: "var(--muted-foreground)" }}
           >
-            Enter your credentials to access your account.
+            <EncryptedText
+              text="Enter your credentials to access your account."
+              revealDelayMs={50}
+            />
           </CardDescription>
 
         </CardHeader>
@@ -104,6 +128,7 @@ export default function LoginPage() {
               </div>
 
               <Button
+                variant="default"
                 type="submit"
                 className="w-full"
               >
