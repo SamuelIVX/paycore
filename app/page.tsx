@@ -17,11 +17,12 @@ import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import SplitText from "@/components/SplitText";
 import { EncryptedText } from "@/components/ui/encrypted-text";
+import { sup } from "motion/react-client";
 
 export default function LoginPage() {
   const supabase = createClient();
 
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
@@ -30,7 +31,7 @@ export default function LoginPage() {
 
     // Authenticate with Supabase Auth (using signInWithPassword for simplicity)
     const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email: username,
+      email: email,
       password: password,
     });
 
@@ -55,9 +56,13 @@ export default function LoginPage() {
 
     if (role === "MANAGER") {
       router.push("/manager/dashboard");
-    } else {
+      return;
+    }
+    if (role === "EMPLOYEE") {
       router.push("/employee/dashboard");
     }
+    await supabase.auth.signOut();
+    alert("Unauthorized role.");
   };
 
   return (
@@ -120,12 +125,12 @@ export default function LoginPage() {
                     <UserCircle2 />
                   </span>
                   <Input
-                    id="username"
-                    type="text"
-                    placeholder="Enter username"
+                    id="email"
+                    type="email"
+                    placeholder="Enter email"
                     required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
                   />
                 </div>

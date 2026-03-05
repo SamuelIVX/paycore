@@ -1,37 +1,29 @@
 'use client'
 
-import { useState } from "react"
 import { ArrowRight, DollarSign, FileCheck, Heart, UserPlus } from "lucide-react"
 import { Button } from "@/components/animate-ui/components/buttons/button"
 import { Button as BaseButton } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
-import { addEmployee as addEmployeeToDB } from "@/lib/employee"
+import { useAddEmployee } from "@/hooks/use-add-employee"
 
 export default function QuickActionCard() {
 
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [position, setPosition] = useState("");
-    const [payFrequency, setPayFrequency] = useState("");
-    const [payRate, setPayRate] = useState(0);
-
-    const handleAddEmployee = async () => {
-        await addEmployeeToDB({
-            employee_number: `EMP-${Date.now()}`,
-            hire_date: new Date().toISOString().split("T")[0],
-            first_name: firstName,
-            last_name: lastName,
-            position,
-            pay_frequency: payFrequency,
-            pay_rate: payRate
-        })
-    }
+    const {
+        firstName, setFirstName,
+        lastName, setLastName,
+        position, setPosition,
+        payFrequency, setPayFrequency,
+        payRate, setPayRate,
+        loading,
+        open, setOpen,
+        handleAddEmployee,
+    } = useAddEmployee()
 
     return (
         <Card>
@@ -43,7 +35,7 @@ export default function QuickActionCard() {
 
             <CardContent className="grid grid-cols-2 gap-4">
 
-                <Dialog>
+                <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button
                             className="h-24 flex flex-col gap-2"
@@ -59,31 +51,34 @@ export default function QuickActionCard() {
                         </DialogHeader>
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
-                                <Label >First Name</Label>
+                                <Label htmlFor="addEmpFirstName">First Name</Label>
                                 <Input
+                                    id="addEmpFirstName"
                                     placeholder="John"
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label >Last Name</Label>
+                                <Label htmlFor="addEmpLastName">Last Name</Label>
                                 <Input
+                                    id="addEmpLastName"
                                     placeholder="Smith"
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label >Position</Label>
+                                <Label htmlFor="addEmpPosition">Position</Label>
                                 <Input
+                                    id="addEmpPosition"
                                     placeholder="Software Engineer"
                                     value={position}
                                     onChange={(e) => setPosition(e.target.value)}
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label >Pay Frequency</Label>
+                                <Label htmlFor="addEmpPayFrequency">Pay Frequency</Label>
                                 <Select value={payFrequency} onValueChange={setPayFrequency}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Choose..." />
@@ -107,9 +102,9 @@ export default function QuickActionCard() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <DialogClose asChild>
-                                <Button onClick={handleAddEmployee}>Add Employee</Button>
-                            </DialogClose>
+                            <Button onClick={handleAddEmployee} disabled={loading}>
+                                {loading ? "Adding..." : "Add Employee"}
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
