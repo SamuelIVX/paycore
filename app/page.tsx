@@ -14,29 +14,56 @@ import { Label } from "@/components/ui/label"
 import { UserCircle2, Lock } from "lucide-react";
 import PayCoreLogo from "../public/logo.png";
 import Image from "next/image";
-
+import { createClient } from "@/utils/supabase/client";
 import SplitText from "@/components/SplitText";
 import { EncryptedText } from "@/components/ui/encrypted-text";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const supabase = createClient();
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = (e: React.SubmitEvent) => {
+  const handleLogin = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    // Simple authentication logic for demonstration purposes
-    // Backend team, please replace this with better authentication (fetch from Supabase)
-    // Also, implement proper error handling and security measures.
 
-    if (username.toLowerCase().includes("manager")) {
-      router.push("/manager/dashboard");
-    } else if (username.toLowerCase().includes("employee")) {
-      router.push("/employee/dashboard")
-    } else {
-      // Temporary error message display
-      alert("Invalid credentials. Use 'manager' or 'employee' as username.");
+    // Authenticate with Supabase Auth (using signInWithPassword for simplicity)
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (authError || !data.user) {
+      alert("Invalid credentials.");
+      return;
     }
+
+    // Fetch user profile to determine role
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+
+    if (profileError) {
+      alert("Error fetching user profile.");
+      await supabase.auth.signOut();
+      return;
+    }
+
+    const role = profile.role;
+
+    if (role === "MANAGER") {
+      router.push("/manager/dashboard");
+      return;
+    }
+    if (role === "EMPLOYEE") {
+      router.push("/employee/dashboard");
+      return;
+    }
+    await supabase.auth.signOut();
+    alert("Unauthorized role.");
   };
 
   return (
@@ -93,18 +120,18 @@ export default function LoginPage() {
             <div className="flex flex-col gap-6">
 
               <div className="grid gap-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative" style={{ color: "var(--muted-foreground)" }}>
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5">
                     <UserCircle2 />
                   </span>
                   <Input
-                    id="username"
-                    type="text"
-                    placeholder="Enter username"
+                    id="email"
+                    type="email"
+                    placeholder="Enter email"
                     required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -145,8 +172,8 @@ export default function LoginPage() {
           style={{ color: "var(--muted-foreground)" }}
         >
           <p className="font-medium mb-1">Demo Credentials:</p>
-          <p>Username: <span className="font-mono">manager</span> or <span className="font-mono">employee</span></p>
-          <p>Password: <span className="font-mono">any</span></p>
+          <p>Manager: <span className="font-mono">johnsmith@paycore.com</span></p>
+          <p>Employee: <span className="font-mono">emilydavis@paycore.com</span></p>
         </div>
 
       </Card>

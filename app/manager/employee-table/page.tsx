@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { UserPlus, Edit } from "lucide-react";
+import { useAddEmployee } from "@/hooks/use-add-employee";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 /* TODO (Backend): Remove all hardcoded from the employee data table and replace with data fetched from Supabase  */
 const employees = ([
@@ -41,6 +43,17 @@ const employees = ([
 
 /* TODO (Backend): Add functionalities to the table (e.g., edit, delete, search, sort)  */
 export default function EmployeeTable() {
+    const {
+        firstName, setFirstName,
+        lastName, setLastName,
+        position, setPosition,
+        payFrequency, setPayFrequency,
+        payRate, setPayRate,
+        loading,
+        open, setOpen,
+        handleAddEmployee,
+    } = useAddEmployee()
+
     return (
         <Card className="m-6">
             <CardHeader>
@@ -49,10 +62,10 @@ export default function EmployeeTable() {
                         <CardTitle>Employee Management</CardTitle>
                         <CardDescription>Add, edit, or remove employees</CardDescription>
                     </div>
-                    <Dialog >
+                    <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
                             <Button>
-                                <UserPlus className="w-4 h-4 mr-2" />
+                                <UserPlus className="w-4 h-4" />
                                 Add Employee
                             </Button>
                         </DialogTrigger>
@@ -63,26 +76,60 @@ export default function EmployeeTable() {
                             </DialogHeader>
                             <div className="space-y-4 py-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="add-empName">Full Name</Label>
-                                    <Input id="add-empName" placeholder="John Doe" />
+                                    <Label htmlFor="addEmpFirstName">First Name</Label>
+                                    <Input
+                                        id="addEmpFirstName"
+                                        placeholder="John"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="add-empRole">Role</Label>
-                                    <Input id="add-empRole" placeholder="Software Engineer" />
+                                    <Label htmlFor="addEmpLastName">Last Name</Label>
+                                    <Input
+                                        id="addEmpLastName"
+                                        placeholder="Smith"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="add-payType">Pay Type</Label>
-                                    <Input id="add-payType" placeholder="Hourly/Salary" />
+                                    <Label htmlFor="addEmpPosition">Position</Label>
+                                    <Input
+                                        id="addEmpPosition"
+                                        placeholder="Software Engineer"
+                                        value={position}
+                                        onChange={(e) => setPosition(e.target.value)}
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="add-empPay">Pay</Label>
-                                    <Input id="add-empPay" type="number" placeholder="75000" />
+                                    <Label htmlFor="addEmpPayFrequency">Pay Frequency</Label>
+                                    <Select value={payFrequency} onValueChange={setPayFrequency}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Choose..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="HOURLY">Hourly</SelectItem>
+                                            <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
+                                            <SelectItem value="MONTHLY">Monthly</SelectItem>
+                                            <SelectItem value="SALARY">Salary</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label >Pay Rate</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="75000"
+                                        value={payRate}
+                                        onChange={(e) => setPayRate(Number(e.target.value))}
+                                    />
                                 </div>
                             </div>
                             <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button>Add Employee</Button>
-                                </DialogClose>
+                                <Button onClick={handleAddEmployee} disabled={loading}>
+                                    {loading ? "Adding..." : "Add Employee"}
+                                </Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
