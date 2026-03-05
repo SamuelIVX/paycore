@@ -17,7 +17,6 @@ import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import SplitText from "@/components/SplitText";
 import { EncryptedText } from "@/components/ui/encrypted-text";
-import { sup } from "motion/react-client";
 
 export default function LoginPage() {
   const supabase = createClient();
@@ -49,6 +48,7 @@ export default function LoginPage() {
 
     if (profileError) {
       alert("Error fetching user profile.");
+      await supabase.auth.signOut();
       return;
     }
 
