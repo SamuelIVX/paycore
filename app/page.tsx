@@ -60,6 +60,7 @@ export default function LoginPage() {
     }
     if (role === "EMPLOYEE") {
       router.push("/employee/dashboard");
+      return;
     }
     await supabase.auth.signOut();
     alert("Unauthorized role.");
@@ -119,7 +120,7 @@ export default function LoginPage() {
             <div className="flex flex-col gap-6">
 
               <div className="grid gap-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative" style={{ color: "var(--muted-foreground)" }}>
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5">
                     <UserCircle2 />
