@@ -16,7 +16,6 @@ import PayCoreLogo from "../public/logo.png";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import SplitText from "@/components/SplitText";
-import { EncryptedText } from "@/components/ui/encrypted-text";
 
 export default function LoginPage() {
   const supabase = createClient();
@@ -107,10 +106,7 @@ export default function LoginPage() {
             className="text-center"
             style={{ color: "var(--muted-foreground)" }}
           >
-            <EncryptedText
-              text="Enter your credentials to access your account."
-              revealDelayMs={50}
-            />
+            Enter your credentials to access your account.
           </CardDescription>
 
         </CardHeader>
