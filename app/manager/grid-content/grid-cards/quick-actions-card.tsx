@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
 import { useAddEmployee } from "@/hooks/use-add-employee"
+import { useState } from "react"
 
 export default function QuickActionCard() {
 
@@ -24,6 +25,9 @@ export default function QuickActionCard() {
         open, setOpen,
         handleAddEmployee,
     } = useAddEmployee()
+
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     return (
         <Card>
@@ -86,7 +90,6 @@ export default function QuickActionCard() {
                                     <SelectContent>
                                         <SelectItem value="HOURLY">Hourly</SelectItem>
                                         <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
-                                        <SelectItem value="MONTHLY">Monthly</SelectItem>
                                         <SelectItem value="SALARY">Salary</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -124,13 +127,16 @@ export default function QuickActionCard() {
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
                                 <Label htmlFor="payPeriod">Pay Period</Label>
-                                <Select>
+                                <Select onValueChange={(value) => { const [start, end] = value.split("_"); setStartDate(start); setEndDate(end); }}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select period" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="current">Current Period (Feb 1-15, 2026)</SelectItem>
-                                        <SelectItem value="previous">Previous Period (Jan 16-31, 2026)</SelectItem>
+                                        <SelectItem value="2026-01-01_2026-01-14">Jan 1 - Jan 14, 2026</SelectItem>
+                                        <SelectItem value="2026-01-15_2026-01-28">Jan 15 - Jan 28, 2026</SelectItem>
+                                        <SelectItem value="2026-01-29_2026-02-11">Jan 29 - Feb 11, 2026</SelectItem>
+                                        <SelectItem value="2026-02-12_2026-02-25">Feb 12 - Feb 25, 2026</SelectItem>
+                                        <SelectItem value="2026-02-26_2026-03-11">Feb 26 - Mar 11, 2026</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -141,7 +147,7 @@ export default function QuickActionCard() {
                         </div>
                         <DialogFooter>
                             <BaseButton asChild>
-                                <Link href="/manager/payroll-status">
+                                <Link href={`/manager/payroll-status?startDate=${startDate}&endDate=${endDate}`}>
                                     Run Payroll
                                     <ArrowRight className="w-4 h-4 ml-2" />
                                 </Link>

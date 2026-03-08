@@ -1,3 +1,5 @@
+'use client'
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner";
 import { Separator } from "@/components/ui/separator";
@@ -8,9 +10,11 @@ import {
     CircleCheck,
     Home,
     DollarSign,
-    Users,
     FileText,
 } from "lucide-react";
+import { runPayroll } from "@/lib/payroll";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
 
 export function PayrollSection({ title, value, icon, color }: PayrollSectionProps) {
     return (
@@ -48,10 +52,8 @@ export function StatusCard({ text, icon, color, children }: StatusCardProps) {
                                     <Home className="w-4 h-4" /> Back To Dashboard
                                 </Link>
                             </Button>
-
                         </>
                     }
-
                 </div>
             </CardContent>
         </Card>
@@ -60,10 +62,32 @@ export function StatusCard({ text, icon, color, children }: StatusCardProps) {
 
 export default function PayrollStatusPage() {
 
-    // TODO (backend) : Please create the functions and algorithms that acquires the wait time
-    // and any other important information to display within the respective components
-    const isProcessing = true;
-    const payrollResults = true;
+    const searchParams = useSearchParams();
+    const startDate = searchParams.get("startDate") ?? "";
+    const endDate = searchParams.get("endDate") ?? "";
+
+    const [isProcessing, setIsProcessing] = useState(true);
+    const [results, setResults] = useState<{ total_gross: number; total_net: number; total_taxes: number } | null>(null);
+    const hasRunRef = useRef(false);
+
+    useEffect(() => {
+        if (!startDate || !endDate || hasRunRef.current) return;
+        hasRunRef.current = true;
+
+        runPayroll(startDate, endDate)
+            .then(({ total_gross, total_net, total_taxes }) => {
+                setResults({
+                    total_gross,
+                    total_net,
+                    total_taxes
+                });
+                setIsProcessing(false);
+            })
+            .catch((err) => {
+                console.error("Payroll failed:", err);
+                setIsProcessing(false);
+            });
+    }, [startDate, endDate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
@@ -97,28 +121,21 @@ export default function PayrollStatusPage() {
                             bg: "bg-green-50",
                         }}
                     >
-                        {payrollResults &&
+                        {results &&
                             <>
-
                                 <h3 className="font-semibold mb-4 text-left">Summary</h3>
 
                                 <div className="grid grid-cols-2 gap-4 text-sm">
 
                                     <PayrollSection
-                                        title="Employees Processed"
-                                        value="8"
-                                        icon={<Users className="w-4 h-4 text-gray-500" />}
-                                    />
-
-                                    <PayrollSection
                                         title="Total Gross Pay"
-                                        value="$10,999"
+                                        value={`$${results.total_gross.toLocaleString()}`}
                                         icon={<FileText className="w-4 h-4 text-gray-500" />}
                                     />
 
                                     <PayrollSection
                                         title="Total Deductions"
-                                        value="-$1,023"
+                                        value={`-$${results.total_taxes.toLocaleString()}`}
                                         icon={<FileText className="w-4 h-4 text-gray-500" />}
                                         color="text-red-500"
                                     />
@@ -127,20 +144,18 @@ export default function PayrollStatusPage() {
 
                                     <PayrollSection
                                         title="Total Net Pay"
-                                        value="$13,784"
+                                        value={`$${results.total_net.toLocaleString()}`}
                                         icon={<DollarSign className="w-4 h-4 text-green-600" />}
                                         color="text-green-500"
                                     />
 
                                 </div>
-
                             </>
                         }
-
                     </StatusCard>
 
                 )}
             </div>
-        </div >
+        </div>
     )
 }
