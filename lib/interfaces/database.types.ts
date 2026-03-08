@@ -40,7 +40,7 @@ export type Database = {
           department_id: string | null
           employee_number: string
           employment_status: string | null
-          federal_tax_rate: number | null
+          federal_tax_rate: number
           first_name: string | null
           hire_date: string
           id: string
@@ -51,8 +51,9 @@ export type Database = {
           position: string
           "profile.id": string | null
           role: string | null
+          social_security_tax_rate: number
           state: string | null
-          state_tax_rate: number | null
+          state_tax_rate: number
           updated_at: string | null
           zip_code: string | null
         }
@@ -63,7 +64,7 @@ export type Database = {
           department_id?: string | null
           employee_number: string
           employment_status?: string | null
-          federal_tax_rate?: number | null
+          federal_tax_rate?: number
           first_name?: string | null
           hire_date: string
           id?: string
@@ -74,8 +75,9 @@ export type Database = {
           position: string
           "profile.id"?: string | null
           role?: string | null
+          social_security_tax_rate?: number
           state?: string | null
-          state_tax_rate?: number | null
+          state_tax_rate?: number
           updated_at?: string | null
           zip_code?: string | null
         }
@@ -86,7 +88,7 @@ export type Database = {
           department_id?: string | null
           employee_number?: string
           employment_status?: string | null
-          federal_tax_rate?: number | null
+          federal_tax_rate?: number
           first_name?: string | null
           hire_date?: string
           id?: string
@@ -97,8 +99,9 @@ export type Database = {
           position?: string
           "profile.id"?: string | null
           role?: string | null
+          social_security_tax_rate?: number
           state?: string | null
-          state_tax_rate?: number | null
+          state_tax_rate?: number
           updated_at?: string | null
           zip_code?: string | null
         }
@@ -121,13 +124,11 @@ export type Database = {
       }
       payroll_records: {
         Row: {
-          benefits_deduction: number | null
           created_at: string | null
           employee_id: string | null
           federal_tax: number | null
           gross_pay: number
           id: string
-          medicare: number | null
           net_pay: number
           overtime_hours: number | null
           payroll_run_id: string | null
@@ -136,13 +137,11 @@ export type Database = {
           state_tax: number | null
         }
         Insert: {
-          benefits_deduction?: number | null
           created_at?: string | null
           employee_id?: string | null
           federal_tax?: number | null
           gross_pay: number
           id?: string
-          medicare?: number | null
           net_pay: number
           overtime_hours?: number | null
           payroll_run_id?: string | null
@@ -151,13 +150,11 @@ export type Database = {
           state_tax?: number | null
         }
         Update: {
-          benefits_deduction?: number | null
           created_at?: string | null
           employee_id?: string | null
           federal_tax?: number | null
           gross_pay?: number
           id?: string
-          medicare?: number | null
           net_pay?: number
           overtime_hours?: number | null
           payroll_run_id?: string | null
@@ -264,10 +261,10 @@ export type Database = {
           clock_out: string | null
           created_at: string | null
           employee_id: string | null
-          hours_worked: number | null
+          hours_worked: number
           id: string
           status: string | null
-          work_date: string
+          work_date: string | null
         }
         Insert: {
           approved_at?: string | null
@@ -276,10 +273,10 @@ export type Database = {
           clock_out?: string | null
           created_at?: string | null
           employee_id?: string | null
-          hours_worked?: number | null
+          hours_worked: number
           id?: string
           status?: string | null
-          work_date: string
+          work_date?: string | null
         }
         Update: {
           approved_at?: string | null
@@ -288,10 +285,10 @@ export type Database = {
           clock_out?: string | null
           created_at?: string | null
           employee_id?: string | null
-          hours_worked?: number | null
+          hours_worked?: number
           id?: string
           status?: string | null
-          work_date?: string
+          work_date?: string | null
         }
         Relationships: [
           {

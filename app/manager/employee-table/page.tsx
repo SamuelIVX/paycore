@@ -111,7 +111,6 @@ export default function EmployeeTable() {
                                         <SelectContent>
                                             <SelectItem value="HOURLY">Hourly</SelectItem>
                                             <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
-                                            <SelectItem value="MONTHLY">Monthly</SelectItem>
                                             <SelectItem value="SALARY">Salary</SelectItem>
                                         </SelectContent>
                                     </Select>
