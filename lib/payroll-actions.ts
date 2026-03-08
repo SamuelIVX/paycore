@@ -107,6 +107,15 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
     }
     const userId = user.id;
 
+    const startDate = new Date(payPeriodStart);
+    const endDate = new Date(payPeriodEnd);
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        throw new Error("Invalid pay period dates provided.");
+    }
+    if (startDate > endDate) {
+        throw new Error("Pay period start date must be before or equal to end date.");
+    }
+
     // Idempotency: reject if a completed run already exists for this period
     const { data: existingRun } = await supabase
         .from("payroll_runs")
