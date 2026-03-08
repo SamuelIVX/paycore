@@ -8,11 +8,12 @@ import Link from "next/link";
 import { StatusCardProps, PayrollSectionProps } from "./types";
 import {
     CircleCheck,
+    CircleX,
     Home,
     DollarSign,
     FileText,
 } from "lucide-react";
-import { runPayroll } from "@/lib/payroll";
+import { runPayroll } from "@/lib/payroll-actions";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
@@ -66,7 +67,7 @@ export default function PayrollStatusPage() {
     const startDate = searchParams.get("startDate") ?? "";
     const endDate = searchParams.get("endDate") ?? "";
 
-    const [isProcessing, setIsProcessing] = useState(true);
+    const [status, setStatus] = useState(startDate && endDate ? "PROCESSING" : "ERROR");
     const [results, setResults] = useState<{ total_gross: number; total_net: number; total_taxes: number } | null>(null);
     const hasRunRef = useRef(false);
 
@@ -81,19 +82,18 @@ export default function PayrollStatusPage() {
                     total_net,
                     total_taxes
                 });
-                setIsProcessing(false);
+                setStatus("SUCCESS");
             })
             .catch((err) => {
                 console.error("Payroll failed:", err);
-                setIsProcessing(false);
+                setStatus("ERROR");
             });
     }, [startDate, endDate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="container mx-auto max-w-2xl">
-                {isProcessing ? (
-
+                {status === "PROCESSING" && (
                     // Loading State
                     <StatusCard
                         text={{
@@ -106,9 +106,9 @@ export default function PayrollStatusPage() {
                             bg: "",
                         }}
                     />
+                )}
 
-                ) : (
-
+                {status === "SUCCESS" && (
                     // Completed State
                     <StatusCard
                         text={{
@@ -153,8 +153,23 @@ export default function PayrollStatusPage() {
                             </>
                         }
                     </StatusCard>
-
                 )}
+
+                {status === "ERROR" && (
+                    // Error State
+                    <StatusCard
+                        text={{
+                            title: "Payroll Failed to Process",
+                            description: "An error occurred while processing the payroll."
+                        }}
+                        icon={<CircleX className="w-24 h-24 text-red-500" />}
+                        color={{
+                            border: "border-red-300",
+                            bg: "bg-red-50",
+                        }}
+                    />
+                )}
+
             </div>
         </div>
     )
