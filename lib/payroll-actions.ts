@@ -117,7 +117,7 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
     }
 
     // Idempotency: reject if a completed run already exists for this period
-    const { data: existingRun } = await supabase
+    const { data: existingRun, error: existingRunError } = await supabase
         .from("payroll_runs")
         .select("id, status")
         .eq("pay_period_start", payPeriodStart)
@@ -127,6 +127,10 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
 
     if (existingRun) {
         throw new Error(`Payroll for this period has already been ${existingRun.status?.toLowerCase()}.`);
+    }
+    if (existingRunError) {
+        console.error("Error checking for existing payroll run:", existingRunError);
+        throw existingRunError;
     }
 
     const payroll_run = await insertPayrollRun(supabase, payPeriodStart, payPeriodEnd, userId);
@@ -150,10 +154,14 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
         };
     } catch (err) {
         // Mark the run FAILED so it doesn't get stuck in PROCESSING
-        await supabase
+        const { error: failError } = await supabase
             .from("payroll_runs")
             .update({ status: "FAILED" })
             .eq("id", payroll_run.id);
+
+        if (failError) {
+            console.error("Error marking payroll run as FAILED after error:", failError);
+        }
         throw err;
     }
 };
