@@ -102,7 +102,10 @@ export const updatePayrollRun = async (supabase: SupabaseClient, records: Tables
 export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) => {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const userId = user?.id ?? "";
+    if (!user) {
+        throw new Error("User must be authenticated to run payroll.");
+    }
+    const userId = user.id;
 
     // Idempotency: reject if a completed run already exists for this period
     const { data: existingRun } = await supabase
