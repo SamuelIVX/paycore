@@ -46,6 +46,7 @@ export default function EmployeeTable() {
     const [editValues, setEditValues] = useState({ first_name: "", last_name: "", position: "", pay_frequency: "", pay_rate: 0 });
     const [deleteOpenId, setDeleteOpenId] = useState<Employee["id"] | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         getEmployees()
@@ -125,7 +126,16 @@ export default function EmployeeTable() {
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button onClick={handleAddEmployee} disabled={loading}>
+                                <Button
+                                    onClick={async () => {
+                                        const success = await handleAddEmployee();
+                                        if (success) {
+                                            const updated = await getEmployees();
+                                            setEmployees(updated ?? []);
+                                        }
+                                    }}
+                                    disabled={loading}
+                                >
                                     {loading ? "Adding..." : "Add Employee"}
                                 </Button>
                             </DialogFooter>
@@ -220,14 +230,19 @@ export default function EmployeeTable() {
                                                                 onChange={(e) => setEditValues((v) => ({ ...v, position: e.target.value }))}
                                                             />
                                                         </div>
-                                                        <div className="space-y-2">
-                                                            <Label htmlFor="edit-payType">Pay Type</Label>
-                                                            <Input
-                                                                id="edit-payType"
-                                                                value={editValues.pay_frequency}
-                                                                onChange={(e) => setEditValues((v) => ({ ...v, pay_frequency: e.target.value }))}
-                                                            />
-                                                        </div>
+                                                        <Select
+                                                            value={editValues.pay_frequency}
+                                                            onValueChange={(value) => setEditValues((v) => ({ ...v, pay_frequency: value }))}
+                                                        >
+                                                            <SelectTrigger id="edit-payType">
+                                                                <SelectValue placeholder="Choose..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="HOURLY">Hourly</SelectItem>
+                                                                <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
+                                                                <SelectItem value="SALARY">Salary</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
                                                         <div className="space-y-2">
                                                             <Label htmlFor="edit-empPay">Pay</Label>
                                                             <Input
@@ -240,8 +255,10 @@ export default function EmployeeTable() {
                                                     </div>
                                                     <DialogFooter>
                                                         <Button
+                                                            disabled={isSubmitting}
                                                             onClick={async () => {
                                                                 try {
+                                                                    setIsSubmitting(true);
                                                                     await updateEmployee(employee.id, {
                                                                         first_name: editValues.first_name,
                                                                         last_name: editValues.last_name,
@@ -252,11 +269,14 @@ export default function EmployeeTable() {
                                                                     const updated = await getEmployees();
                                                                     setEmployees(updated ?? []);
                                                                     setEditOpenId(null);
+                                                                    setError(null);
                                                                 } catch {
                                                                     setError("Failed to update employee.");
+                                                                } finally {
+                                                                    setIsSubmitting(false)
                                                                 }
                                                             }}>
-                                                            Update
+                                                            {isSubmitting ? "Updating..." : "Update"}
                                                         </Button>
                                                     </DialogFooter>
                                                 </DialogContent>
@@ -280,16 +300,21 @@ export default function EmployeeTable() {
                                                         <Button variant="default" onClick={() => setDeleteOpenId(null)}>Cancel</Button>
                                                         <Button
                                                             variant="destructive"
+                                                            disabled={isSubmitting}
                                                             onClick={async () => {
+                                                                setIsSubmitting(true)
                                                                 try {
                                                                     await deleteEmployee(employee.id);
                                                                     setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
                                                                     setDeleteOpenId(null);
+                                                                    setError(null);
                                                                 } catch {
                                                                     setError("Failed to delete employee.");
+                                                                } finally {
+                                                                    setIsSubmitting(false)
                                                                 }
                                                             }}>
-                                                            Delete
+                                                            {isSubmitting ? "Deleting..." : "Delete"}
                                                         </Button>
                                                     </DialogFooter>
                                                 </DialogContent>

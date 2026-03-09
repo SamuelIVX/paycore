@@ -10,7 +10,7 @@ export function useAddEmployee() {
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
 
-    const handleAddEmployee = async () => {
+    const handleAddEmployee = async (): Promise<boolean> => {
         setLoading(true)
         try {
             await addEmployeeToDB({
@@ -28,9 +28,11 @@ export function useAddEmployee() {
             setPosition("")
             setPayFrequency("")
             setPayRate(0)
+            return true;
         } catch (error) {
             console.error("Error adding employee:", error);
             alert("Failed to add employee. Please try again.");
+            return false;
         } finally {
             setLoading(false);
         }
