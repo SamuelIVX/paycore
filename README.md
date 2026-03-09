@@ -192,7 +192,7 @@ net_pay = gross_pay - federal_tax - state_tax - social_security
 {
     employee_id,
     payroll_run_id,
-    regular_hours,   // hoursWorked (0 for salaried)
+    regular_hours,   // summed employee hours; salaried gross pay ignores it
     gross_pay,
     federal_tax,
     state_tax,

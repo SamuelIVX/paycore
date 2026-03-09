@@ -125,13 +125,13 @@ describe('calculatePayRollForEmployee', () => {
             expect(result.social_security).toBeCloseTo(14.88); // 240 * 0.062
         });
 
-        it('defaults null tax rates to 0', () => {
+        it('defaults null tax rates to null', () => {
             const employee = makeEmployee({
                 pay_rate: 30,
                 pay_frequency: 'HOURLY',
-                federal_tax_rate: 0,
-                state_tax_rate: 0,
-                social_security_tax_rate: 0,
+                federal_tax_rate: null,
+                state_tax_rate: null,
+                social_security_tax_rate: null,
             });
             const entries = [makeTimeEntry({ hours_worked: 8 })];
             const result = calculatePayRollForEmployee(employee, entries, makePayrollRun());
