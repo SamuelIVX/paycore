@@ -1,32 +1,49 @@
+'use client';
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/animate-ui/components/buttons/button";
+import { Button as BaseButton } from "@/components/ui/button"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { DollarSign, ArrowRight, CheckCircle2 } from "lucide-react";
+import { DollarSign, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { getPayrollRecords } from "@/lib/payroll";
 
-/* TODO (Backend): Remove all hardcoded from the payroll data table and replace with data fetched from Supabase  */
+type PayrollRecord = {
+    id: string;
+    employee_id: string | null;
+    payroll_run_id: string | null;
+    regular_hours: number | null;
+    overtime_hours: number | null;
+    gross_pay: number;
+    federal_tax: number | null;
+    state_tax: number | null;
+    social_security: number | null;
+    net_pay: number;
+    created_at: string | null;
+};
 
-const payrollRecords = ([
-    { id: "1", employeeName: "John Smith", grossPay: 7083.33, taxes: 1770.83, benefitDeductions: 32.00, netPay: 5280.50, status: "pending", date: "2026-02-01" },
-    { id: "2", employeeName: "Sarah Johnson", grossPay: 7916.67, taxes: 1979.17, benefitDeductions: 45.00, netPay: 5892.50, status: "pending", date: "2026-02-01" },
-    { id: "3", employeeName: "Mike Chen", grossPay: 6250.00, taxes: 1562.50, benefitDeductions: 0.00, netPay: 4687.50, status: "approved", date: "2026-01-15" },
-    { id: "4", employeeName: "John Smith", grossPay: 7083.33, taxes: 1770.83, benefitDeductions: 32.00, netPay: 5280.50, status: "pending", date: "2026-02-01" },
-    { id: "5", employeeName: "Sarah Johnson", grossPay: 7916.67, taxes: 1979.17, benefitDeductions: 45.00, netPay: 5892.50, status: "pending", date: "2026-02-01" },
-    { id: "6", employeeName: "Mike Chen", grossPay: 6250.00, taxes: 1562.50, benefitDeductions: 0.00, netPay: 4687.50, status: "approved", date: "2026-01-15" },
-    { id: "7", employeeName: "John Smith", grossPay: 7083.33, taxes: 1770.83, benefitDeductions: 32.00, netPay: 5280.50, status: "pending", date: "2026-02-01" },
-    { id: "8", employeeName: "Sarah Johnson", grossPay: 7916.67, taxes: 1979.17, benefitDeductions: 45.00, netPay: 5892.50, status: "pending", date: "2026-02-01" },
-    { id: "9", employeeName: "Mike Chen", grossPay: 6250.00, taxes: 1562.50, benefitDeductions: 0.00, netPay: 4687.50, status: "approved", date: "2026-01-15" },
-    { id: "10", employeeName: "John Smith", grossPay: 7083.33, taxes: 1770.83, benefitDeductions: 32.00, netPay: 5280.50, status: "pending", date: "2026-02-01" },
-    { id: "11", employeeName: "Sarah Johnson", grossPay: 7916.67, taxes: 1979.17, benefitDeductions: 45.00, netPay: 5892.50, status: "pending", date: "2026-02-01" },
-    { id: "12", employeeName: "Mike Chen", grossPay: 6250.00, taxes: 1562.50, benefitDeductions: 0.00, netPay: 4687.50, status: "approved", date: "2026-01-15" },
-]);
+type TimeEntry = {
+    id: string;
+    employee_id: string | null;
+    work_date: string | null;
+    hours_worked: number;
+    status: string | null;
+};
 
-/* TODO (Backend): Add functionalities to the table (e.g., run payroll, approve or decline payroll, etc) */
 export default function PayrollTable() {
+
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>([]);
+
+    useEffect(() => {
+        getPayrollRecords().then((records) => setPayrollRecords(records ?? []));
+    }, []);
 
     return (
         <Card className="m-6">
@@ -34,7 +51,7 @@ export default function PayrollTable() {
                 <div className="flex items-center justify-between">
                     <div>
                         <CardTitle>Payroll Records</CardTitle>
-                        <CardDescription>Review and approve payroll records</CardDescription>
+                        <CardDescription>Review payroll records</CardDescription>
                     </div>
                     <Dialog >
 
@@ -52,25 +69,32 @@ export default function PayrollTable() {
                             </DialogHeader>
                             <div className="space-y-4 py-4">
                                 <div className="space-y-2">
-                                    <Label >Pay Period</Label>
-                                    <Select>
+                                    <Label htmlFor="payPeriod">Pay Period</Label>
+                                    <Select onValueChange={(value) => { const [start, end] = value.split("_"); setStartDate(start); setEndDate(end); }}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select period" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="current">Current Period (Feb 1-15, 2026)</SelectItem>
-                                            <SelectItem value="previous">Previous Period (Jan 16-31, 2026)</SelectItem>
+                                            <SelectItem value="2026-01-01_2026-01-14">Jan 1 - Jan 14, 2026</SelectItem>
+                                            <SelectItem value="2026-01-15_2026-01-28">Jan 15 - Jan 28, 2026</SelectItem>
+                                            <SelectItem value="2026-01-29_2026-02-11">Jan 29 - Feb 11, 2026</SelectItem>
+                                            <SelectItem value="2026-02-12_2026-02-25">Feb 12 - Feb 25, 2026</SelectItem>
+                                            <SelectItem value="2026-02-26_2026-03-11">Feb 26 - Mar 11, 2026</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="notes">Notes (Optional)</Label>
+                                    <Textarea id="notes" placeholder="Add any notes..." />
+                                </div>
                             </div>
                             <DialogFooter>
-                                <Button asChild>
-                                    <Link href="/manager/payroll-status">
+                                <BaseButton asChild>
+                                    <Link href={`/manager/payroll-status?startDate=${startDate}&endDate=${endDate}`}>
                                         Run Payroll
                                         <ArrowRight className="w-4 h-4 ml-2" />
                                     </Link>
-                                </Button>
+                                </BaseButton>
                             </DialogFooter>
                         </DialogContent>
 
@@ -81,54 +105,34 @@ export default function PayrollTable() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Employee</TableHead>
+                            <TableHead>Employee ID</TableHead>
+                            <TableHead>Hours Worked</TableHead>
+                            <TableHead>Overtime Hours</TableHead>
                             <TableHead>Gross Pay</TableHead>
-                            <TableHead>Taxes</TableHead>
-                            <TableHead>Benefits</TableHead>
+                            <TableHead>Federal Tax</TableHead>
+                            <TableHead>State Tax</TableHead>
+                            <TableHead>Social Security</TableHead>
                             <TableHead>Net Pay</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead>Created At</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {payrollRecords.map(record => (
                             <TableRow key={record.id}>
-                                <TableCell className="font-medium">{record.employeeName}</TableCell>
-                                <TableCell>${record.grossPay.toFixed(2)}</TableCell>
-                                <TableCell className="text-red-600">-${record.taxes.toFixed(2)}</TableCell>
-                                <TableCell className="text-red-600">-${record.benefitDeductions.toFixed(2)}</TableCell>
-                                <TableCell className="font-semibold text-green-600">${record.netPay.toFixed(2)}</TableCell>
-                                <TableCell>{new Date(record.date + "T00:00:00").toLocaleDateString()}</TableCell>
-                                <TableCell>
-                                    <Badge
-                                        variant={
-                                            record.status === "pending" ? "destructive"
-                                                : record.status === "approved" ? "default"
-                                                    : "secondary"
-                                        }
-                                    >
-                                        {record.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    {record.status === "pending" ? (
-                                        <Button variant="ghost" size="sm">
-                                            <CheckCircle2 className="w-4 h-4" />
-                                            Approve?
-                                        </Button>
-                                    ) : record.status === "approved" ? (
-                                        <Button variant="ghost" size="sm" className="text-green-500 hover:text-green-200">
-                                            <CheckCircle2 className="w-4 h-4" />
-                                            Approved
-                                        </Button>
-                                    ) : null}
-                                </TableCell>
+                                <TableCell className="font-medium">{record.employee_id ?? "—"}</TableCell>
+                                <TableCell>{record.regular_hours}</TableCell>
+                                <TableCell>{record.overtime_hours}</TableCell>
+                                <TableCell>${record.gross_pay.toFixed(2)}</TableCell>
+                                <TableCell className="text-red-600">-${(record.federal_tax ?? 0).toFixed(2)}</TableCell>
+                                <TableCell className="text-red-600">-${(record.state_tax ?? 0).toFixed(2)}</TableCell>
+                                <TableCell className="text-red-600">-${(record.social_security ?? 0).toFixed(2)}</TableCell>
+                                <TableCell className="font-semibold text-green-600">${record.net_pay.toFixed(2)}</TableCell>
+                                <TableCell>{record.created_at ? new Date(record.created_at).toLocaleDateString() : "—"}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </CardContent>
         </Card>
-    )
-}
+    );
+};

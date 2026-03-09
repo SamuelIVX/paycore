@@ -95,7 +95,7 @@ export default function QuickActionCard() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label >Pay Rate</Label>
+                                <Label>Pay Rate</Label>
                                 <Input
                                     type="number"
                                     placeholder="75000"
