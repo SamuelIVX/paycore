@@ -27,22 +27,17 @@ type PayrollRecord = {
     created_at: string | null;
 };
 
-type TimeEntry = {
-    id: string;
-    employee_id: string | null;
-    work_date: string | null;
-    hours_worked: number;
-    status: string | null;
-};
-
 export default function PayrollTable() {
 
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        getPayrollRecords().then((records) => setPayrollRecords(records ?? []));
+        getPayrollRecords()
+            .then((records) => setPayrollRecords(records ?? []))
+            .catch(() => setError("Failed to load payroll records."));
     }, []);
 
     return (
@@ -102,6 +97,7 @@ export default function PayrollTable() {
                 </div>
             </CardHeader>
             <CardContent>
+                {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
                 <Table>
                     <TableHeader>
                         <TableRow>
