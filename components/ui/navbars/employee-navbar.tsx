@@ -93,9 +93,9 @@ export interface EmployeeNavbarProps extends React.HTMLAttributes<HTMLElement> {
 
 // Default navigation links
 const defaultNavigationLinks: EmployeeNavbarNavLink[] = [
-    { href: "#", icon: <House />, label: "Home" },
-    { href: "#about", icon: <FileText />, label: "Benefits" },
-    { href: "#features", icon: <HandCoins />, label: "Pay Stubs" },
+  { href: "/employee/dashboard", icon: <House className="h-5 w-5" />, label: "Home" },
+  { href: "/employee/benefits", icon: <FileText className="h-5 w-5" />, label: "Benefits" },
+  { href: "/employee/paystubs", icon: <HandCoins className="h-5 w-5" />, label: "Pay Stubs" },
 ]
 
 export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>(

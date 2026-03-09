@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import {
   Area,
   AreaChart,
@@ -20,7 +19,6 @@ import {
   Clock,
   DollarSign,
   Heart,
-  LogOut,
   Plus,
   Shield,
   TrendingUp,
@@ -77,59 +75,11 @@ function StatusBadge({ status }: { status: "submitted" | "approved" }) {
 
 export default function EmployeeDashboardPage() {
   const router = useRouter()
-  const pathname = usePathname()
-  const navLinks = [
-    { href: "/employee/dashboard", label: "Dashboard" },
-    { href: "/employee/dashboard/benefits", label: "Benefits" },
-    { href: "/employee/paystubs", label: "Pay Stubs" },
-  ]
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Bar */}
-      <div className="border-b">
-        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-green-600 text-white">
-                <User className="h-4 w-4" />
-              </AvatarFallback>
-            </Avatar>
-
-            <div className="leading-tight">
-              <div className="font-semibold">Employee Dashboard</div>
-              <div className="text-xs text-muted-foreground">John Smith</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <nav className="hidden md:flex items-center gap-2">
-              {navLinks.map((item) => (
-                <Button
-                  key={item.href}
-                  variant={pathname === item.href ? "default" : "ghost"}
-                  size="sm"
-                  asChild
-                >
-                  <Link href={item.href}>{item.label}</Link>
-                </Button>
-              ))}
-            </nav>
-
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => router.push("/")}
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </div>
-
       <main className="mx-auto max-w-6xl px-4 py-6">
+
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="shadow-sm">
@@ -180,9 +130,10 @@ export default function EmployeeDashboardPage() {
           </Card>
         </div>
 
-        {/* Main Uniform Grid */}
+        {/* Main Grid */}
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          {/* Row 1 */}
+
+          {/* Hours Chart */}
           <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="text-base">This Week&apos;s Hours</CardTitle>
@@ -194,20 +145,14 @@ export default function EmployeeDashboardPage() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="day" tickLine={false} axisLine={false} />
                   <YAxis tickLine={false} axisLine={false} width={28} />
-                  <Tooltip
-                    cursor={{ fill: "transparent" }}
-                    contentStyle={{
-                      borderRadius: 12,
-                      border: "1px solid hsl(var(--border))",
-                      background: "hsl(var(--background))",
-                    }}
-                  />
+                  <Tooltip />
                   <Bar dataKey="hours" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
+          {/* Earnings Summary */}
           <Card className="shadow-sm">
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
               <div>
@@ -240,7 +185,7 @@ export default function EmployeeDashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Row 2 */}
+          {/* Recent Timesheets */}
           <Card className="shadow-sm">
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
               <div>
@@ -274,76 +219,7 @@ export default function EmployeeDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Earnings Trend</CardTitle>
-              <CardDescription>Net pay over last 6 months</CardDescription>
-            </CardHeader>
-            <CardContent className="h-[220px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={earningsTrend}>
-                  <defs>
-                    <linearGradient id="fillNet" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopOpacity={0.25} />
-                      <stop offset="100%" stopOpacity={0.03} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} width={40} />
-                  <Tooltip
-                    contentStyle={{
-                      borderRadius: 12,
-                      border: "1px solid hsl(var(--border))",
-                      background: "hsl(var(--background))",
-                    }}
-                  />
-                  <Area type="monotone" dataKey="net" strokeWidth={2} fill="url(#fillNet)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Row 3 */}
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Quick Stats</CardTitle>
-              <CardDescription>Employment overview</CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-3 rounded-xl bg-blue-50/70 p-3">
-                <div className="h-9 w-9 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <User className="h-4 w-4 text-blue-700" />
-                </div>
-                <div className="leading-tight">
-                  <div className="text-xs text-muted-foreground">Position</div>
-                  <div className="text-sm font-semibold">Software Engineer</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 rounded-xl bg-purple-50/70 p-3">
-                <div className="h-9 w-9 rounded-lg bg-purple-100 flex items-center justify-center">
-                  <Shield className="h-4 w-4 text-purple-700" />
-                </div>
-                <div className="leading-tight">
-                  <div className="text-xs text-muted-foreground">Tenure</div>
-                  <div className="text-sm font-semibold">2 years, 1 month</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 rounded-xl bg-pink-50/70 p-3">
-                <div className="h-9 w-9 rounded-lg bg-pink-100 flex items-center justify-center">
-                  <Heart className="h-4 w-4 text-pink-700" />
-                </div>
-                <div className="leading-tight">
-                  <div className="text-xs text-muted-foreground">Benefits Enrolled</div>
-                  <div className="text-sm font-semibold">2 optional plans</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
+          {/* Actions */}
           <Card className="shadow-sm border-green-200 bg-green-50/40">
             <CardHeader>
               <CardTitle className="text-base">Actions</CardTitle>
@@ -352,16 +228,7 @@ export default function EmployeeDashboardPage() {
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2 bg-background"
-                onClick={() => router.push("/employee/timesheets/new")}
-              >
-                <Clock className="h-4 w-4" />
-                Submit Hours
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2 bg-background"
-                onClick={() => router.push("/employee/dashboard/benefits")}
+                onClick={() => router.push("/employee/benefits")}
               >
                 <Heart className="h-4 w-4" />
                 Manage Benefits
@@ -377,6 +244,7 @@ export default function EmployeeDashboardPage() {
               </Button>
             </CardContent>
           </Card>
+
         </div>
       </main>
     </div>
