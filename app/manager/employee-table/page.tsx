@@ -43,11 +43,8 @@ export default function EmployeeTable() {
     } = useAddEmployee()
 
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const [editFirstName, setEditFirstName] = useState<string>("");
-    const [editLastName, setEditLastName] = useState<string>("");
-    const [editPosition, setEditPosition] = useState<string>("");
-    const [editPayFrequency, setEditPayFrequency] = useState<string>("");
-    const [editPayRate, setEditPayRate] = useState<number>(0);
+    const [editOpenId, setEditOpenId] = useState<Employee["id"] | null>(null);
+    const [editValues, setEditValues] = useState({ first_name: "", last_name: "", position: "", pay_frequency: "", pay_rate: 0 });
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -160,7 +157,7 @@ export default function EmployeeTable() {
                                 <TableCell>${employee.pay_rate.toLocaleString()}</TableCell>
                                 <TableCell>
                                     <Badge variant={employee.employment_status === "ACTIVE" ? "default" : "destructive"}>
-                                        {employee.employment_status}
+                                        {employee.employment_status ?? "unknown"}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
@@ -171,7 +168,23 @@ export default function EmployeeTable() {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent>
-                                            <Dialog>
+                                            <Dialog
+                                                open={editOpenId === employee.id}
+                                                onOpenChange={(open) => {
+                                                    if (open) {
+                                                        setEditValues({
+                                                            first_name: employee.first_name ?? "",
+                                                            last_name: employee.last_name ?? "",
+                                                            position: employee.position ?? "",
+                                                            pay_frequency: employee.pay_frequency ?? "",
+                                                            pay_rate: employee.pay_rate,
+                                                        });
+                                                        setEditOpenId(employee.id);
+                                                    } else {
+                                                        setEditOpenId(null);
+                                                    }
+                                                }}
+                                            >
                                                 <DialogTrigger asChild>
                                                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                                         Edit Employee
@@ -184,35 +197,35 @@ export default function EmployeeTable() {
                                                     </DialogHeader>
                                                     <div className="space-y-4 py-4">
                                                         <div className="space-y-2">
-                                                            <Label htmlFor="edit-empPosition">First Name</Label>
+                                                            <Label htmlFor="edit-empFirstName">First Name</Label>
                                                             <Input
-                                                                id="edit-empPosition"
-                                                                placeholder="Software Engineer"
-                                                                onChange={(e) => setEditFirstName(e.target.value)}
+                                                                id="edit-empFirstName"
+                                                                value={editValues.first_name}
+                                                                onChange={(e) => setEditValues((v) => ({ ...v, first_name: e.target.value }))}
                                                             />
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <Label htmlFor="edit-empPosition">Last Name</Label>
+                                                            <Label htmlFor="edit-empLastName">Last Name</Label>
                                                             <Input
-                                                                id="edit-empPosition"
-                                                                placeholder="Software Engineer"
-                                                                onChange={(e) => setEditLastName(e.target.value)}
+                                                                id="edit-empLastName"
+                                                                value={editValues.last_name}
+                                                                onChange={(e) => setEditValues((v) => ({ ...v, last_name: e.target.value }))}
                                                             />
                                                         </div>
                                                         <div className="space-y-2">
                                                             <Label htmlFor="edit-empPosition">Position</Label>
                                                             <Input
                                                                 id="edit-empPosition"
-                                                                placeholder="Software Engineer"
-                                                                onChange={(e) => setEditPosition(e.target.value)}
+                                                                value={editValues.position}
+                                                                onChange={(e) => setEditValues((v) => ({ ...v, position: e.target.value }))}
                                                             />
                                                         </div>
                                                         <div className="space-y-2">
                                                             <Label htmlFor="edit-payType">Pay Type</Label>
                                                             <Input
                                                                 id="edit-payType"
-                                                                placeholder="Hourly"
-                                                                onChange={(e) => setEditPayFrequency(e.target.value)}
+                                                                value={editValues.pay_frequency}
+                                                                onChange={(e) => setEditValues((v) => ({ ...v, pay_frequency: e.target.value }))}
                                                             />
                                                         </div>
                                                         <div className="space-y-2">
@@ -220,22 +233,30 @@ export default function EmployeeTable() {
                                                             <Input
                                                                 id="edit-empPay"
                                                                 type="number"
-                                                                placeholder="75000"
-                                                                onChange={(e) => setEditPayRate(Number(e.target.value))}
+                                                                value={editValues.pay_rate}
+                                                                onChange={(e) => setEditValues((v) => ({ ...v, pay_rate: Number(e.target.value) }))}
                                                             />
                                                         </div>
                                                     </div>
                                                     <DialogFooter>
                                                         <DialogClose asChild>
                                                             <Button
-                                                                onClick={() => updateEmployee(employee.id,
-                                                                    {
-                                                                        first_name: editFirstName || employee.first_name,
-                                                                        last_name: editLastName || employee.last_name,
-                                                                        position: editPosition || employee.position,
-                                                                        pay_frequency: editPayFrequency || employee.pay_frequency,
-                                                                        pay_rate: editPayRate || employee.pay_rate
-                                                                    })}>
+                                                                onClick={async () => {
+                                                                    try {
+                                                                        await updateEmployee(employee.id, {
+                                                                            first_name: editValues.first_name,
+                                                                            last_name: editValues.last_name,
+                                                                            position: editValues.position,
+                                                                            pay_frequency: editValues.pay_frequency,
+                                                                            pay_rate: editValues.pay_rate,
+                                                                        });
+                                                                        const updated = await getEmployees();
+                                                                        setEmployees(updated ?? []);
+                                                                    } catch (err) {
+                                                                        setError("Failed to update employee.")
+                                                                        throw err;
+                                                                    }
+                                                                }}>
                                                                 Update
                                                             </Button>
                                                         </DialogClose>
@@ -261,7 +282,15 @@ export default function EmployeeTable() {
                                                         <DialogClose asChild>
                                                             <Button
                                                                 variant="destructive"
-                                                                onClick={() => deleteEmployee(employee.id)}>
+                                                                onClick={async () => {
+                                                                    try {
+                                                                        await deleteEmployee(employee.id)
+                                                                        setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+                                                                    } catch (err) {
+                                                                        setError("Failed to delete employee.")
+                                                                        throw err;
+                                                                    }
+                                                                }}>
                                                                 Delete
                                                             </Button>
                                                         </DialogClose>
