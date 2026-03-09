@@ -38,7 +38,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_supabase_publishable_key
 
 ## Project Structure
 
-```
+```bash
 paycore/
 ├── app/                            # Next.js App Router pages
 │   ├── page.tsx                    # Login page — authenticates user and routes by role
@@ -141,7 +141,7 @@ The payroll engine lives in two files: [`lib/payroll.tsx`](lib/payroll.tsx) (pur
 
 Located at [`lib/payroll.tsx`](lib/payroll.tsx). This is a **pure function** — no DB calls, no side effects. Given an employee, their time entries, and a payroll run, it returns a complete payroll record.
 
-```
+```bash
 calculatePayRollForEmployee(employee, time_entries, payroll_run) → payroll_record
 ```
 
@@ -149,7 +149,7 @@ calculatePayRollForEmployee(employee, time_entries, payroll_run) → payroll_rec
 
 Time entries are filtered to only those belonging to the current employee, then summed:
 
-```
+```bash
 hoursWorked = time_entries
     .filter(entry => entry.employee_id === employee.id)
     .reduce((total, entry) => total + entry.hours_worked, 0)
@@ -161,7 +161,7 @@ Note: only `APPROVED` time entries are ever passed to this function — the filt
 
 The formula branches on the employee's `pay_frequency`:
 
-```
+```bash
 HOURLY:  gross_pay = hoursWorked × pay_rate
 SALARY:  gross_pay = pay_rate ÷ 26          (bi-weekly: 26 pay periods per year)
 ```
@@ -172,7 +172,7 @@ Salaried employees receive a fixed amount regardless of hours logged.
 
 Each tax is calculated as a flat percentage of gross pay. Null rates default to `0`:
 
-```
+```bash
 federal_tax       = gross_pay × (federal_tax_rate       ?? 0)
 state_tax         = gross_pay × (state_tax_rate         ?? 0)
 social_security   = gross_pay × (social_security_tax_rate ?? 0)
@@ -182,7 +182,7 @@ Tax rates are stored per-employee in the `employees` table, so each employee can
 
 #### Step 4 — Net Pay
 
-```
+```bash
 net_pay = gross_pay - federal_tax - state_tax - social_security
 ```
 
@@ -321,7 +321,7 @@ Verifies that `employee_id` and `payroll_run_id` on the returned record match th
 **The `mockFrom` call-count pattern:**
 `supabase.from()` is called once per database operation in sequence. The happy path test tracks `callCount` to return a different mock chain per call:
 
-```
+```bash
 call 1 → idempotency check (payroll_runs SELECT)
 call 2 → insert payroll run
 call 3 → fetch active employees
