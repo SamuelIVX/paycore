@@ -10,7 +10,6 @@ import {
     DialogTitle,
     DialogDescription,
     DialogFooter,
-    DialogClose
 } from "@/components/ui/dialog";
 import {
     DropdownMenu,
@@ -45,6 +44,7 @@ export default function EmployeeTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [editOpenId, setEditOpenId] = useState<Employee["id"] | null>(null);
     const [editValues, setEditValues] = useState({ first_name: "", last_name: "", position: "", pay_frequency: "", pay_rate: 0 });
+    const [deleteOpenId, setDeleteOpenId] = useState<Employee["id"] | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -239,32 +239,33 @@ export default function EmployeeTable() {
                                                         </div>
                                                     </div>
                                                     <DialogFooter>
-                                                        <DialogClose asChild>
-                                                            <Button
-                                                                onClick={async () => {
-                                                                    try {
-                                                                        await updateEmployee(employee.id, {
-                                                                            first_name: editValues.first_name,
-                                                                            last_name: editValues.last_name,
-                                                                            position: editValues.position,
-                                                                            pay_frequency: editValues.pay_frequency,
-                                                                            pay_rate: editValues.pay_rate,
-                                                                        });
-                                                                        const updated = await getEmployees();
-                                                                        setEmployees(updated ?? []);
-                                                                    } catch (err) {
-                                                                        setError("Failed to update employee.")
-                                                                        throw err;
-                                                                    }
-                                                                }}>
-                                                                Update
-                                                            </Button>
-                                                        </DialogClose>
+                                                        <Button
+                                                            onClick={async () => {
+                                                                try {
+                                                                    await updateEmployee(employee.id, {
+                                                                        first_name: editValues.first_name,
+                                                                        last_name: editValues.last_name,
+                                                                        position: editValues.position,
+                                                                        pay_frequency: editValues.pay_frequency,
+                                                                        pay_rate: editValues.pay_rate,
+                                                                    });
+                                                                    const updated = await getEmployees();
+                                                                    setEmployees(updated ?? []);
+                                                                    setEditOpenId(null);
+                                                                } catch {
+                                                                    setError("Failed to update employee.");
+                                                                }
+                                                            }}>
+                                                            Update
+                                                        </Button>
                                                     </DialogFooter>
                                                 </DialogContent>
                                             </Dialog>
 
-                                            <Dialog>
+                                            <Dialog
+                                                open={deleteOpenId === employee.id}
+                                                onOpenChange={(open) => setDeleteOpenId(open ? employee.id : null)}
+                                            >
                                                 <DialogTrigger asChild>
                                                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                                         Delete Employee
@@ -276,24 +277,20 @@ export default function EmployeeTable() {
                                                         <DialogDescription>Confirm deletion of employee from the system</DialogDescription>
                                                     </DialogHeader>
                                                     <DialogFooter>
-                                                        <DialogClose asChild>
-                                                            <Button variant="default">Cancel</Button>
-                                                        </DialogClose>
-                                                        <DialogClose asChild>
-                                                            <Button
-                                                                variant="destructive"
-                                                                onClick={async () => {
-                                                                    try {
-                                                                        await deleteEmployee(employee.id)
-                                                                        setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
-                                                                    } catch (err) {
-                                                                        setError("Failed to delete employee.")
-                                                                        throw err;
-                                                                    }
-                                                                }}>
-                                                                Delete
-                                                            </Button>
-                                                        </DialogClose>
+                                                        <Button variant="default" onClick={() => setDeleteOpenId(null)}>Cancel</Button>
+                                                        <Button
+                                                            variant="destructive"
+                                                            onClick={async () => {
+                                                                try {
+                                                                    await deleteEmployee(employee.id);
+                                                                    setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+                                                                    setDeleteOpenId(null);
+                                                                } catch {
+                                                                    setError("Failed to delete employee.");
+                                                                }
+                                                            }}>
+                                                            Delete
+                                                        </Button>
                                                     </DialogFooter>
                                                 </DialogContent>
                                             </Dialog>
