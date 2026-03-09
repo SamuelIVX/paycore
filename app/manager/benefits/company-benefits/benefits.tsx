@@ -10,7 +10,7 @@ import { CheckCircle2 } from "lucide-react";
 export function CompanyBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
         <div className="flex items-center justify-between">
-            <span className="text-gray-600">{title}</span>
+            <span className="text-gray-600 dark:text-white">{title}</span>
             <span className="font-medium">{value}</span>
         </div>
     )
@@ -47,7 +47,7 @@ export default function CompanyBenefitsGrid() {
                                             </Badge>
                                         </div>
 
-                                        <p className="text-sm text-gray-700 mb-3">{benefit.description}</p>
+                                        <p className="text-sm text-gray-700 dark:text-zinc-300 mb-3">{benefit.description}</p>
 
                                         <div className="space-y-1 text-sm">
 

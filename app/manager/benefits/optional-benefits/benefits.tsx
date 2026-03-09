@@ -8,7 +8,7 @@ import { BENEFIT_ICONS } from "../constant";
 export function OptionalBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
         <div className="flex items-center justify-between">
-            <span className="text-gray-600">{title}</span>
+            <span className="text-gray-600 dark:text-white">{title}</span>
             <span className="font-medium">{value}</span>
         </div>
     )
@@ -43,11 +43,11 @@ export default function OptionalBenefitsGrid() {
                                                 <div className="text-lg font-bold text-purple-600">
                                                     ${benefit.monthlyPrice}
                                                 </div>
-                                                <div className="text-xs text-gray-500">/month</div>
+                                                <div className="text-xs text-purple-300">/month</div>
                                             </div>
                                         </div>
 
-                                        <p className="text-sm text-gray-600 mb-3">{benefit.description}</p>
+                                        <p className="text-sm text-gray-600 dark:text-zinc-300 mb-3">{benefit.description}</p>
 
                                         <div className="space-y-1 text-sm">
 

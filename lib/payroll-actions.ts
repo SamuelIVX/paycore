@@ -80,8 +80,8 @@ export const updatePayrollRun = async (supabase: SupabaseClient, records: Tables
         .update({
             "run_date": new Date().toISOString(),
             "run_by": user,
-            "total_gross": total_gross_pay,
-            "total_net": total_net_pay,
+            "total_gross": Number(total_gross_pay).toFixed(2),
+            "total_net": Number(total_net_pay).toFixed(2),
             "total_taxes": Number((total_federal_tax + total_state_tax + total_social_security_tax).toFixed(2)),
             "status": "COMPLETED"
         })
@@ -93,8 +93,8 @@ export const updatePayrollRun = async (supabase: SupabaseClient, records: Tables
     }
 
     return {
-        total_gross_pay,
-        total_net_pay,
+        total_gross_pay: Number(total_gross_pay).toFixed(2),
+        total_net_pay: Number(total_net_pay).toFixed(2),
         total_taxes: Number((total_federal_tax + total_state_tax + total_social_security_tax).toFixed(2))
     };
 };

@@ -5,7 +5,7 @@ const supabase = createClient();
 const BI_WEEKLY_PAY_PERIODS = 26;
 
 export const getPayrollRuns = async () => {
-    const { data, error } = await supabase
+    const { data: payroll_runs, error } = await supabase
         .from("payroll_runs")
         .select("*");
 
@@ -14,11 +14,11 @@ export const getPayrollRuns = async () => {
         throw error;
     }
 
-    return data;
+    return payroll_runs;
 };
 
 export const getPayrollRecords = async () => {
-    const { data, error } = await supabase
+    const { data: payroll_records, error } = await supabase
         .from("payroll_records")
         .select("*");
 
@@ -27,8 +27,8 @@ export const getPayrollRecords = async () => {
         throw error;
     }
 
-    return data;
-}
+    return payroll_records;
+};
 
 export const calculatePayRollForEmployee = (employee: Tables<"employees">, time_entries: Tables<"time_entries">[], payroll_run: Tables<"payroll_runs">) => {
     const { pay_rate, pay_frequency, federal_tax_rate, state_tax_rate, social_security_tax_rate } = employee;
@@ -46,6 +46,7 @@ export const calculatePayRollForEmployee = (employee: Tables<"employees">, time_
     return {
         employee_id: employee.id,
         payroll_run_id: payroll_run.id,
+        regular_hours: hoursWorked,
         gross_pay,
         federal_tax,
         state_tax,

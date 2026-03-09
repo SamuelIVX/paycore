@@ -18,14 +18,14 @@ export function BenefitSummaryCard({ title, icon, count, description }: BenefitS
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-white">{title}</CardTitle>
                 {icon}
             </CardHeader>
             <CardContent>
                 <div className="text-3xl font-bold">
                     {count}
                 </div>
-                <p className="text-xs text-gray-600 mt-1">{description}</p>
+                <p className="text-xs text-gray-600 dark:text-white mt-1">{description}</p>
             </CardContent>
         </Card>
     )
