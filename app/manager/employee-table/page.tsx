@@ -129,9 +129,14 @@ export default function EmployeeTable() {
                                 <Button
                                     onClick={async () => {
                                         const success = await handleAddEmployee();
-                                        if (success) {
+                                        if (!success) return;
+
+                                        try {
                                             const updated = await getEmployees();
                                             setEmployees(updated ?? []);
+                                            setError(null);
+                                        } catch {
+                                            setError("Employee was added, but failed to refresh table.");
                                         }
                                     }}
                                     disabled={loading}
@@ -259,15 +264,19 @@ export default function EmployeeTable() {
                                                             onClick={async () => {
                                                                 try {
                                                                     setIsSubmitting(true);
-                                                                    await updateEmployee(employee.id, {
+                                                                    const updates = {
                                                                         first_name: editValues.first_name,
                                                                         last_name: editValues.last_name,
                                                                         position: editValues.position,
                                                                         pay_frequency: editValues.pay_frequency,
                                                                         pay_rate: editValues.pay_rate,
-                                                                    });
-                                                                    const updated = await getEmployees();
-                                                                    setEmployees(updated ?? []);
+                                                                    };
+                                                                    await updateEmployee(employee.id, updates);
+                                                                    setEmployees((prev) =>
+                                                                        prev.map((e) =>
+                                                                            e.id === employee.id ? { ...e, ...updates } : e
+                                                                        )
+                                                                    );
                                                                     setEditOpenId(null);
                                                                     setError(null);
                                                                 } catch {
