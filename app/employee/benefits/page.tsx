@@ -1,14 +1,15 @@
 "use client"
 
 import * as React from "react"
-import {DollarSign, Heart, Shield, Stethoscope, Smile, BadgeCheck, Info} from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { BadgeCheck, DollarSign, Heart, Info, Shield, Smile, Stethoscope } from "lucide-react"
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
-import { Switch } from "@/components/ui/switch"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { Progress } from "@/components/ui/progress"
+import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
 
 type Benefit = {
   title: string
@@ -148,6 +149,7 @@ const optionalBenefits: Benefit[] = [
     icon: <Shield className="h-4 w-4 text-white" />,
   },
 ]
+
 export default function BenefitsPage() {
   const [selectedOptional, setSelectedOptional] = React.useState<Record<string, boolean>>({
     "Vision Insurance": true,
@@ -156,8 +158,8 @@ export default function BenefitsPage() {
 
   const monthlyDeduction = Object.entries(selectedOptional).reduce((sum, [name, on]) => {
     if (!on) return sum
-    const b = optionalBenefits.find((x) => x.title === name)
-    return sum + (b?.monthlyCost ?? 0)
+    const benefit = optionalBenefits.find((x) => x.title === name)
+    return sum + (benefit?.monthlyCost ?? 0)
   }, 0)
 
   const annualCost = monthlyDeduction * 12
@@ -169,10 +171,8 @@ export default function BenefitsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-
-      <main className="mx-auto max-w-6xl px-4 py-6 space-y-6">
-        {/* Top summary */}
-        <Card className="shadow-sm border-blue-200 bg-blue-50/30">
+      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
+        <Card className="border-blue-200 bg-blue-50/30 shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
@@ -181,19 +181,19 @@ export default function BenefitsPage() {
           </CardHeader>
 
           <CardContent className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-md bg-background border p-4 text-center">
+            <div className="rounded-md border bg-background p-4 text-center">
               <div className="text-xs text-muted-foreground">Company Benefits</div>
               <div className="text-2xl font-bold text-blue-600">{companyCount}</div>
               <div className="text-xs text-muted-foreground">No cost to employee</div>
             </div>
 
-            <div className="rounded-md bg-background border p-4 text-center">
+            <div className="rounded-md border bg-background p-4 text-center">
               <div className="text-xs text-muted-foreground">Monthly Deduction</div>
               <div className="text-2xl font-bold text-orange-600">${monthlyDeduction.toFixed(2)}</div>
-              <div className="text-xs text-muted-foreground">From each paycheck</div>
+              <div className="text-xs text-muted-foreground">Total per month</div>
             </div>
 
-            <div className="rounded-md bg-background border p-4 text-center">
+            <div className="rounded-md border bg-background p-4 text-center">
               <div className="text-xs text-muted-foreground">Annual Cost</div>
               <div className="text-2xl font-bold text-purple-600">${annualCost.toFixed(2)}</div>
               <div className="text-xs text-muted-foreground">Total per year</div>
@@ -201,18 +201,15 @@ export default function BenefitsPage() {
           </CardContent>
         </Card>
 
-        {/* Company vs Optional bar */}
         <div className="rounded-full border bg-muted/30 p-2">
-          <div className="flex items-center justify-between text-xs px-2 mb-2">
+          <div className="mb-2 flex items-center justify-between px-2 text-xs">
             <span className="font-medium">Company Benefits ({companyCount})</span>
             <span className="font-medium">Optional Benefits ({optionalCount})</span>
           </div>
           <Progress value={pctCompany} />
         </div>
 
-        {/* Content grid */}
         <div className="grid gap-4 lg:grid-cols-2">
-          {/* Company-provided */}
           <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="text-base">Company-Provided Benefits</CardTitle>
@@ -222,7 +219,7 @@ export default function BenefitsPage() {
               {companyBenefits.map((b) => (
                 <div key={b.title} className="rounded-lg border bg-blue-50/30 p-4">
                   <div className="flex items-start gap-3">
-                    <div className="h-9 w-9 rounded-md bg-blue-600 flex items-center justify-center">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600">
                       {b.icon}
                     </div>
 
@@ -233,9 +230,9 @@ export default function BenefitsPage() {
                           {b.tag}
                         </Badge>
                       </div>
-                      <div className="text-sm text-muted-foreground mt-1">{b.description}</div>
+                      <div className="mt-1 text-sm text-muted-foreground">{b.description}</div>
 
-                      <div className="text-xs text-muted-foreground mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                         <span>
                           Provider: <span className="text-foreground">{b.provider}</span>
                         </span>
@@ -250,7 +247,6 @@ export default function BenefitsPage() {
             </CardContent>
           </Card>
 
-          {/* Optional */}
           <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="text-base">Optional Benefits</CardTitle>
@@ -259,36 +255,38 @@ export default function BenefitsPage() {
             <CardContent className="space-y-3">
               {optionalBenefits.map((b) => {
                 const enabled = !!selectedOptional[b.title]
+                const switchId = `optional-benefit-${b.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`
+
                 return (
                   <div
                     key={b.title}
                     className={[
                       "rounded-lg border p-4 transition-colors",
-                      enabled ? "bg-green-50/40 border-green-300" : "bg-background",
+                      enabled ? "border-green-300 bg-green-50/40" : "bg-background",
                     ].join(" ")}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="h-9 w-9 rounded-md bg-muted flex items-center justify-center">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
                         {b.icon}
                       </div>
 
                       <div className="flex-1">
                         <div className="flex items-center justify-between gap-3">
-                          <div className="font-semibold">{b.title}</div>
-                          <div className="flex items-center gap-2">
-                            <Label className="text-xs text-muted-foreground"> </Label>
-                            <Switch
-                              checked={enabled}
-                              onCheckedChange={(v: boolean) =>
-                                setSelectedOptional((prev) => ({ ...prev, [b.title]: v }))
-                              }
-                            />
-                          </div>
+                          <Label htmlFor={switchId} className="font-semibold cursor-pointer">
+                            {b.title}
+                          </Label>
+                          <Switch
+                            id={switchId}
+                            checked={enabled}
+                            onCheckedChange={(v: boolean) =>
+                              setSelectedOptional((prev) => ({ ...prev, [b.title]: v }))
+                            }
+                          />
                         </div>
 
-                        <div className="text-sm text-muted-foreground mt-1">{b.description}</div>
+                        <div className="mt-1 text-sm text-muted-foreground">{b.description}</div>
 
-                        <div className="text-xs text-muted-foreground mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                           <span>
                             Provider: <span className="text-foreground">{b.provider}</span>
                           </span>
@@ -316,7 +314,7 @@ export default function BenefitsPage() {
           <Info className="h-4 w-4" />
           <AlertTitle>Important Information</AlertTitle>
           <AlertDescription>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
+            <ul className="list-disc space-y-1 pl-5 text-sm">
               <li>Changes to optional benefits take effect on the 1st of the following month.</li>
               <li>Deductions are calculated automatically and shown on pay stubs.</li>
               <li>Benefit selections can be modified during open enrollment or after qualifying life events.</li>
