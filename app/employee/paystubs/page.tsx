@@ -1,169 +1,129 @@
 "use client"
 
-import * as React from "react"
-import { Clock3, DollarSign, FileText, Heart } from "lucide-react"
-
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { PaystubInfoProps } from "./types"
+import { FileText, TrendingDown, TrendingUp } from "lucide-react"
 
-type Stub = {
-  period: string
-  paidOn: string
-  netPay: number
-  grossPay: number
-  taxes: number
-  benefits: number
-}
-
-const paystubs: Stub[] = [
-  {
-    period: "Jan 16–31, 2026",
-    paidOn: "1/31/2026",
-    netPay: 3125,
-    grossPay: 4166.67,
-    taxes: 1041.67,
-    benefits: 32,
-  },
-  {
-    period: "Jan 1–15, 2026",
-    paidOn: "1/15/2026",
-    netPay: 3125,
-    grossPay: 4166.67,
-    taxes: 1041.67,
-    benefits: 32,
-  },
-  {
-    period: "Dec 16–31, 2025",
-    paidOn: "12/31/2025",
-    netPay: 3125,
-    grossPay: 4166.67,
-    taxes: 1041.67,
-    benefits: 32,
-  },
+const payStubs = [
+  { id: "1", period: "Jan 16-31, 2026", grossPay: 4166.67, netPay: 3125.00, date: "2026-02-01" },
+  { id: "2", period: "Jan 1-15, 2026", grossPay: 9482.23, netPay: 8322.00, date: "2026-01-16" },
+  { id: "3", period: "Dec 16-31, 2025", grossPay: 2230.23, netPay: 2763.00, date: "2026-01-01" },
 ]
 
-const money = (n: number) => `$${n.toFixed(2)}`
+const benefitDeductions = 32
+
+export function PaystubInfo({ title, value, valueClassName }: PaystubInfoProps) {
+  return (
+    <div className="flex justify-between items-center text-sm py-1">
+      <span className="text-muted-foreground">{title}</span>
+      <span className={`font-semibold tabular-nums ${valueClassName ?? ""}`}>{value}</span>
+    </div>
+  )
+}
 
 export default function PayStubsPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-6xl px-4 py-6 space-y-6">
-        {/* Top summary cards */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardDescription>Hours This Week</CardDescription>
-                <div className="h-9 w-9 rounded-full bg-blue-50 flex items-center justify-center">
-                  <Clock3 className="h-4 w-4 text-blue-600" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">0</div>
-              <div className="text-xs text-muted-foreground mt-1">Target: 40 hours</div>
-            </CardContent>
-          </Card>
+    <div className="container mx-auto py-4">
 
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardDescription>Benefit Deductions</CardDescription>
-                <div className="h-9 w-9 rounded-full bg-red-50 flex items-center justify-center">
-                  <Heart className="h-4 w-4 text-red-500" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$32.00</div>
-              <div className="text-xs text-muted-foreground mt-1">Per month</div>
-            </CardContent>
-          </Card>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle>Pay Stubs</CardTitle>
+          </div>
+          <CardDescription>View your payment history and deductions</CardDescription>
+        </CardHeader>
 
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardDescription>Last Payment</CardDescription>
-                <div className="h-9 w-9 rounded-full bg-green-50 flex items-center justify-center">
-                  <DollarSign className="h-4 w-4 text-green-600" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$3125.00</div>
-              <div className="text-xs text-muted-foreground mt-1">Jan 16–31, 2026</div>
-            </CardContent>
-          </Card>
-        </div>
+        <CardContent className="space-y-4">
+          {payStubs.map((stub, index) => {
+            const taxes = stub.grossPay * 0.25
+            const totalDeductions = taxes + benefitDeductions
 
-        {/* Main pay stubs section */}
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">Pay Stubs</CardTitle>
-            <CardDescription>View payment history and deductions</CardDescription>
-          </CardHeader>
+            return (
+              <Card key={stub.id} className="overflow-hidden shadow-none border transition-all duration-200 hover:shadow-md hover:border-primary/30 hover:bg-primary/3 cursor-pointer">
 
-          <CardContent className="space-y-4">
-            {paystubs.map((stub) => (
-              <div key={stub.period} className="rounded-xl bg-muted/20 p-4">
-                {/* Top row */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
-                      <FileText className="h-4 w-4 text-green-700" />
+                {/* Card header band */}
+                <div className="flex items-center justify-between bg-muted/40 px-5 py-3 border-b">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10">
+                      <FileText className="h-4 w-4 text-primary" />
                     </div>
+                    <div>
+                      <p className="font-semibold text-sm">{stub.period}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Paid {new Date(stub.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {index === 0 && (
+                      <Badge variant="secondary" className="text-xs">Most Recent</Badge>
+                    )}
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">Net Pay</p>
+                      <p className="text-lg font-bold text-green-600">${stub.netPay.toFixed(2)}</p>
+                    </div>
+                  </div>
+                </div>
 
-                    <div className="leading-tight">
-                      <div className="font-semibold">{stub.period}</div>
-                      <div className="text-sm text-muted-foreground">
-                        Paid on {stub.paidOn}
+                <CardContent className="p-5">
+                  <div className="flex gap-0 divide-x rounded-lg overflow-hidden border">
+
+                    {/* Earnings */}
+                    <div className="flex-1 bg-green-50/50 p-4">
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <TrendingUp className="h-3.5 w-3.5 text-green-600" />
+                        <span className="text-xs font-semibold uppercase tracking-wider text-green-700">Earnings</span>
                       </div>
+                      <PaystubInfo
+                        title="Gross Pay"
+                        value={`$${stub.grossPay.toFixed(2)}`}
+                        valueClassName="text-green-600"
+                      />
                     </div>
-                  </div>
 
-                  <div className="text-right">
-                    <div className="text-2xl font-semibold text-green-600">
-                      {money(stub.netPay)}
+                    {/* Deductions */}
+                    <div className="flex-1 bg-red-50/50 p-4">
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+                        <span className="text-xs font-semibold uppercase tracking-wider text-red-600">Deductions</span>
+                      </div>
+                      <PaystubInfo
+                        title="Federal Taxes (25%)"
+                        value={`-$${taxes.toFixed(2)}`}
+                        valueClassName="text-red-500"
+                      />
+                      <PaystubInfo
+                        title="Benefits"
+                        value={`-$${benefitDeductions.toFixed(2)}`}
+                        valueClassName="text-red-500"
+                      />
+                      <Separator className="my-2" />
+                      <PaystubInfo
+                        title="Total Deductions"
+                        value={`-$${totalDeductions.toFixed(2)}`}
+                        valueClassName="text-red-600"
+                      />
                     </div>
-                    <div className="text-xs text-muted-foreground">Net Pay</div>
-                  </div>
-                </div>
 
-                <Separator className="my-4" />
-
-                {/* Breakdown */}
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Gross Pay:</span>
-                    <span className="font-medium">{money(stub.grossPay)}</span>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Taxes (25%):</span>
-                    <span className="font-medium text-red-600">-{money(stub.taxes)}</span>
+                  <Separator className="my-4" />
+
+                  <div className="flex items-center justify-between rounded-lg bg-green-50 border border-green-100 px-4 py-2.5">
+                    <span className="text-sm font-semibold text-green-900">Take-Home Pay</span>
+                    <span className="text-base font-bold text-green-600">${stub.netPay.toFixed(2)}</span>
                   </div>
+                </CardContent>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Benefits:</span>
-                    <span className="font-medium text-red-600">-{money(stub.benefits)}</span>
-                  </div>
+              </Card>
+            )
+          })}
+        </CardContent>
+      </Card>
 
-                  <Separator />
-
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold">Net Pay:</span>
-                    <span className="font-semibold text-green-600">{money(stub.netPay)}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {paystubs.length === 0 && (
-              <div className="text-sm text-muted-foreground">No pay stubs found.</div>
-            )}
-          </CardContent>
-        </Card>
-      </main>
     </div>
   )
 }

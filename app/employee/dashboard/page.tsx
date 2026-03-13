@@ -1,32 +1,33 @@
 "use client"
 
-import * as React from "react"
-import { useRouter } from "next/navigation"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts"
-import {
-  ArrowUpRight,
-  CalendarDays,
+  AlertCircle,
+  CheckCircle2,
   Clock,
   DollarSign,
   Heart,
   Plus,
   TrendingUp,
+  FileText
 } from "lucide-react"
-
+import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/animate-ui/components/buttons/button"
+import { Button as BaseButton } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
+import { EmployeeStatCardProps } from "./types"
+import Link from "next/link"
 
 const weeklyTarget = 40
+
+const chartConfig = {
+  hours: {
+    label: "Hours",
+    color: "var(--chart-1)",
+  },
+} satisfies ChartConfig
 
 const hoursByDay = [
   { day: "Mon", hours: 8.0 },
@@ -38,203 +39,232 @@ const hoursByDay = [
 
 const hoursThisWeek = hoursByDay.reduce((total, day) => total + day.hours, 0)
 
-const timesheets = [
-  { date: "Sat, Jan 31", hours: 8, status: "submitted" as const },
-  { date: "Fri, Jan 30", hours: 8, status: "approved" as const },
-  { date: "Thu, Jan 29", hours: 7.5, status: "approved" as const },
-]
+const timeEntries = [
+  { id: "1", date: "2026-02-01", hoursWorked: 8, status: "submitted" },
+  { id: "2", date: "2026-01-31", hoursWorked: 8, status: "approved" },
+  { id: "3", date: "2026-01-30", hoursWorked: 7.5, status: "approved" },
+];
 
-function StatusBadge({ status }: { status: "submitted" | "approved" }) {
-  if (status === "approved") {
-    return (
-      <Badge className="rounded-full bg-black px-3 py-1 text-white hover:bg-black/90">
-        approved
-      </Badge>
-    )
-  }
-
+export function EmployeeStatCard({ title, icon, value, description }: EmployeeStatCardProps) {
   return (
-    <Badge variant="secondary" className="rounded-full px-3 py-1">
-      submitted
-    </Badge>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium text-gray-600 dark:text-white">{title}</CardTitle>
+        {icon}
+      </CardHeader>
+      <CardContent>
+        <div className="text-3xl font-bold">{value}</div>
+        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{description}</p>
+      </CardContent>
+    </Card>
   )
 }
 
 export default function EmployeeDashboardPage() {
-  const router = useRouter()
-
   return (
-    <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-6xl px-4 py-6">
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardDescription>Hours This Week</CardDescription>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50">
-                  <Clock className="h-4 w-4 text-blue-600" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{hoursThisWeek}</div>
-              <div className="mt-1 text-xs text-muted-foreground">
-                Target: {weeklyTarget} hours
-              </div>
-            </CardContent>
-          </Card>
+    <div className="container mx-auto py-4">
 
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardDescription>Benefit Deductions</CardDescription>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50">
-                  <Heart className="h-4 w-4 text-red-500" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$32.00</div>
-              <div className="mt-1 text-xs text-muted-foreground">Per month</div>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 mt-4">
+        <EmployeeStatCard
+          title="Hours This Week"
+          icon={<Clock className="h-4 w-4 text-blue-600" />}
+          value={hoursThisWeek}
+          description={`Target ${weeklyTarget} hours`}
+        />
 
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardDescription>Last Payment</CardDescription>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-50">
-                  <DollarSign className="h-4 w-4 text-green-600" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$3125.00</div>
-              <div className="mt-1 text-xs text-muted-foreground">Jan 16–31, 2026</div>
-            </CardContent>
-          </Card>
-        </div>
+        <EmployeeStatCard
+          title="Benefit Deductions"
+          icon={<Heart className="h-4 w-4 text-red-600" />}
+          value="$32.00"
+          description="Per month"
+        />
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">This Week&apos;s Hours</CardTitle>
-              <CardDescription>Daily breakdown of hours worked</CardDescription>
-            </CardHeader>
-            <CardContent className="h-[220px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={hoursByDay}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="day" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} width={28} />
-                  <Tooltip />
-                  <Bar dataKey="hours" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+        <EmployeeStatCard
+          title="Last Payment"
+          icon={<DollarSign className="h-4 w-4 text-green-600" />}
+          value="$3125.00"
+          description="Han 16-31, 2026"
+        />
+      </div>
 
-              <div className="sr-only" aria-label="Daily hours worked this week">
-                <ul>
-                  {hoursByDay.map((entry) => (
-                    <li key={entry.day}>
-                      {entry.day}: {entry.hours} hours
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          <Card className="shadow-sm">
-            <CardHeader className="flex flex-row items-start justify-between space-y-0">
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">This Week&apos;s Hours</CardTitle>
+            <CardDescription>Daily breakdown of hours worked</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="h-[220px] w-full">
+              <BarChart data={hoursByDay}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="day"
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  width={28}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="hours" fill="var(--color-hours)" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+
+            <div className="sr-only" aria-label="Daily hours worked this week">
+              <ul>
+                {hoursByDay.map((entry) => (
+                  <li key={entry.day}>
+                    {entry.day}: {entry.hours} hours
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">Year-to-Date Earnings</CardTitle>
+            <CardDescription>Total earnings in 2026</CardDescription>
+          </CardHeader>
+
+          <CardContent>
+
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <CardTitle className="text-base">Year-to-Date Earnings</CardTitle>
-                <CardDescription>Total earnings in 2026</CardDescription>
+                <p className="text-4xl font-bold text-green-600">
+                  $9,375
+                </p>
+                <p className="text-sm text-gray-600 mt-1">Net earnings</p>
               </div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-green-100">
-                <TrendingUp className="h-5 w-5 text-green-700" />
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                <TrendingUp className="w-8 h-8 text-green-600" />
               </div>
-            </CardHeader>
+            </div>
 
-            <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t">
               <div>
-                <div className="text-3xl font-bold text-green-700">$9,375</div>
-                <div className="text-xs text-muted-foreground">Net earnings</div>
+                <p className="text-sm text-gray-600">Paychecks</p>
+                <p className="text-2xl font-bold">3</p>
               </div>
-
-              <Separator />
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-xs text-muted-foreground">Paychecks</div>
-                  <div className="text-lg font-semibold">3</div>
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground">Avg. Per Check</div>
-                  <div className="text-lg font-semibold">$3125</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-sm">
-            <CardHeader className="flex flex-row items-start justify-between space-y-0">
               <div>
-                <CardTitle className="text-base">Recent Timesheets</CardTitle>
-                <CardDescription>Latest time entries</CardDescription>
+                <p className="text-sm text-gray-600">Avg. Per Check</p>
+                <p className="text-2xl font-bold">
+                  $3125
+                </p>
               </div>
-              <Button variant="outline" size="sm" className="gap-2" disabled aria-disabled="true">
-                <Plus className="h-4 w-4" />
-                Add Hours
-              </Button>
-            </CardHeader>
+            </div>
 
-            <CardContent className="space-y-3">
-              {timesheets.map((t, idx) => (
-                <div key={t.date}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50">
-                        <CalendarDays className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <div className="leading-tight">
-                        <div className="text-sm font-medium">{t.date}</div>
-                        <div className="text-xs text-muted-foreground">{t.hours} hours</div>
-                      </div>
-                    </div>
-                    <StatusBadge status={t.status} />
+          </CardContent>
+
+        </Card >
+
+        <Card className="shadow-sm">
+
+          <CardHeader className="flex flex-row items-start justify-between space-y-0">
+
+            <div>
+              <CardTitle className="text-base">Recent Timesheets</CardTitle>
+              <CardDescription>Latest time entries</CardDescription>
+            </div>
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Hours
+            </Button>
+
+          </CardHeader>
+
+          <CardContent className="space-y-3">
+            {timeEntries.slice(0, 4).map(entry => (
+              <div key={entry.id} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${entry.status === "draft" ? "bg-orange-100" :
+                    entry.status === "submitted" ? "bg-blue-100" : "bg-green-100"
+                    }`}>
+                    {entry.status === "draft" ? (
+                      <AlertCircle className="w-5 h-5 text-orange-600" />
+                    ) : entry.status === "submitted" ? (
+                      <Clock className="w-5 h-5 text-blue-600" />
+                    ) : (
+                      <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    )}
                   </div>
-                  {idx !== timesheets.length - 1 && <Separator className="my-3" />}
+                  <div>
+                    <p className="font-medium dark:text-black">
+                      {new Date(entry.date).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {entry.hoursWorked} hours
+                    </p>
+                  </div>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
+                <Badge variant={
+                  entry.status === "draft" ? "outline" :
+                    entry.status === "submitted" ? "secondary" :
+                      "default"
+                }>
+                  {entry.status}
+                </Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
-          <Card className="border-green-200 bg-green-50/40 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2 bg-background"
-                onClick={() => router.push("/employee/benefits")}
-              >
-                <Heart className="h-4 w-4" />
+        <Card className="border-green-200 bg-green-50">
+
+          <CardHeader>
+            <CardTitle className="text-green-900">Quick Actions</CardTitle>
+            <CardDescription>Common employee operations</CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-3">
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className="w-full justify-start bg-white hover:bg-gray-50 h-10 text-sm dark:text-black"
+                  variant="outline">
+                  <Clock className="w-5 h-5 mr-3" />
+                  Submit Hours
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+
+            <BaseButton
+              variant="outline"
+              className="w-full justify-start bg-white hover:bg-gray-50 h-10 text-sm dark:text-black"
+              asChild
+            >
+              <Link href="/employee/benefits">
+                <Heart className="w-5 h-5 mr-3" />
                 Manage Benefits
-              </Button>
+              </Link>
+            </BaseButton>
 
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2 bg-background"
-                onClick={() => router.push("/employee/paystubs")}
-              >
-                <ArrowUpRight className="h-4 w-4" />
+            <BaseButton
+              variant="outline"
+              className="w-full justify-start bg-white hover:bg-gray-50 h-10 text-sm dark:text-black"
+              asChild
+            >
+              <Link href="/employee/paystubs">
+                <FileText className="w-5 h-5 mr-3" />
                 View Pay Stubs
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
+              </Link>
+            </BaseButton>
+
+          </CardContent>
+
+        </Card>
+
+      </div >
+
+    </div >
   )
 }
