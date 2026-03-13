@@ -22,7 +22,7 @@ export default function RecentTimesheetsCard({ time_entries }: { time_entries: T
             </CardHeader>
 
             <CardContent className="space-y-3">
-                {time_entries.length == 0 ? (
+                {time_entries.length === 0 ? (
                     <p className="text-center text-gray-500 py-4">No recent timesheets</p>
                 ) : (
                     <>

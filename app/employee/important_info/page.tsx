@@ -10,7 +10,7 @@ export default function ImportantInfoCard() {
                 <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
 
                 <div className="text-sm text-amber-900">
-                    <p className="font-medium mb-1">Important Information</p>
+                    <h3 className="font-medium mb-1">Important Information</h3>
                     <ul className="list-disc list-inside space-y-1 text-amber-800">
                         <li>Changes to optional benefits take effect on the 1st of the following month</li>
                         <li>Deductions are automatically calculated and shown on your pay stubs</li>
