@@ -38,11 +38,15 @@ export default function RecentTimesheetsCard({ time_entries }: { time_entries: T
                             </div>
                             <div>
                                 <p className="font-medium dark:text-black">
-                                    {new Date(entry.date).toLocaleDateString('en-US', {
-                                        weekday: 'short',
-                                        month: 'short',
-                                        day: 'numeric'
-                                    })}
+                                    {(() => {
+                                        const [year, month, day] = entry.date.split("-").map(Number)
+                                        return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+                                            weekday: 'short',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })
+                                    })()}
+
                                 </p>
                                 <p className="text-sm text-gray-600">
                                     {entry.hoursWorked} hours

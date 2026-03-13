@@ -27,7 +27,7 @@ export default function SummaryCards({ company_count, monthly_deduction, annual_
 
             <CardContent className="grid gap-3 md:grid-cols-3">
                 <SummaryCard
-                    title="company_count Benefits"
+                    title="Company Benefits"
                     value={company_count}
                     description="No cost to employee"
                 />

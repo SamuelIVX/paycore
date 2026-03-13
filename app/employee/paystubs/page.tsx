@@ -48,7 +48,7 @@ export default function PayStubsPage() {
             const totalDeductions = taxes + benefitDeductions
 
             return (
-              <Card key={stub.id} className="overflow-hidden shadow-none border transition-all duration-200 hover:shadow-md hover:border-primary/30 hover:bg-primary/5 cursor-pointer">
+              <Card key={stub.id} className="overflow-hidden shadow-none border transition-all duration-200 hover:shadow-md hover:border-primary/30 hover:bg-primary/5">
 
                 {/* Card header band */}
                 <div className="flex items-center justify-between bg-muted/40 px-5 py-3 border-b">
@@ -59,7 +59,12 @@ export default function PayStubsPage() {
                     <div>
                       <p className="font-semibold text-sm">{stub.period}</p>
                       <p className="text-xs text-muted-foreground">
-                        Paid {new Date(stub.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        Paid {new Date(`${stub.date}T00:00:00Z`).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          timeZone: "UTC",
+                        })}
                       </p>
                     </div>
                   </div>
