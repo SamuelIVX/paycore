@@ -5,6 +5,10 @@ import { Badge } from "@/components/ui/badge"
 import type { TimeEntry } from "./types"
 
 export default function RecentTimesheetsCard({ time_entries }: { time_entries: TimeEntry[] }) {
+    const recentEntries = [...time_entries]
+        .sort((a, b) => b.date.localeCompare(a.date)) // YYYY-MM-DD safe lexical sort
+        .slice(0, 4)
+
     return (
         <Card className="shadow-sm">
 
@@ -22,7 +26,7 @@ export default function RecentTimesheetsCard({ time_entries }: { time_entries: T
             </CardHeader>
 
             <CardContent className="space-y-3">
-                {time_entries.length === 0 ? (
+                {recentEntries.length === 0 ? (
                     <p className="text-center text-gray-500 py-4">No recent timesheets</p>
                 ) : (
                     <>
