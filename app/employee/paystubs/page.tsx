@@ -6,13 +6,19 @@ import { Separator } from "@/components/ui/separator"
 import { PaystubInfoProps } from "./types"
 import { FileText, TrendingDown, TrendingUp } from "lucide-react"
 
-const payStubs = [
-  { id: "1", period: "Jan 16-31, 2026", grossPay: 4166.67, netPay: 3125.00, date: "2026-02-01" },
-  { id: "2", period: "Jan 1-15, 2026", grossPay: 9482.23, netPay: 8322.00, date: "2026-01-16" },
-  { id: "3", period: "Dec 16-31, 2025", grossPay: 2230.23, netPay: 2763.00, date: "2026-01-01" },
+const payStubsData = [
+  { id: "1", period: "Jan 16-31, 2026", grossPay: 4166.67, date: "2026-02-01" },
+  { id: "2", period: "Jan 1-15, 2026", grossPay: 9482.23, date: "2026-01-16" },
+  { id: "3", period: "Dec 16-31, 2025", grossPay: 2230.23, date: "2026-01-01" },
 ]
 
+const TAX_RATE = 0.25
 const benefitDeductions = 32
+
+const payStubs = payStubsData.map(stub => ({
+  ...stub,
+  netPay: stub.grossPay - (stub.grossPay * TAX_RATE) - benefitDeductions
+}))
 
 export function PaystubInfo({ title, value, valueClassName }: PaystubInfoProps) {
   return (
@@ -42,7 +48,7 @@ export default function PayStubsPage() {
             const totalDeductions = taxes + benefitDeductions
 
             return (
-              <Card key={stub.id} className="overflow-hidden shadow-none border transition-all duration-200 hover:shadow-md hover:border-primary/30 hover:bg-primary/3 cursor-pointer">
+              <Card key={stub.id} className="overflow-hidden shadow-none border transition-all duration-200 hover:shadow-md hover:border-primary/30 hover:bg-primary/5 cursor-pointer">
 
                 {/* Card header band */}
                 <div className="flex items-center justify-between bg-muted/40 px-5 py-3 border-b">
