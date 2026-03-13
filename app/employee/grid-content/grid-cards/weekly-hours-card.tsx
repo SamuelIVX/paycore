@@ -29,7 +29,7 @@ export default function WeeklyHoursCardBreakdown({ chart_config, hours_by_day }:
                     </BarChart>
                 </ChartContainer>
 
-                <div className="sr-only" role="region" aria-label="Daily hours worked this week">
+                <section className="sr-only" aria-label="Daily hours worked this week">
                     <ul>
                         {hours_by_day.map((entry) => (
                             <li key={entry.day}>
@@ -37,7 +37,7 @@ export default function WeeklyHoursCardBreakdown({ chart_config, hours_by_day }:
                             </li>
                         ))}
                     </ul>
-                </div>
+                </section>
             </CardContent>
         </Card>
     )

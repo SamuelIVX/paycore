@@ -4,18 +4,7 @@ import {
     Heart,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { EmployeeStatCardProps } from "./types"
-
-const hoursByDay = [
-    { day: "Mon", hours: 8.0 },
-    { day: "Tue", hours: 8.0 },
-    { day: "Wed", hours: 7.5 },
-    { day: "Thu", hours: 8.0 },
-    { day: "Fri", hours: 0.0 },
-]
-
-const hoursThisWeek = hoursByDay.reduce((total, day) => total + day.hours, 0)
-const weeklyTarget = 40
+import { EmployeeStatCardProps, HoursByDayProps } from "./types"
 
 export function EmployeeStatCard({ title, icon, value, description }: EmployeeStatCardProps) {
     return (
@@ -32,7 +21,10 @@ export function EmployeeStatCard({ title, icon, value, description }: EmployeeSt
     )
 }
 
-export default function EmployeeStatCards() {
+export default function EmployeeStatCards({ hours_by_day }: HoursByDayProps) {
+
+    const hoursThisWeek = hours_by_day.reduce((total, day) => total + day.hours, 0)
+    const weeklyTarget = 40
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 mt-4">
 

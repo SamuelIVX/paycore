@@ -30,6 +30,9 @@ export function PaystubInfo({ title, value, valueClassName }: PaystubInfoProps) 
 }
 
 export default function PayStubsPage() {
+  const mostRecentStubId = payStubs.reduce((latest, current) =>
+    current.date > latest.date ? current : latest
+  ).id
   return (
     <div className="container mx-auto py-4">
 
@@ -44,7 +47,7 @@ export default function PayStubsPage() {
 
         <CardContent className="space-y-4">
           {payStubs.map((stub, index) => {
-            const taxes = stub.grossPay * 0.25
+            const taxes = stub.grossPay * TAX_RATE
             const totalDeductions = taxes + benefitDeductions
 
             return (
@@ -69,7 +72,7 @@ export default function PayStubsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    {index === 0 && (
+                    {stub.id === mostRecentStubId && (
                       <Badge variant="secondary" className="text-xs">Most Recent</Badge>
                     )}
                     <div className="text-right">
@@ -102,7 +105,7 @@ export default function PayStubsPage() {
                         <span className="text-xs font-semibold uppercase tracking-wider text-red-600">Deductions</span>
                       </div>
                       <PaystubInfo
-                        title="Federal Taxes (25%)"
+                        title="Taxes"
                         value={`-$${taxes.toFixed(2)}`}
                         valueClassName="text-red-500"
                       />

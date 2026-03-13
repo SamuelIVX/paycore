@@ -6,7 +6,7 @@ export default function YTDEarningsCard() {
         <Card className="shadow-sm">
             <CardHeader>
                 <CardTitle className="text-base">Year-to-Date Earnings</CardTitle>
-                <CardDescription>Total earnings in 2026</CardDescription>
+                <CardDescription>Total earnings in {new Date().getFullYear()}</CardDescription>
             </CardHeader>
 
             <CardContent>

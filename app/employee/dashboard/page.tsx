@@ -30,10 +30,10 @@ export default function EmployeeDashboardPage() {
   return (
     <div className="container mx-auto py-4">
 
-      <EmployeeStatCards />
+      <EmployeeStatCards hours_by_day={hoursByDay} />
 
       <GridContent chart_config={chartConfig} hours_by_day={hoursByDay} time_entries={timeEntries} />
 
-    </div >
+    </div>
   )
 }
