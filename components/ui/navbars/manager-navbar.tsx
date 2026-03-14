@@ -22,7 +22,6 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import PayCoreLogo from "../../../public/logo.png";
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -217,7 +216,13 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
                 onClick={e => e.preventDefault()}
               >
                 <div className="shrink-0">
-                  <Image src={PayCoreLogo} alt="PayCore Logo" className="size-15 rounded-full object-cover" />
+                  <Image
+                    src="/logo.png"
+                    alt="PayCore Logo"
+                    className="size-15 rounded-full object-cover"
+                    width={60}
+                    height={60}
+                  />
                 </div>
 
                 <div className="flex flex-col items-start justify-center">
