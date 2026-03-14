@@ -70,10 +70,18 @@ export default function PayStubsPage() {
         setLoading(true)
         setLoadError(null)
 
-        const [paystubRows, weeklyEntries] = await Promise.all([
+        const [paystubsResult, weeklyResult] = await Promise.allSettled([
           getEmployeePaystubs(),
           getWeeklyHours(),
         ])
+
+        if (paystubsResult.status !== "fulfilled") {
+          throw paystubsResult.reason
+        }
+
+        const paystubRows = paystubsResult.value
+        const weeklyEntries =
+          weeklyResult.status === "fulfilled" ? weeklyResult.value : []
 
         const formattedPaystubs: PayStub[] = paystubRows.map((row) => {
           const payrollRun = Array.isArray(row.payroll_runs)
