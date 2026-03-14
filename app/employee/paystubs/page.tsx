@@ -2,11 +2,22 @@
 
 import * as React from "react"
 import { Clock3, DollarSign, FileText, Heart } from "lucide-react"
+import { useState } from "react"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { getEmployeePaystubs } from "@/lib/supabase/payroll"
+import { getWeeklyHours } from "@/lib/supabase/time-entries"
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 
-type Stub = {
+type PayStub = {
+  id: string
   period: string
   paidOn: string
   netPay: number
@@ -15,40 +26,109 @@ type Stub = {
   benefits: number
 }
 
-const paystubs: Stub[] = [
-  {
-    period: "Jan 16–31, 2026",
-    paidOn: "1/31/2026",
-    netPay: 3125,
-    grossPay: 4166.67,
-    taxes: 1041.67,
-    benefits: 32,
-  },
-  {
-    period: "Jan 1–15, 2026",
-    paidOn: "1/15/2026",
-    netPay: 3125,
-    grossPay: 4166.67,
-    taxes: 1041.67,
-    benefits: 32,
-  },
-  {
-    period: "Dec 16–31, 2025",
-    paidOn: "12/31/2025",
-    netPay: 3125,
-    grossPay: 4166.67,
-    taxes: 1041.67,
-    benefits: 32,
-  },
-]
+const weeklyTarget = 40
+const monthlyBenefits = 32
 
 const money = (n: number) => `$${n.toFixed(2)}`
 
+function formatPayPeriod(start?: string | null, end?: string | null) {
+  if (!start || !end) return "Unknown period"
+
+  const startDate = new Date(`${start}T12:00:00`)
+  const endDate = new Date(`${end}T12:00:00`)
+
+  const startText = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(startDate)
+
+  const endText = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(endDate)
+
+  return `${startText}–${endText}`
+}
+
+function formatPaidOn(date?: string | null) {
+  if (!date) return "Unknown"
+  return new Intl.DateTimeFormat("en-US").format(new Date(date))
+}
+
 export default function PayStubsPage() {
+  const [paystubs, setPaystubs] = useState<PayStub[]>([])
+  const [hoursThisWeek, setHoursThisWeek] = useState(0)
+  const [lastPaymentAmount, setLastPaymentAmount] = useState(0)
+  const [lastPaymentPeriod, setLastPaymentPeriod] = useState("No payroll yet")
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  React.useEffect(() => {
+    async function loadPaystubs() {
+      try {
+        setLoading(true)
+        setLoadError(null)
+
+        const [paystubRows, weeklyEntries] = await Promise.all([
+          getEmployeePaystubs(),
+          getWeeklyHours(),
+        ])
+
+        const formattedPaystubs: PayStub[] = paystubRows.map((row) => {
+          const payrollRun = Array.isArray(row.payroll_runs)
+            ? row.payroll_runs[0]
+            : row.payroll_runs
+
+          const federalTax = Number(row.federal_tax ?? 0)
+          const stateTax = Number(row.state_tax ?? 0)
+          const socialSecurity = Number(row.social_security ?? 0)
+          const taxes = federalTax + stateTax + socialSecurity
+
+          return {
+            id: row.id,
+            period: formatPayPeriod(
+              payrollRun?.pay_period_start ?? null,
+              payrollRun?.pay_period_end ?? null
+            ),
+            paidOn: formatPaidOn(row.created_at ?? null),
+            netPay: Number(row.net_pay ?? 0),
+            grossPay: Number(row.gross_pay ?? 0),
+            taxes,
+            benefits: monthlyBenefits,
+          }
+        })
+
+        setPaystubs(formattedPaystubs)
+
+        if (formattedPaystubs.length > 0) {
+          setLastPaymentAmount(formattedPaystubs[0].netPay)
+          setLastPaymentPeriod(formattedPaystubs[0].period)
+        } else {
+          setLastPaymentAmount(0)
+          setLastPaymentPeriod("No payroll yet")
+        }
+
+        const weeklyHoursTotal = weeklyEntries.reduce(
+          (sum, entry) => sum + Number(entry.hours_worked ?? 0),
+          0
+        )
+        setHoursThisWeek(weeklyHoursTotal)
+      } catch (error) {
+        console.error("Failed to load pay stubs:", error)
+        setLoadError("Unable to load pay stubs. Please try again.")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadPaystubs()
+  }, [])
+
   return (
     <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-6xl px-4 py-6 space-y-6">
-        {/* Top summary cards */}
+      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
+
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="shadow-sm">
             <CardHeader className="pb-3">
@@ -60,8 +140,8 @@ export default function PayStubsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">0</div>
-              <div className="text-xs text-muted-foreground mt-1">Target: 40 hours</div>
+              <div className="text-3xl font-bold">{hoursThisWeek}</div>
+              <div className="text-xs text-muted-foreground mt-1">Target: {weeklyTarget} hours</div>
             </CardContent>
           </Card>
 
@@ -75,7 +155,7 @@ export default function PayStubsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$32.00</div>
+              <div className="text-2xl font-bold">{money(monthlyBenefits)}</div>
               <div className="text-xs text-muted-foreground mt-1">Per month</div>
             </CardContent>
           </Card>
@@ -90,13 +170,12 @@ export default function PayStubsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$3125.00</div>
-              <div className="text-xs text-muted-foreground mt-1">Jan 16–31, 2026</div>
+              <div className="text-2xl font-bold">{money(lastPaymentAmount)}</div>
+              <div className="text-xs text-muted-foreground mt-1">{lastPaymentPeriod}</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main pay stubs section */}
         <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">Pay Stubs</CardTitle>
@@ -104,9 +183,11 @@ export default function PayStubsPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
+            {loading && (
+              <div className="text-sm text-muted-foreground">Loading pay stubs...</div>
+            )}
             {paystubs.map((stub) => (
-              <div key={stub.period} className="rounded-xl bg-muted/20 p-4">
-                {/* Top row */}
+              <div key={stub.id} className="rounded-xl bg-muted/20 p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
                     <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
@@ -131,7 +212,6 @@ export default function PayStubsPage() {
 
                 <Separator className="my-4" />
 
-                {/* Breakdown */}
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Gross Pay:</span>
@@ -139,7 +219,7 @@ export default function PayStubsPage() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Taxes (25%):</span>
+                    <span className="text-muted-foreground">Taxes:</span>
                     <span className="font-medium text-red-600">-{money(stub.taxes)}</span>
                   </div>
 
@@ -158,7 +238,11 @@ export default function PayStubsPage() {
               </div>
             ))}
 
-            {paystubs.length === 0 && (
+            {loadError && (
+              <div role="alert" className="text-sm text-destructive">{loadError}</div>
+            )}
+
+            {!loading && !loadError && paystubs.length === 0 && (
               <div className="text-sm text-muted-foreground">No pay stubs found.</div>
             )}
           </CardContent>
