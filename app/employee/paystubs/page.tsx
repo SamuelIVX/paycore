@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Clock3, DollarSign, FileText, Heart } from "lucide-react"
+import { useState } from "react"
 
 import { getEmployeePaystubs } from "@/lib/supabase/payroll"
 import { getWeeklyHours } from "@/lib/supabase/time-entries"
@@ -58,16 +59,18 @@ function formatPaidOn(date?: string | null) {
 }
 
 export default function PayStubsPage() {
-  const [paystubs, setPaystubs] = React.useState<PayStub[]>([])
-  const [hoursThisWeek, setHoursThisWeek] = React.useState(0)
-  const [lastPaymentAmount, setLastPaymentAmount] = React.useState(0)
-  const [lastPaymentPeriod, setLastPaymentPeriod] = React.useState("No payroll yet")
-  const [loading, setLoading] = React.useState(true)
+  const [paystubs, setPaystubs] = useState<PayStub[]>([])
+  const [hoursThisWeek, setHoursThisWeek] = useState(0)
+  const [lastPaymentAmount, setLastPaymentAmount] = useState(0)
+  const [lastPaymentPeriod, setLastPaymentPeriod] = useState("No payroll yet")
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   React.useEffect(() => {
     async function loadPaystubs() {
       try {
         setLoading(true)
+        setLoadError(null)
 
         const [paystubRows, weeklyEntries] = await Promise.all([
           getEmployeePaystubs(),
@@ -116,6 +119,8 @@ export default function PayStubsPage() {
         setHoursThisWeek(weeklyHoursTotal)
       } catch (error) {
         console.error("Failed to load pay stubs:", error)
+        setLoadError("Unable to load pay stubs. Please try again.")
+
       } finally {
         setLoading(false)
       }
@@ -245,9 +250,16 @@ export default function PayStubsPage() {
               </div>
             ))}
 
-            {!loading && paystubs.length === 0 && (
+            {loadError && (
+              <div role="alert" className="text-sm text-destructive">
+                {loadError}
+              </div>
+            )}
+
+            {!loading && !loadError && paystubs.length === 0 && (
               <div className="text-sm text-muted-foreground">No pay stubs found.</div>
             )}
+
           </CardContent>
         </Card>
       </main>

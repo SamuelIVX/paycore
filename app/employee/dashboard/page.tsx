@@ -24,6 +24,8 @@ import {
   TrendingUp,
 } from "lucide-react"
 
+import { createTimeEntry } from "@/lib/supabase/time-entries"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar as DateCalendar } from "@/components/ui/calendar"
@@ -43,23 +45,23 @@ const initialHoursByDay = [
 ]
 
 const initialTimesheets = [
-  { date: "Sat, Jan 31", hours: 8, status: "submitted" as const },
-  { date: "Fri, Jan 30", hours: 8, status: "approved" as const },
-  { date: "Thu, Jan 29", hours: 7.5, status: "approved" as const },
+  { date: "Sat, Jan 31", hours: 8, status: "PENDING" as const },
+  { date: "Fri, Jan 30", hours: 8, status: "APPROVED" as const },
+  { date: "Thu, Jan 29", hours: 7.5, status: "APPROVED" as const },
 ]
 
-function StatusBadge({ status }: { status: "submitted" | "approved" }) {
-  if (status === "approved") {
+function StatusBadge({ status }: { status: "PENDING" | "APPROVED" }) {
+  if (status === "APPROVED") {
     return (
       <Badge className="rounded-full bg-black px-3 py-1 text-white hover:bg-black/90">
-        approved
+        Approved
       </Badge>
     )
   }
 
   return (
     <Badge variant="secondary" className="rounded-full px-3 py-1">
-      submitted
+      Pending
     </Badge>
   )
 }
@@ -87,12 +89,16 @@ export default function EmployeeDashboardPage() {
 
   const hoursThisWeek = hoursByDay.reduce((total, day) => total + day.hours, 0)
 
-  function handleRecordHours() {
+  async function handleRecordHours() {
     if (!selectedDate) return
 
     const parsedHours = Number(hoursWorked)
 
     if (Number.isNaN(parsedHours) || parsedHours < 0) return
+
+    const workDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`
+
+    await createTimeEntry(workDate, parsedHours)
 
     const formattedDate = formatDisplayDate(selectedDate)
     const shortDay = getShortDay(selectedDate)
@@ -101,7 +107,7 @@ export default function EmployeeDashboardPage() {
       {
         date: formattedDate,
         hours: parsedHours,
-        status: "submitted",
+        status: "PENDING",
       },
       ...prev,
     ])
@@ -184,7 +190,8 @@ export default function EmployeeDashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
 
-              <div className="sr-only" aria-label="Daily hours worked this week">
+              <div className="sr-only">
+                <h3>Daily hours worked this week</h3>
                 <ul>
                   {hoursByDay.map((entry) => (
                     <li key={entry.day}>
@@ -251,11 +258,10 @@ export default function EmployeeDashboardPage() {
                   <div className="flex items-center justify-between rounded-xl bg-muted/30 p-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                          t.status === "approved" ? "bg-green-100" : "bg-blue-50"
-                        }`}
+                        className={`flex h-10 w-10 items-center justify-center rounded-full ${t.status === "APPROVED" ? "bg-green-100" : "bg-blue-50"
+                          }`}
                       >
-                        {t.status === "approved" ? (
+                        {t.status === "APPROVED" ? (
                           <CheckCircle2 className="h-4 w-4 text-green-600" />
                         ) : (
                           <Clock className="h-4 w-4 text-blue-600" />
@@ -359,15 +365,17 @@ export default function EmployeeDashboardPage() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Date</label>
-              <div className="rounded-md border p-3">
-                <DateCalendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  className="w-full"
-                />
-              </div>
+              <label className="text-sm font-medium">
+                Date
+                <div className="mt-2 rounded-md border p-3">
+                  <DateCalendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    className="w-full"
+                  />
+                </div>
+              </label>
             </div>
 
             <div className="space-y-2">
