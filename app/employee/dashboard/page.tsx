@@ -12,10 +12,8 @@ import {
   YAxis,
 } from "recharts"
 import {
-  ArrowUpRight,
   Briefcase,
   Calendar,
-  CalendarDays,
   CheckCircle2,
   Clock,
   DollarSign,
@@ -169,7 +167,7 @@ export default function EmployeeDashboardPage() {
           </Card>
         </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <div className="mt-6 grid gap-4 lg:grid-cols-[0.98fr_1.02fr]">
           <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="text-base">This Week&apos;s Hours</CardTitle>
@@ -182,7 +180,7 @@ export default function EmployeeDashboardPage() {
                   <XAxis dataKey="day" tickLine={false} axisLine={false} />
                   <YAxis tickLine={false} axisLine={false} width={28} />
                   <Tooltip />
-                  <Bar dataKey="hours" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="hours" fill="#6BBF69" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
 
@@ -230,7 +228,7 @@ export default function EmployeeDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          <Card className="shadow-sm min-h-[410px]">
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
               <div>
                 <CardTitle className="text-base">Recent Timesheets</CardTitle>
@@ -276,79 +274,77 @@ export default function EmployeeDashboardPage() {
             </CardContent>
           </Card>
 
-          <div className="space-y-4">
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-base">Quick Stats</CardTitle>
-                <CardDescription>Your employment overview</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4 rounded-xl bg-blue-50 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70">
-                    <Briefcase className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Position</div>
-                    <div className="text-lg font-semibold">Software Engineer</div>
-                  </div>
+          <Card className="shadow-sm min-h-[410px]">
+            <CardHeader>
+              <CardTitle className="text-base">Quick Stats</CardTitle>
+              <CardDescription>Your employment overview</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-4 rounded-xl bg-blue-50 p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70">
+                  <Briefcase className="h-5 w-5 text-blue-600" />
                 </div>
-
-                <div className="flex items-center gap-4 rounded-xl bg-purple-50 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70">
-                    <Calendar className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Tenure</div>
-                    <div className="text-lg font-semibold">2 years, 1 month</div>
-                  </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Position</div>
+                  <div className="text-lg font-semibold">Software Engineer</div>
                 </div>
+              </div>
 
-                <div className="flex items-center gap-4 rounded-xl bg-pink-50 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70">
-                    <Heart className="h-5 w-5 text-pink-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Benefits Enrolled</div>
-                    <div className="text-lg font-semibold">2 optional plans</div>
-                  </div>
+              <div className="flex items-center gap-4 rounded-xl bg-purple-50 p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70">
+                  <Calendar className="h-5 w-5 text-purple-600" />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <div className="text-sm text-muted-foreground">Tenure</div>
+                  <div className="text-lg font-semibold">2 years, 1 month</div>
+                </div>
+              </div>
 
-            <Card className="border-green-200 bg-green-50/40 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-base">Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  variant="outline"
-                  className="w-full justify-start gap-2 bg-background"
-                  onClick={() => setSubmitHoursOpen(true)}
-                >
-                  <TimerReset className="h-4 w-4" />
-                  Submit Hours
-                </Button>
+              <div className="flex items-center gap-4 rounded-xl bg-pink-50 p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70">
+                  <Heart className="h-5 w-5 text-pink-600" />
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Benefits Enrolled</div>
+                  <div className="text-lg font-semibold">2 optional plans</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                <Button
-                  variant="outline"
-                  className="w-full justify-start gap-2 bg-background"
-                  onClick={() => router.push("/employee/benefits")}
-                >
-                  <Heart className="h-4 w-4" />
-                  Manage Benefits
-                </Button>
+          <Card className="border-green-200 bg-green-50/40 shadow-sm lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-base">Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 bg-background"
+                onClick={() => setSubmitHoursOpen(true)}
+              >
+                <TimerReset className="h-4 w-4" />
+                Submit Hours
+              </Button>
 
-                <Button
-                  variant="outline"
-                  className="w-full justify-start gap-2 bg-background"
-                  onClick={() => router.push("/employee/paystubs")}
-                >
-                  <FileText className="h-4 w-4" />
-                  View Pay Stubs
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 bg-background"
+                onClick={() => router.push("/employee/benefits")}
+              >
+                <Heart className="h-4 w-4" />
+                Manage Benefits
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 bg-background"
+                onClick={() => router.push("/employee/paystubs")}
+              >
+                <FileText className="h-4 w-4" />
+                View Pay Stubs
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </main>
 
