@@ -1,8 +1,15 @@
 import { createClient } from "@/utils/supabase/client"
 import { getCurrentEmployee } from "./employee"
 
+const supabase = createClient()
+
 export async function createTimeEntry(workDate: string, hoursWorked: number) {
-  const supabase = createClient()
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(workDate)) {
+    throw new Error("workDate must be in YYYY-MM-DD format")
+  }
+  if (!Number.isFinite(hoursWorked) || hoursWorked < 0) {
+    throw new Error("hoursWorked must be a non-negative number")
+  }
   const { employee } = await getCurrentEmployee()
 
   const { data, error } = await supabase
@@ -26,7 +33,6 @@ export async function createTimeEntry(workDate: string, hoursWorked: number) {
 }
 
 export async function getRecentTimeEntries() {
-  const supabase = createClient()
   const { employee } = await getCurrentEmployee()
 
   const { data, error } = await supabase
@@ -44,7 +50,13 @@ export async function getRecentTimeEntries() {
 }
 
 export async function getWeeklyHours() {
-  const supabase = createClient()
+  const formatLocalDate = (date: Date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, "0")
+    const dayOfMonth = String(date.getDate()).padStart(2, "0")
+    return `${year}-${month}-${dayOfMonth}`
+  }
+
   const { employee } = await getCurrentEmployee()
 
   const today = new Date()
@@ -55,8 +67,8 @@ export async function getWeeklyHours() {
   const sunday = new Date(monday)
   sunday.setDate(monday.getDate() + 6)
 
-  const start = monday.toISOString().split("T")[0]
-  const end = sunday.toISOString().split("T")[0]
+  const start = formatLocalDate(monday)
+  const end = formatLocalDate(sunday)
 
   const { data, error } = await supabase
     .from("time_entries")

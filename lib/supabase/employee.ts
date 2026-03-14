@@ -1,8 +1,9 @@
 import { createClient } from "@/utils/supabase/client"
 
-export async function getCurrentEmployee() {
-  const supabase = createClient()
+const supabase = createClient()
 
+
+export async function getCurrentEmployee() {
   const {
     data: { user },
     error: userError,
@@ -25,7 +26,7 @@ export async function getCurrentEmployee() {
   const { data: employee, error: employeeError } = await supabase
     .from("employees")
     .select("*")
-    .eq("profile.id", profile.id)
+    .eq('"profile.id"', profile.id)
     .single()
 
   if (employeeError || !employee) {
