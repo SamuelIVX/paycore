@@ -10,7 +10,6 @@ import {
     DialogTitle,
     DialogDescription,
     DialogFooter,
-    DialogClose
 } from "@/components/ui/dialog";
 import {
     DropdownMenu,
@@ -24,24 +23,12 @@ import { Badge } from "@/components/ui/badge";
 import { UserPlus, Edit } from "lucide-react";
 import { useAddEmployee } from "@/hooks/use-add-employee";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getEmployees, updateEmployee, deleteEmployee } from "@/lib/employee";
+import { Tables } from "@/lib/interfaces/database.types";
+import { useEffect, useState } from "react";
 
-/* TODO (Backend): Remove all hardcoded from the employee data table and replace with data fetched from Supabase  */
-const employees = ([
-    { id: "1", name: "John Smith", role: "Software Engineer", payType: "Annual", pay: 85000, status: "active" },
-    { id: "2", name: "Sarah Johnson", role: "Product Manager", payType: "Hourly", pay: 35, status: "offline" },
-    { id: "3", name: "Mike Chen", role: "Designer", payType: "Bi-Weekly", pay: 3600, status: "on break" },
-    { id: "4", name: "Emily Davis", role: "Data Analyst", payType: "Weekly", pay: 1800, status: "active" },
-    { id: "5", name: "John Smith", role: "Software Engineer", payType: "Annual", pay: 85000, status: "active" },
-    { id: "6", name: "Sarah Johnson", role: "Product Manager", payType: "Hourly", pay: 35, status: "offline" },
-    { id: "7", name: "Mike Chen", role: "Designer", payType: "Bi-Weekly", pay: 3600, status: "on break" },
-    { id: "8", name: "Emily Davis", role: "Data Analyst", payType: "Weekly", pay: 1800, status: "active" },
-    { id: "9", name: "John Smith", role: "Software Engineer", payType: "Annual", pay: 85000, status: "active" },
-    { id: "10", name: "Sarah Johnson", role: "Product Manager", payType: "Hourly", pay: 35, status: "offline" },
-    { id: "11", name: "John Smith", role: "Software Engineer", payType: "Annual", pay: 85000, status: "active" },
-    { id: "12", name: "Sarah Johnson", role: "Product Manager", payType: "Hourly", pay: 35, status: "offline" },
-]);
+type Employee = Tables<"employees">;
 
-/* TODO (Backend): Add functionalities to the table (e.g., edit, delete, search, sort)  */
 export default function EmployeeTable() {
     const {
         firstName, setFirstName,
@@ -53,6 +40,19 @@ export default function EmployeeTable() {
         open, setOpen,
         handleAddEmployee,
     } = useAddEmployee()
+
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [editOpenId, setEditOpenId] = useState<Employee["id"] | null>(null);
+    const [editValues, setEditValues] = useState({ first_name: "", last_name: "", position: "", pay_frequency: "", pay_rate: 0 });
+    const [deleteOpenId, setDeleteOpenId] = useState<Employee["id"] | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        getEmployees()
+            .then((employees) => setEmployees(employees ?? []))
+            .catch(() => setError("Failed to load employees."));
+    }, []);
 
     return (
         <Card className="m-6">
@@ -126,7 +126,21 @@ export default function EmployeeTable() {
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button onClick={handleAddEmployee} disabled={loading}>
+                                <Button
+                                    onClick={async () => {
+                                        const success = await handleAddEmployee();
+                                        if (!success) return;
+
+                                        try {
+                                            const updated = await getEmployees();
+                                            setEmployees(updated ?? []);
+                                            setError(null);
+                                        } catch {
+                                            setError("Employee was added, but failed to refresh table.");
+                                        }
+                                    }}
+                                    disabled={loading}
+                                >
                                     {loading ? "Adding..." : "Add Employee"}
                                 </Button>
                             </DialogFooter>
@@ -135,11 +149,13 @@ export default function EmployeeTable() {
                 </div>
             </CardHeader>
             <CardContent>
+                {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
-                            <TableHead>Role</TableHead>
+                            <TableHead>Position</TableHead>
+                            <TableHead>Hire Date</TableHead>
                             <TableHead>Pay Type</TableHead>
                             <TableHead>Pay</TableHead>
                             <TableHead>Status</TableHead>
@@ -149,13 +165,14 @@ export default function EmployeeTable() {
                     <TableBody>
                         {employees.map(employee => (
                             <TableRow key={employee.id}>
-                                <TableCell className="font-medium">{employee.name}</TableCell>
-                                <TableCell>{employee.role}</TableCell>
-                                <TableCell>{employee.payType}</TableCell>
-                                <TableCell>${employee.pay.toLocaleString()}</TableCell>
+                                <TableCell className="font-medium">{employee.first_name} {employee.last_name}</TableCell>
+                                <TableCell>{employee.position ?? "—"}</TableCell>
+                                <TableCell>{employee.hire_date ?? "—"}</TableCell>
+                                <TableCell>{employee.pay_frequency ?? "—"}</TableCell>
+                                <TableCell>${employee.pay_rate.toLocaleString()}</TableCell>
                                 <TableCell>
-                                    <Badge variant={employee.status === "active" ? "default" : employee.status === "offline" ? "destructive" : "outline"}>
-                                        {employee.status}
+                                    <Badge variant={employee.employment_status === "ACTIVE" ? "default" : "destructive"}>
+                                        {employee.employment_status ?? "unknown"}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
@@ -166,7 +183,23 @@ export default function EmployeeTable() {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent>
-                                            <Dialog>
+                                            <Dialog
+                                                open={editOpenId === employee.id}
+                                                onOpenChange={(open) => {
+                                                    if (open) {
+                                                        setEditValues({
+                                                            first_name: employee.first_name ?? "",
+                                                            last_name: employee.last_name ?? "",
+                                                            position: employee.position ?? "",
+                                                            pay_frequency: employee.pay_frequency ?? "",
+                                                            pay_rate: employee.pay_rate,
+                                                        });
+                                                        setEditOpenId(employee.id);
+                                                    } else {
+                                                        setEditOpenId(null);
+                                                    }
+                                                }}
+                                            >
                                                 <DialogTrigger asChild>
                                                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                                         Edit Employee
@@ -179,31 +212,89 @@ export default function EmployeeTable() {
                                                     </DialogHeader>
                                                     <div className="space-y-4 py-4">
                                                         <div className="space-y-2">
-                                                            <Label htmlFor="edit-empName">Full Name</Label>
-                                                            <Input id="edit-empName" placeholder="John Doe" />
+                                                            <Label htmlFor="edit-empFirstName">First Name</Label>
+                                                            <Input
+                                                                id="edit-empFirstName"
+                                                                value={editValues.first_name}
+                                                                onChange={(e) => setEditValues((v) => ({ ...v, first_name: e.target.value }))}
+                                                            />
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <Label htmlFor="edit-empRole">Role</Label>
-                                                            <Input id="edit-empRole" placeholder="Software Engineer" />
+                                                            <Label htmlFor="edit-empLastName">Last Name</Label>
+                                                            <Input
+                                                                id="edit-empLastName"
+                                                                value={editValues.last_name}
+                                                                onChange={(e) => setEditValues((v) => ({ ...v, last_name: e.target.value }))}
+                                                            />
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <Label htmlFor="edit-payType">Pay Type</Label>
-                                                            <Input id="edit-payType" placeholder="Hourly/Salary" />
+                                                            <Label htmlFor="edit-empPosition">Position</Label>
+                                                            <Input
+                                                                id="edit-empPosition"
+                                                                value={editValues.position}
+                                                                onChange={(e) => setEditValues((v) => ({ ...v, position: e.target.value }))}
+                                                            />
                                                         </div>
+                                                        <Select
+                                                            value={editValues.pay_frequency}
+                                                            onValueChange={(value) => setEditValues((v) => ({ ...v, pay_frequency: value }))}
+                                                        >
+                                                            <SelectTrigger id="edit-payType">
+                                                                <SelectValue placeholder="Choose..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="HOURLY">Hourly</SelectItem>
+                                                                <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
+                                                                <SelectItem value="SALARY">Salary</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
                                                         <div className="space-y-2">
                                                             <Label htmlFor="edit-empPay">Pay</Label>
-                                                            <Input id="edit-empPay" type="number" placeholder="75000" />
+                                                            <Input
+                                                                id="edit-empPay"
+                                                                type="number"
+                                                                value={editValues.pay_rate}
+                                                                onChange={(e) => setEditValues((v) => ({ ...v, pay_rate: Number(e.target.value) }))}
+                                                            />
                                                         </div>
                                                     </div>
                                                     <DialogFooter>
-                                                        <DialogClose asChild>
-                                                            <Button> Edit Employee </Button>
-                                                        </DialogClose>
+                                                        <Button
+                                                            disabled={isSubmitting}
+                                                            onClick={async () => {
+                                                                try {
+                                                                    setIsSubmitting(true);
+                                                                    const updates = {
+                                                                        first_name: editValues.first_name,
+                                                                        last_name: editValues.last_name,
+                                                                        position: editValues.position,
+                                                                        pay_frequency: editValues.pay_frequency,
+                                                                        pay_rate: editValues.pay_rate,
+                                                                    };
+                                                                    await updateEmployee(employee.id, updates);
+                                                                    setEmployees((prev) =>
+                                                                        prev.map((e) =>
+                                                                            e.id === employee.id ? { ...e, ...updates } : e
+                                                                        )
+                                                                    );
+                                                                    setEditOpenId(null);
+                                                                    setError(null);
+                                                                } catch {
+                                                                    setError("Failed to update employee.");
+                                                                } finally {
+                                                                    setIsSubmitting(false)
+                                                                }
+                                                            }}>
+                                                            {isSubmitting ? "Updating..." : "Update"}
+                                                        </Button>
                                                     </DialogFooter>
                                                 </DialogContent>
                                             </Dialog>
 
-                                            <Dialog>
+                                            <Dialog
+                                                open={deleteOpenId === employee.id}
+                                                onOpenChange={(open) => setDeleteOpenId(open ? employee.id : null)}
+                                            >
                                                 <DialogTrigger asChild>
                                                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                                         Delete Employee
@@ -215,12 +306,25 @@ export default function EmployeeTable() {
                                                         <DialogDescription>Confirm deletion of employee from the system</DialogDescription>
                                                     </DialogHeader>
                                                     <DialogFooter>
-                                                        <DialogClose asChild>
-                                                            <Button variant="default">Cancel</Button>
-                                                        </DialogClose>
-                                                        <DialogClose asChild>
-                                                            <Button variant="destructive">Delete</Button>
-                                                        </DialogClose>
+                                                        <Button variant="default" onClick={() => setDeleteOpenId(null)}>Cancel</Button>
+                                                        <Button
+                                                            variant="destructive"
+                                                            disabled={isSubmitting}
+                                                            onClick={async () => {
+                                                                setIsSubmitting(true)
+                                                                try {
+                                                                    await deleteEmployee(employee.id);
+                                                                    setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+                                                                    setDeleteOpenId(null);
+                                                                    setError(null);
+                                                                } catch {
+                                                                    setError("Failed to delete employee.");
+                                                                } finally {
+                                                                    setIsSubmitting(false)
+                                                                }
+                                                            }}>
+                                                            {isSubmitting ? "Deleting..." : "Delete"}
+                                                        </Button>
                                                     </DialogFooter>
                                                 </DialogContent>
                                             </Dialog>

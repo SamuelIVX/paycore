@@ -40,7 +40,7 @@ export type Database = {
           department_id: string | null
           employee_number: string
           employment_status: string | null
-          federal_tax_rate: number
+          federal_tax_rate: number | null
           first_name: string | null
           hire_date: string
           id: string
@@ -51,9 +51,9 @@ export type Database = {
           position: string
           "profile.id": string | null
           role: string | null
-          social_security_tax_rate: number
+          social_security_tax_rate: number | null
           state: string | null
-          state_tax_rate: number
+          state_tax_rate: number | null
           updated_at: string | null
           zip_code: string | null
         }
@@ -64,7 +64,7 @@ export type Database = {
           department_id?: string | null
           employee_number: string
           employment_status?: string | null
-          federal_tax_rate?: number
+          federal_tax_rate?: number | null
           first_name?: string | null
           hire_date: string
           id?: string
@@ -75,9 +75,9 @@ export type Database = {
           position: string
           "profile.id"?: string | null
           role?: string | null
-          social_security_tax_rate?: number
+          social_security_tax_rate?: number | null
           state?: string | null
-          state_tax_rate?: number
+          state_tax_rate?: number | null
           updated_at?: string | null
           zip_code?: string | null
         }
@@ -88,7 +88,7 @@ export type Database = {
           department_id?: string | null
           employee_number?: string
           employment_status?: string | null
-          federal_tax_rate?: number
+          federal_tax_rate?: number | null
           first_name?: string | null
           hire_date?: string
           id?: string
@@ -99,9 +99,9 @@ export type Database = {
           position?: string
           "profile.id"?: string | null
           role?: string | null
-          social_security_tax_rate?: number
+          social_security_tax_rate?: number | null
           state?: string | null
-          state_tax_rate?: number
+          state_tax_rate?: number | null
           updated_at?: string | null
           zip_code?: string | null
         }
