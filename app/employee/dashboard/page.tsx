@@ -12,13 +12,15 @@ import {
   YAxis,
 } from "recharts"
 import {
-  ArrowUpRight,
-  CalendarDays,
+  Briefcase,
+  Calendar,
   CheckCircle2,
   Clock,
   DollarSign,
+  FileText,
   Heart,
   Plus,
+  TimerReset,
   TrendingUp,
 } from "lucide-react"
 
@@ -43,23 +45,23 @@ const initialHoursByDay = [
 ]
 
 const initialTimesheets = [
-  { date: "Sat, Jan 31", hours: 8, status: "PENDING" as const },
-  { date: "Fri, Jan 30", hours: 8, status: "APPROVED" as const },
-  { date: "Thu, Jan 29", hours: 7.5, status: "APPROVED" as const },
+  { date: "Sat, Jan 31", hours: 8, status: "submitted" as const },
+  { date: "Fri, Jan 30", hours: 8, status: "approved" as const },
+  { date: "Thu, Jan 29", hours: 7.5, status: "approved" as const },
 ]
 
-function StatusBadge({ status }: { status: "PENDING" | "APPROVED" }) {
-  if (status === "APPROVED") {
+function StatusBadge({ status }: { status: "submitted" | "approved" }) {
+  if (status === "approved") {
     return (
       <Badge className="rounded-full bg-black px-3 py-1 text-white hover:bg-black/90">
-        Approved
+        approved
       </Badge>
     )
   }
 
   return (
     <Badge variant="secondary" className="rounded-full px-3 py-1">
-      Pending
+      submitted
     </Badge>
   )
 }
@@ -82,7 +84,7 @@ export default function EmployeeDashboardPage() {
   const [hoursByDay, setHoursByDay] = React.useState(initialHoursByDay)
   const [timesheets, setTimesheets] = React.useState(initialTimesheets)
   const [submitHoursOpen, setSubmitHoursOpen] = React.useState(false)
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date())
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date(2026, 2, 11))
   const [hoursWorked, setHoursWorked] = React.useState("8.0")
   const [submitError, setSubmitError] = React.useState<string | null>(null)
 
@@ -93,6 +95,9 @@ export default function EmployeeDashboardPage() {
 
     const parsedHours = Number(hoursWorked)
     if (Number.isNaN(parsedHours) || parsedHours < 0) return
+
+    const dayOfWeek = selectedDate.getDay()
+    if (dayOfWeek === 0 || dayOfWeek === 6) return
 
     const workDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`
 
@@ -107,11 +112,7 @@ export default function EmployeeDashboardPage() {
     const formattedDate = formatDisplayDate(selectedDate)
     const shortDay = getShortDay(selectedDate)
 
-    setTimesheets((prev) => [
-      { date: formattedDate, hours: parsedHours, status: "PENDING" },
-      ...prev,
-    ])
-
+    setTimesheets((prev) => [{ date: formattedDate, hours: parsedHours, status: "submitted" }, ...prev])
     setHoursByDay((prev) =>
       prev.map((entry) =>
         entry.day === shortDay ? { ...entry, hours: parsedHours } : entry
@@ -173,7 +174,7 @@ export default function EmployeeDashboardPage() {
           </Card>
         </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <div className="mt-6 grid gap-4 lg:grid-cols-[0.98fr_1.02fr]">
           <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="text-base">This Week&apos;s Hours</CardTitle>
@@ -186,7 +187,7 @@ export default function EmployeeDashboardPage() {
                   <XAxis dataKey="day" tickLine={false} axisLine={false} />
                   <YAxis tickLine={false} axisLine={false} width={28} />
                   <Tooltip />
-                  <Bar dataKey="hours" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="hours" fill="#6BBF69" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
 
@@ -234,14 +235,14 @@ export default function EmployeeDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          <Card className="shadow-sm min-h-[410px]">
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
               <div>
                 <CardTitle className="text-base">Recent Timesheets</CardTitle>
-                <CardDescription>Latest time entries</CardDescription>
+                <CardDescription>Your latest time entries</CardDescription>
               </div>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 className="gap-2"
                 onClick={() => setSubmitHoursOpen(true)}
@@ -254,16 +255,16 @@ export default function EmployeeDashboardPage() {
             <CardContent className="space-y-3">
               {timesheets.map((t, idx) => (
                 <div key={`${t.date}-${idx}`}>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between rounded-xl bg-muted/30 p-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-full ${t.status === "APPROVED" ? "bg-green-100" : "bg-blue-50"
+                        className={`flex h-10 w-10 items-center justify-center rounded-full ${t.status === "approved" ? "bg-green-100" : "bg-blue-50"
                           }`}
                       >
-                        {t.status === "APPROVED" ? (
+                        {t.status === "approved" ? (
                           <CheckCircle2 className="h-4 w-4 text-green-600" />
                         ) : (
-                          <CalendarDays className="h-4 w-4 text-blue-600" />
+                          <Clock className="h-4 w-4 text-blue-600" />
                         )}
                       </div>
                       <div className="leading-tight">
@@ -273,17 +274,64 @@ export default function EmployeeDashboardPage() {
                     </div>
                     <StatusBadge status={t.status} />
                   </div>
-                  {idx !== timesheets.length - 1 && <Separator className="my-3" />}
+                  {idx !== timesheets.length - 1 && <div className="h-2" />}
                 </div>
               ))}
             </CardContent>
           </Card>
 
-          <Card className="border-green-200 bg-green-50/40 shadow-sm">
+          <Card className="shadow-sm min-h-[410px]">
+            <CardHeader>
+              <CardTitle className="text-base">Quick Stats</CardTitle>
+              <CardDescription>Your employment overview</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-4 rounded-xl bg-blue-50 p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70">
+                  <Briefcase className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Position</div>
+                  <div className="text-lg font-semibold">Software Engineer</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 rounded-xl bg-purple-50 p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70">
+                  <Calendar className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Tenure</div>
+                  <div className="text-lg font-semibold">2 years, 1 month</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 rounded-xl bg-pink-50 p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70">
+                  <Heart className="h-5 w-5 text-pink-600" />
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Benefits Enrolled</div>
+                  <div className="text-lg font-semibold">2 optional plans</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-green-200 bg-green-50/40 shadow-sm lg:col-span-2">
             <CardHeader>
               <CardTitle className="text-base">Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 bg-background"
+                onClick={() => setSubmitHoursOpen(true)}
+              >
+                <TimerReset className="h-4 w-4" />
+                Submit Hours
+              </Button>
+
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2 bg-background"
@@ -298,7 +346,7 @@ export default function EmployeeDashboardPage() {
                 className="w-full justify-start gap-2 bg-background"
                 onClick={() => router.push("/employee/paystubs")}
               >
-                <ArrowUpRight className="h-4 w-4" />
+                <FileText className="h-4 w-4" />
                 View Pay Stubs
               </Button>
             </CardContent>
@@ -306,22 +354,19 @@ export default function EmployeeDashboardPage() {
         </div>
       </main>
 
-      <Dialog
-        open={submitHoursOpen}
-        onOpenChange={(open) => { setSubmitHoursOpen(open); setSubmitError(null) }}
-      >
+      <Dialog open={submitHoursOpen} onOpenChange={(open) => { setSubmitHoursOpen(open); setSubmitError(null) }}>
         <DialogContent className="sm:max-w-[440px]">
           <DialogHeader>
             <DialogTitle>Submit Hours Worked</DialogTitle>
-            <DialogDescription>Record your hours for a specific date</DialogDescription>
+            <DialogDescription>
+              Record your hours for a specific date
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <span id="date-label" className="text-sm font-medium">
-                Date
-              </span>
-              <div className="mt-2 rounded-md border p-3" role="group" aria-labelledby="date-label">
+              <label className="text-sm font-medium">Date</label>
+              <div className="rounded-md border p-3">
                 <DateCalendar
                   mode="single"
                   selected={selectedDate}
