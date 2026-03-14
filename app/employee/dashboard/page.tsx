@@ -257,9 +257,8 @@ export default function EmployeeDashboardPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                          t.status === "APPROVED" ? "bg-green-100" : "bg-blue-50"
-                        }`}
+                        className={`flex h-10 w-10 items-center justify-center rounded-full ${t.status === "APPROVED" ? "bg-green-100" : "bg-blue-50"
+                          }`}
                       >
                         {t.status === "APPROVED" ? (
                           <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -319,17 +318,17 @@ export default function EmployeeDashboardPage() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">
+              <span id="date-label" className="text-sm font-medium">
                 Date
-                <div className="mt-2 rounded-md border p-3">
-                  <DateCalendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    className="w-full"
-                  />
-                </div>
-              </label>
+              </span>
+              <div className="mt-2 rounded-md border p-3" role="group" aria-labelledby="date-label">
+                <DateCalendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  className="w-full"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">

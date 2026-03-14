@@ -91,7 +91,7 @@ export default function PayStubsPage() {
               payrollRun?.pay_period_start ?? null,
               payrollRun?.pay_period_end ?? null
             ),
-            paidOn: formatPaidOn(row.created_at ?? null),
+            paidOn: formatPaidOn(payrollRun?.run_date ?? row.created_at ?? null),
             netPay: Number(row.net_pay ?? 0),
             grossPay: Number(row.gross_pay ?? 0),
             taxes,
