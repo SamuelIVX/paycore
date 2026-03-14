@@ -1,9 +1,7 @@
 import { createClient } from "@/utils/supabase/client"
 
-const supabase = createClient()
-
-
 export async function getCurrentEmployee() {
+  const supabase = createClient()
   const {
     data: { user },
     error: userError,

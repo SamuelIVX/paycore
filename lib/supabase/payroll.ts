@@ -1,9 +1,8 @@
 import { createClient } from "@/utils/supabase/client"
 import { getCurrentEmployee } from "./employee"
 
-const supabase = createClient()
-
 export async function getEmployeePaystubs() {
+  const supabase = createClient()
   const { employee } = await getCurrentEmployee()
 
   const { data, error } = await supabase
@@ -37,6 +36,7 @@ export async function getEmployeePaystubs() {
 }
 
 export async function getLastPayrollRecord() {
+  const supabase = createClient()
   const { employee } = await getCurrentEmployee()
 
   const { data, error } = await supabase
@@ -65,6 +65,7 @@ export async function getLastPayrollRecord() {
 }
 
 export async function getYtdEarnings() {
+  const supabase = createClient()
   const { employee } = await getCurrentEmployee()
 
   const startOfYear = `${new Date().getFullYear()}-01-01`
