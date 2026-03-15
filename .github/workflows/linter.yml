@@ -26,9 +26,6 @@ jobs:
             - name: Install Dependencies
               run: npm install
 
-            - name: ESLint
-              run: npm run lint
-
             - name: Super-Linter
               uses: super-linter/super-linter@v8.3.2
               env:
