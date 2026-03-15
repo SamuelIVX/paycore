@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { UserPlus, Edit } from "lucide-react";
 import { useAddEmployee } from "@/hooks/use-add-employee";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getEmployees, updateEmployee, deleteEmployee } from "@/lib/employee";
+import { getEmployees, updateEmployee, deleteEmployee } from "@/lib/supabase/employee";
 import { Tables } from "@/lib/interfaces/database.types";
 import { useEffect, useState } from "react";
 

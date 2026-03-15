@@ -21,7 +21,7 @@ vi.mock('@/utils/supabase/client', () => ({
     createClient: () => ({}),
 }));
 
-import { runPayroll } from '@/lib/payroll-actions';
+import { runPayroll } from '@/lib/supabase/payroll-actions';
 
 // ---- helpers ----
 

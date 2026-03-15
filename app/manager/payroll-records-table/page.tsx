@@ -11,7 +11,7 @@ import { DollarSign, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { getPayrollRecords } from "@/lib/payroll";
+import { getPayrollRecords } from "@/lib/supabase/payroll";
 
 type PayrollRecord = {
     id: string;
@@ -33,11 +33,13 @@ export default function PayrollTable() {
     const [endDate, setEndDate] = useState("");
     const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         getPayrollRecords()
             .then((records) => setPayrollRecords(records ?? []))
-            .catch(() => setError("Failed to load payroll records."));
+            .catch(() => setError("Failed to load payroll records."))
+            .finally(() => setIsLoading(false));
     }, []);
 
     return (
@@ -97,6 +99,16 @@ export default function PayrollTable() {
                 </div>
             </CardHeader>
             <CardContent>
+                {isLoading && (
+                    <p role="status" aria-live="polite" className="text-sm text-muted-foreground mb-4">
+                        Loading payroll records...
+                    </p>
+                )}
+                {!isLoading && payrollRecords.length === 0 && !error && (
+                    <p role="status" aria-live="polite" className="text-sm text-muted-foreground mb-4">
+                        No payroll records found.
+                    </p>
+                )}
                 {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
                 <Table>
                     <TableHeader>

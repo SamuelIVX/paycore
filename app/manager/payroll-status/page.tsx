@@ -13,7 +13,7 @@ import {
     DollarSign,
     FileText,
 } from "lucide-react";
-import { runPayroll } from "@/lib/payroll-actions";
+import { runPayroll } from "@/lib/supabase/payroll-actions";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
