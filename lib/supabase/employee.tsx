@@ -53,8 +53,6 @@ export const deleteEmployee = async (id: string) => {
 }
 
 export async function getCurrentEmployee() {
-    const supabase = createClient()
-
     const {
         data: { user },
         error: userError,

@@ -46,7 +46,7 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
             setTimesheets((prev) => [newEntry, ...prev])
             setHoursByDay((prev) =>
                 prev.map((e) =>
-                    e.day === shortDay ? { ...e, hours: parsedHours } : e
+                    e.day === shortDay ? { ...e, hours: e.hours + parsedHours } : e
                 )
             )
             setSubmitHoursOpen(false)
@@ -80,7 +80,7 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
                         <p className="text-center text-gray-500 py-4">No recent timesheets</p>
                     ) : (
                         <>
-                            {timeEntries.slice(0, 4).map(entry => (
+                            {recentEntries.map(entry => (
                                 <div key={entry.id} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${entry.status === "REJECTED" ? "bg-orange-100" :
@@ -140,14 +140,14 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <p id="work-date-label" className="text-sm font-medium">Date</p>
-                            <div role="group" aria-labelledby="work-date-label" className="rounded-md border p-3">
+                            <fieldset aria-labelledby="work-date-label" className="rounded-md border p-3">
                                 <DateCalendar
                                     mode="single"
                                     selected={selectedDate}
                                     onSelect={setSelectedDate}
                                     className="w-full"
                                 />
-                            </div>
+                            </fieldset>
                         </div>
 
                         <div className="space-y-2">
@@ -174,7 +174,7 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
                         </div>
                     </div>
                 </DialogContent>
-            </Dialog>
+            </Dialog >
         </>
     )
 }

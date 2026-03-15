@@ -31,9 +31,13 @@ export function formatPayPeriod(start?: string | null, end?: string | null) {
 
 export function formatPaidOn(date?: string | null) {
   if (!date) return "Unknown"
+
+  // Use noon to avoid timezone shift issues with date-only strings
+  const dateValue = date.includes("T") ? date : `${date}T12:00:00`
+
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
-  }).format(new Date(date))
+  }).format(new Date(dateValue))
 }

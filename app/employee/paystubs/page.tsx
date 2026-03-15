@@ -33,15 +33,7 @@ export default function PayStubsPage() {
         setLoading(true)
         setLoadError(null)
 
-        const [paystubsResult] = await Promise.allSettled([
-          getEmployeePaystubs(),
-        ])
-
-        if (paystubsResult.status !== "fulfilled") {
-          throw paystubsResult.reason
-        }
-
-        const paystubRows = paystubsResult.value
+        const paystubRows = await getEmployeePaystubs()
 
         const formattedPaystubs: PayStub[] = paystubRows.map((row) => {
           const payrollRun = Array.isArray(row.payroll_runs)
@@ -93,7 +85,7 @@ export default function PayStubsPage() {
 
         <CardContent className="space-y-4">
           {loading && (
-            <div className="text-sm text-muted-foreground">Loading pay stubs...</div>
+            <div aria-live="polite" className="text-sm text-muted-foreground">Loading pay stubs...</div>
           )}
 
           {paystubs.map((stub, index) => {

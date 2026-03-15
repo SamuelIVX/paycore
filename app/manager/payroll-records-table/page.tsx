@@ -33,11 +33,13 @@ export default function PayrollTable() {
     const [endDate, setEndDate] = useState("");
     const [payrollRecords, setPayrollRecords] = useState<PayrollRecord[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         getPayrollRecords()
             .then((records) => setPayrollRecords(records ?? []))
-            .catch(() => setError("Failed to load payroll records."));
+            .catch(() => setError("Failed to load payroll records."))
+            .finally(() => setIsLoading(false));
     }, []);
 
     return (
@@ -97,6 +99,10 @@ export default function PayrollTable() {
                 </div>
             </CardHeader>
             <CardContent>
+                {isLoading && <p className="text-sm text-muted-foreground mb-4">Loading payroll records...</p>}
+                {!isLoading && payrollRecords.length === 0 && !error && (
+                    <p className="text-sm text-muted-foreground mb-4">No payroll records found.</p>
+                )}
                 {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
                 <Table>
                     <TableHeader>
