@@ -26,8 +26,10 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
         if (isSubmitting) return
 
         const parsedHours = Number(hoursWorked)
-        if (Number.isNaN(parsedHours) || parsedHours < 0) return
-
+        if (Number.isNaN(parsedHours) || parsedHours < 0) {
+            setSubmitError("Please enter a valid number of hours (0 or greater).")
+            return
+        }
         const dayOfWeek = selectedDate.getDay()
         if (dayOfWeek === 0 || dayOfWeek === 6) {
             setSubmitError("Hours can only be recorded Monday through Friday.")
