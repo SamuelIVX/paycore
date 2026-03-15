@@ -12,14 +12,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-  ]),
-  {
-    rules: {
-      // TypeScript path aliases (e.g. @/) are not understood by eslint-plugin-n.
-      // Module resolution is handled correctly by TypeScript and Next.js.
-      "n/no-missing-import": "off",
-    },
-  },
+  ])
 ]);
 
 export default eslintConfig;

@@ -19,9 +19,11 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
     const [hoursWorked, setHoursWorked] = useState("8.0")
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     async function handleRecordHours() {
         if (!selectedDate) return
+        if (isSubmitting) return
 
         const parsedHours = Number(hoursWorked)
         if (Number.isNaN(parsedHours) || parsedHours < 0) return
@@ -34,6 +36,7 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
         const workDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`
 
         try {
+            setIsSubmitting(true)
             setSubmitError(null)
             const entry = await createTimeEntry(workDate, parsedHours)
             const newEntry = {
@@ -52,6 +55,8 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
             setSubmitHoursOpen(false)
         } catch (err) {
             setSubmitError(err instanceof Error ? err.message : "Failed to save time entry. Please try again.")
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -170,7 +175,9 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
                         )}
 
                         <div className="flex justify-end">
-                            <Button onClick={handleRecordHours}>Record Hours</Button>
+                            <Button onClick={handleRecordHours} disabled={isSubmitting}>
+                                {isSubmitting ? "Saving..." : "Record Hours"}
+                            </Button>
                         </div>
                     </div>
                 </DialogContent>
