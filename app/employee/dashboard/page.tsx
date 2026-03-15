@@ -14,8 +14,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-const weeklyTarget = 40
-
 const initialHoursByDay = [
   { day: "Mon", hours: 8.0 },
   { day: "Tue", hours: 8.0 },
@@ -25,10 +23,12 @@ const initialHoursByDay = [
 ]
 
 const initialTimesheets = [
-  { id: "1", date: "2026-01-31", hoursWorked: 8, status: "submitted" as const },
-  { id: "2", date: "2026-01-30", hoursWorked: 8, status: "approved" as const },
-  { id: "3", date: "2026-01-29", hoursWorked: 7.5, status: "approved" as const },
+  { id: "1", date: "2026-01-31", hoursWorked: 8, status: "PENDING" as const },
+  { id: "2", date: "2026-01-30", hoursWorked: 8, status: "APPROVED" as const },
+  { id: "3", date: "2026-01-29", hoursWorked: 7.5, status: "APPROVED" as const },
 ]
+
+const weeklyTarget = 40
 
 export default function EmployeeDashboardPage() {
 

@@ -4,7 +4,7 @@ vi.mock('@/utils/supabase/client', () => ({
     createClient: () => ({}),
 }));
 
-import { calculatePayRollForEmployee } from '@/lib/payroll';
+import { calculatePayRollForEmployee } from '@/lib/supabase/payroll';
 import { Tables } from '@/lib/interfaces/database.types';
 
 const makeEmployee = (overrides: Partial<Tables<'employees'>> = {}): Tables<'employees'> => ({

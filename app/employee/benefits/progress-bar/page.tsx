@@ -3,6 +3,8 @@ import { Progress } from "@/components/ui/progress"
 import type { ProgressBarCardProps } from "./types"
 
 export default function ProgressBarCard({ company_count, optional_count, selected_count, pct_company }: ProgressBarCardProps) {
+    const clampedPct = Math.max(0, Math.min(100, pct_company));
+
     return (
         <Card className="mb-4 mt-4 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-3">
@@ -18,10 +20,10 @@ export default function ProgressBarCard({ company_count, optional_count, selecte
                 </div>
             </CardHeader>
             <CardContent>
-                <Progress value={pct_company} className="h-2" />
+                <Progress value={clampedPct} className="h-2" />
                 <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                    <span>{pct_company}%</span>
-                    <span>{100 - pct_company}%</span>
+                    <span>{clampedPct}%</span>
+                    <span>{100 - clampedPct}%</span>
                 </div>
             </CardContent>
         </Card>

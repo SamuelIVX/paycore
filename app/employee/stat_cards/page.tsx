@@ -23,7 +23,7 @@ export function EmployeeStatCard({ title, icon, value, description }: EmployeeSt
 
 export default function EmployeeStatCards({ hoursThisWeek, weeklyTarget }: HoursByDayProps) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-4 mt-4">
 
             <EmployeeStatCard
                 title="Hours This Week"

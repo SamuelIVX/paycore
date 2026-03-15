@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { addEmployee as addEmployeeToDB } from "@/lib/employee"
+import { addEmployee as addEmployeeToDB } from "@/lib/supabase/employee"
 
 export function useAddEmployee() {
     const [firstName, setFirstName] = useState("")

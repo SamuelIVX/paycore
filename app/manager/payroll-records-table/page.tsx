@@ -11,7 +11,7 @@ import { DollarSign, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { getPayrollRecords } from "@/lib/payroll";
+import { getPayrollRecords } from "@/lib/supabase/payroll";
 
 type PayrollRecord = {
     id: string;

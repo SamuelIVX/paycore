@@ -1,9 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-    Briefcase,
-    Calendar,
-    Heart,
-} from "lucide-react"
+import { Briefcase, Calendar, Heart } from "lucide-react"
 
 export default function QuickStatsCard() {
     return (

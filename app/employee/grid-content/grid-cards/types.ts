@@ -10,7 +10,7 @@ export interface TimeEntry {
     id: string;
     date: string;
     hoursWorked: number;
-    status: "draft" | "submitted" | "approved";
+    status: "PENDING" | "APPROVED" | "REJECTED";
 }
 
 export interface QuickActionsCardProps {
@@ -18,6 +18,11 @@ export interface QuickActionsCardProps {
     setHoursByDay: Dispatch<SetStateAction<HoursByDay[]>>
 }
 
+export interface RecentTimesheetsCardProps {
+    timeEntries: TimeEntry[]
+    setTimesheets: Dispatch<SetStateAction<TimeEntry[]>>
+    setHoursByDay: Dispatch<SetStateAction<HoursByDay[]>>
+}
 export interface GridContentProps {
     timesheets: TimeEntry[]
     setTimesheets: Dispatch<SetStateAction<TimeEntry[]>>

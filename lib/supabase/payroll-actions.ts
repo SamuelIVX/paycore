@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { TablesInsert, Tables } from "@/lib/interfaces/database.types";
-import { calculatePayRollForEmployee } from "@/lib/payroll";
+import { calculatePayRollForEmployee } from "@/lib/supabase/payroll";
 
 export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string, user: string) => {
     const { data: run, error: runError } = await supabase
