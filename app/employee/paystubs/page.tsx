@@ -10,7 +10,6 @@ import { formatPayPeriod, formatPaidOn } from "@/lib/utils"
 import { PaystubInfoProps, PayStub } from "./types"
 
 const money = (n: number) => `$${n.toFixed(2)}`
-const monthlyBenefits = 32
 
 export function PaystubInfo({ title, value, valueClassName }: PaystubInfoProps) {
   return (
@@ -44,6 +43,7 @@ export default function PayStubsPage() {
           const stateTax = Number(row.state_tax ?? 0)
           const socialSecurity = Number(row.social_security ?? 0)
           const taxes = federalTax + stateTax + socialSecurity
+          const monthlyDeductions = Number(row.benefit_deductions ?? 0)
 
           return {
             id: row.id,
@@ -55,7 +55,7 @@ export default function PayStubsPage() {
             netPay: Number(row.net_pay ?? 0),
             grossPay: Number(row.gross_pay ?? 0),
             taxes,
-            benefits: monthlyBenefits,
+            benefits: monthlyDeductions,
           }
         })
 

@@ -14,6 +14,7 @@ export async function getEmployeePaystubs() {
       gross_pay,
       federal_tax,
       state_tax,
+      benefit_deductions,
       social_security,
       net_pay,
       created_at,

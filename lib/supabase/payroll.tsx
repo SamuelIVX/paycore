@@ -30,7 +30,13 @@ export const getPayrollRecords = async () => {
     return payroll_records;
 };
 
-export const calculatePayRollForEmployee = (employee: Tables<"employees">, time_entries: Tables<"time_entries">[], payroll_run: Tables<"payroll_runs">) => {
+// Now accepts benefitDeduction (number) and subtracts it from net_pay
+export const calculatePayRollForEmployee = (
+    employee: Tables<"employees">,
+    time_entries: Tables<"time_entries">[],
+    payroll_run: Tables<"payroll_runs">,
+    benefitDeduction: number = 0
+) => {
     const { pay_rate, pay_frequency, federal_tax_rate, state_tax_rate, social_security_tax_rate } = employee;
 
     const hoursWorked = time_entries
@@ -41,7 +47,7 @@ export const calculatePayRollForEmployee = (employee: Tables<"employees">, time_
     const federal_tax = gross_pay * (federal_tax_rate ?? 0);
     const state_tax = gross_pay * (state_tax_rate ?? 0);
     const social_security_tax = gross_pay * (social_security_tax_rate ?? 0);
-    const net_pay = gross_pay - federal_tax - state_tax - social_security_tax;
+    const net_pay = gross_pay - federal_tax - state_tax - social_security_tax - benefitDeduction;
 
     return {
         employee_id: employee.id,
@@ -51,6 +57,7 @@ export const calculatePayRollForEmployee = (employee: Tables<"employees">, time_
         federal_tax,
         state_tax,
         social_security: social_security_tax,
+        benefit_deductions: benefitDeduction,
         net_pay
     };
 };

@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      benefits: {
+        Row: {
+          benefit: string
+          coverage: string | null
+          created_at: string
+          description: string | null
+          id: string
+          monthly_cost: number | null
+          provider: string | null
+          tag: string
+          type: string
+        }
+        Insert: {
+          benefit: string
+          coverage?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          monthly_cost?: number | null
+          provider?: string | null
+          tag: string
+          type: string
+        }
+        Update: {
+          benefit?: string
+          coverage?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          monthly_cost?: number | null
+          provider?: string | null
+          tag?: string
+          type?: string
+        }
+        Relationships: []
+      }
       departments: {
         Row: {
           created_at: string | null
@@ -31,6 +67,51 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      employee_benefits: {
+        Row: {
+          benefit_id: string
+          created_at: string | null
+          employee_id: string
+          enrolled_at: string | null
+          id: string
+          status: Database["public"]["Enums"]["employee_benefit_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          benefit_id: string
+          created_at?: string | null
+          employee_id: string
+          enrolled_at?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["employee_benefit_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          benefit_id?: string
+          created_at?: string | null
+          employee_id?: string
+          enrolled_at?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["employee_benefit_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_benefits_benefit_id_fkey"
+            columns: ["benefit_id"]
+            isOneToOne: false
+            referencedRelation: "benefits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_benefits_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       employees: {
         Row: {
@@ -124,6 +205,7 @@ export type Database = {
       }
       payroll_records: {
         Row: {
+          benefit_deductions: number | null
           created_at: string | null
           employee_id: string | null
           federal_tax: number | null
@@ -137,6 +219,7 @@ export type Database = {
           state_tax: number | null
         }
         Insert: {
+          benefit_deductions?: number | null
           created_at?: string | null
           employee_id?: string | null
           federal_tax?: number | null
@@ -150,6 +233,7 @@ export type Database = {
           state_tax?: number | null
         }
         Update: {
+          benefit_deductions?: number | null
           created_at?: string | null
           employee_id?: string | null
           federal_tax?: number | null
@@ -188,6 +272,7 @@ export type Database = {
           run_by: string | null
           run_date: string | null
           status: string | null
+          total_benefit_deductions: number | null
           total_gross: number | null
           total_net: number | null
           total_taxes: number | null
@@ -200,6 +285,7 @@ export type Database = {
           run_by?: string | null
           run_date?: string | null
           status?: string | null
+          total_benefit_deductions?: number | null
           total_gross?: number | null
           total_net?: number | null
           total_taxes?: number | null
@@ -212,6 +298,7 @@ export type Database = {
           run_by?: string | null
           run_date?: string | null
           status?: string | null
+          total_benefit_deductions?: number | null
           total_gross?: number | null
           total_net?: number | null
           total_taxes?: number | null
@@ -315,7 +402,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      employee_benefit_status: "ACTIVE" | "NOT_ENROLLED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -442,6 +529,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      employee_benefit_status: ["ACTIVE", "NOT_ENROLLED"],
+    },
   },
 } as const

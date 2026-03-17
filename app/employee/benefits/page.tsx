@@ -1,28 +1,54 @@
 "use client"
 
-import { useState } from "react"
-import { companyBenefits, optionalBenefits } from "./data"
-
+import { useState, useEffect } from "react"
 import SummaryCards from "./summary-cards/page"
 import CompanyBenefitCards from "./company-benefits-cards/page"
 import OptionalBenefitsCard from "./optional-benefits-cards/page"
 import ProgressBarCard from "./progress-bar/page"
 import ImportantInfoCard from "./important-info-card/page"
+import {
+  getCompanyBenefitsCount,
+  getOptionalBenefitsCount,
+  getActiveOptionalEmployeeBenefits
+} from "@/lib/supabase/benefits"
+import { getCurrentEmployee } from "@/lib/supabase/employee"
+
 
 export default function BenefitsPage() {
-  const [selectedOptional, setSelectedOptional] = useState<Record<string, boolean>>({
-    "Vision Insurance": true,
-    "Wellness Program": true,
-  })
+  const [employeeId, setEmployeeId] = useState<string>("");
 
-  const monthlyDeduction = Object.entries(selectedOptional).reduce((sum, [name, on]) => {
-    if (!on) return sum
-    const benefit = optionalBenefits.find((x) => x.title === name)
-    return sum + (benefit?.monthlyCost ?? 0)
-  }, 0)
+  useEffect(() => {
+    getCurrentEmployee().then((emp) => {
+      setEmployeeId(emp?.employee.id || "");
+    });
+  }, []);
 
-  const companyCount = companyBenefits.length
-  const optionalCount = optionalBenefits.length
+  const [activeOptionals, setActiveOptionals] = useState<any[]>([])
+  const [selectedOptional, setSelectedOptional] = useState<Record<string, boolean>>({})
+  const [companyCount, setCompanyCount] = useState(0)
+  const [optionalCount, setOptionalCount] = useState(0)
+
+  useEffect(() => {
+    if (!employeeId) return;
+    // Fetch counts and active optionals
+    getCompanyBenefitsCount().then(setCompanyCount);
+    getOptionalBenefitsCount().then(setOptionalCount);
+    getActiveOptionalEmployeeBenefits(employeeId).then((rows) => {
+      setActiveOptionals(rows);
+      // Set selectedOptional keyed by benefit_id
+      const selected: Record<string, boolean> = {};
+      rows.forEach((row: any) => {
+        if (row.status === 'ACTIVE' && row.benefit?.id) selected[row.benefit.id] = true;
+      });
+      setSelectedOptional(selected);
+    });
+  }, [employeeId]);
+
+  const monthlyDeduction = activeOptionals.reduce(
+    (sum, row) => sum + (row.benefit?.monthly_cost || 0),
+    0
+  )
+
   const selectedCount = Object.values(selectedOptional).filter(Boolean).length
   const activeTotal = companyCount + selectedCount
   const pctCompany = activeTotal > 0 ? Math.round((companyCount / activeTotal) * 100) : 100

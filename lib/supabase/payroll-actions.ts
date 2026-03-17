@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { TablesInsert, Tables } from "@/lib/interfaces/database.types";
 import { calculatePayRollForEmployee } from "@/lib/supabase/payroll";
+import { getActiveOptionalEmployeeBenefits } from "@/lib/supabase/benefits";
 
 export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string, user: string) => {
     const { data: run, error: runError } = await supabase
@@ -139,8 +140,12 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
         const employees = await getActiveEmployees(supabase);
         const time_entries = await getTimeEntriesForPayPeriod(supabase, payPeriodStart, payPeriodEnd);
 
-        const employeeRecords = employees.map((employee) =>
-            calculatePayRollForEmployee(employee, time_entries, payroll_run)
+        const employeeRecords = await Promise.all(
+            employees.map(async (employee) => {
+                const benefits = await getActiveOptionalEmployeeBenefits(employee.id);
+                const benefitDeduction = benefits.reduce((sum: number, row: any) => sum + (row.benefit?.monthly_cost || 0), 0);
+                return calculatePayRollForEmployee(employee, time_entries, payroll_run, benefitDeduction);
+            })
         );
 
         await insertPayrollRecords(supabase, employeeRecords);

@@ -1,13 +1,30 @@
-import { createElement } from "react"
+import { createElement, useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { optionalBenefits } from "../data"
 import { BENEFIT_ICONS } from "../constants"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import type { OptionalBenefitsCardProps } from "../types"
+import { getOptionalBenefits, upsertEmployeeBenefit } from "@/lib/supabase/benefits"
+import { getCurrentEmployee } from "@/lib/supabase/employee"
 
 export default function OptionalBenefitsCard({ selected_benefits, set_selected_benefits }: OptionalBenefitsCardProps) {
+    const [optional_benefits, setOptionalBenefits] = useState<Awaited<ReturnType<typeof getOptionalBenefits>>>([]);
+
+    const [employeeId, setEmployeeId] = useState<string>("");
+
+    useEffect(() => {
+        getCurrentEmployee().then((emp) => {
+            setEmployeeId(emp?.employee.id || "");
+        });
+    }, []);
+
+
+    useEffect(() => {
+        getOptionalBenefits().then(setOptionalBenefits);
+    }, []);
+
+
     return (
         <Card className="shadow-sm">
 
@@ -17,13 +34,13 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
             </CardHeader>
 
             <CardContent className="space-y-3">
-                {optionalBenefits.map((b) => {
-                    const enabled = !!selected_benefits[b.title]
-                    const switchId = `optional-benefit-${b.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`
+                {optional_benefits.map((b) => {
+                    const enabled = !!selected_benefits[b.id]
+                    const switchId = `optional-benefit-${b.id}`
 
                     return (
                         <div
-                            key={b.title}
+                            key={b.id}
                             className={[
                                 "rounded-lg border p-4 transition-colors",
                                 enabled ? "border-green-400 bg-green-50" : "border-purple-300 hover:bg-purple-50",
@@ -31,20 +48,25 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
                         >
                             <div className="flex items-start gap-3">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-md bg-purple-200">
-                                    {createElement(BENEFIT_ICONS[b.type], { className: "h-4 w-4 text-purple-600" })}
+                                    {createElement(BENEFIT_ICONS[b.tag], { className: "h-4 w-4 text-purple-600" })}
                                 </div>
 
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between gap-3">
                                         <Label htmlFor={switchId} className="font-semibold cursor-pointer">
-                                            {b.title}
+                                            {b.benefit}
                                         </Label>
                                         <Switch
                                             id={switchId}
                                             checked={enabled}
-                                            onCheckedChange={(v: boolean) =>
-                                                set_selected_benefits((prev) => ({ ...prev, [b.title]: v }))
-                                            }
+                                            onCheckedChange={async (v: boolean) => {
+                                                set_selected_benefits((prev) => ({ ...prev, [b.id]: v }))
+                                                await upsertEmployeeBenefit({
+                                                    employee_id: employeeId,
+                                                    benefit_id: b.id,
+                                                    status: v ? 'ACTIVE' : 'NOT_ENROLLED',
+                                                })
+                                            }}
                                         />
                                     </div>
 
@@ -63,7 +85,7 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
 
                                     <div className="flex items-center justify-between text-sm">
                                         <span className="text-muted-foreground">Monthly Cost</span>
-                                        <span className="font-semibold">${(b.monthlyCost ?? 0).toFixed(2)}/mo</span>
+                                        <span className="font-semibold">${(b.monthly_cost ?? 0).toFixed(2)}/mo</span>
                                     </div>
                                 </div>
                             </div>
