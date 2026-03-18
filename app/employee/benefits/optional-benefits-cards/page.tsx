@@ -11,11 +11,11 @@ import { getOptionalBenefits, upsertEmployeeBenefit } from "@/lib/supabase/benef
 
 export default function OptionalBenefitsCard({ selected_benefits, set_selected_benefits }: OptionalBenefitsCardProps) {
     const [optional_benefits, setOptionalBenefits] = useState<Awaited<ReturnType<typeof getOptionalBenefits>>>([]);
+    const [pendingBenefits, setPendingBenefits] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         getOptionalBenefits().then(setOptionalBenefits);
     }, []);
-
 
     return (
         <Card className="shadow-sm">
@@ -28,6 +28,7 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
             <CardContent className="space-y-3">
                 {optional_benefits.map((b) => {
                     const enabled = !!selected_benefits[b.id]
+                    const isPending = !!pendingBenefits[b.id]
                     const switchId = `optional-benefit-${b.id}`
 
                     return (
@@ -51,15 +52,21 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
                                         <Switch
                                             id={switchId}
                                             checked={enabled}
+                                            disabled={isPending}
                                             onCheckedChange={async (v: boolean) => {
+                                                const previous = enabled
+                                                setPendingBenefits((prev) => ({ ...prev, [b.id]: true }))
                                                 set_selected_benefits((prev) => ({ ...prev, [b.id]: v }))
                                                 try {
                                                     await upsertEmployeeBenefit({
                                                         benefit_id: b.id,
                                                         status: v ? 'ACTIVE' : 'NOT_ENROLLED',
                                                     })
-                                                } catch {
-                                                    set_selected_benefits((prev) => ({ ...prev, [b.id]: !v }))
+                                                } catch (error) {
+                                                    console.error('Error updating employee benefit:', error)
+                                                    set_selected_benefits((prev) => ({ ...prev, [b.id]: previous }))
+                                                } finally {
+                                                    setPendingBenefits((prev) => ({ ...prev, [b.id]: false }))
                                                 }
                                             }}
                                         />

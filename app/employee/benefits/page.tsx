@@ -20,10 +20,11 @@ export default function BenefitsPage() {
   useEffect(() => {
     getCurrentEmployee().then((emp) => {
       setEmployeeId(emp?.employee.id || "");
+    }).catch((err) => {
+      console.error("Failed to get current employee:", err);
     });
   }, []);
 
-  const [activeOptionals, setActiveOptionals] = useState<any[]>([])
   const [selectedOptional, setSelectedOptional] = useState<Record<string, boolean>>({})
   const [optionalBenefits, setOptionalBenefits] = useState<any[]>([])
   const [companyCount, setCompanyCount] = useState(0)
@@ -36,10 +37,11 @@ export default function BenefitsPage() {
     getCompanyBenefitsCount().then(setCompanyCount);
     getOptionalBenefitsCount().then(setOptionalCount);
 
-    getOptionalBenefits().then(setOptionalBenefits)
+    getOptionalBenefits().then(setOptionalBenefits).catch((error) => {
+      console.error("Failed to fetch optional benefits.", error)
+    })
 
     getActiveOptionalEmployeeBenefits(employeeId).then((rows) => {
-      setActiveOptionals(rows);
       // Set selectedOptional keyed by benefit_id
       const selected: Record<string, boolean> = {};
 
@@ -50,7 +52,9 @@ export default function BenefitsPage() {
       });
 
       setSelectedOptional(selected);
-    });
+    }).catch((error) => {
+      console.error("Failed to fetch active employee benefits:", error)
+    })
   }, [employeeId]);
 
   const monthlyDeduction = optionalBenefits.reduce((sum, benefit) => {
