@@ -74,6 +74,7 @@ export const updatePayrollRun = async (supabase: SupabaseClient, records: Tables
     const total_federal_tax = valid_records.reduce((total, curr) => total + (curr.federal_tax ?? 0), 0);
     const total_state_tax = valid_records.reduce((total, curr) => total + (curr.state_tax ?? 0), 0);
     const total_social_security_tax = valid_records.reduce((total, curr) => total + (curr.social_security ?? 0), 0);
+    const total_benefit_deductions = valid_records.reduce((total, curr) => total + (curr.benefit_deductions ?? 0), 0);
     const total_net_pay = valid_records.reduce((total, curr) => total + curr.net_pay, 0);
 
     const { error: updateError } = await supabase
@@ -84,6 +85,7 @@ export const updatePayrollRun = async (supabase: SupabaseClient, records: Tables
             "total_gross": Number(total_gross_pay).toFixed(2),
             "total_net": Number(total_net_pay).toFixed(2),
             "total_taxes": Number((total_federal_tax + total_state_tax + total_social_security_tax).toFixed(2)),
+            "total_benefit_deductions": Number(total_benefit_deductions.toFixed(2)),
             "status": "COMPLETED"
         })
         .eq("id", payroll_run.id);
@@ -142,7 +144,7 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
 
         const employeeRecords = await Promise.all(
             employees.map(async (employee) => {
-                const benefits = await getActiveOptionalEmployeeBenefits(employee.id);
+                const benefits = await getActiveOptionalEmployeeBenefits(employee.id, supabase);
                 const benefitDeduction = benefits.reduce((sum: number, row: any) => sum + (row.benefit?.monthly_cost || 0), 0);
                 return calculatePayRollForEmployee(employee, time_entries, payroll_run, benefitDeduction);
             })

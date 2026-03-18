@@ -1,4 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { getCurrentEmployee } from "./employee";
 
 export const getCompanyBenefits = async () => {
     const supabase = createClient();
@@ -32,8 +34,8 @@ export const getOptionalBenefits = async () => {
     return optional_benefits
 }
 
-export const getActiveOptionalEmployeeBenefits = async (employee_id: string) => {
-    const supabase = createClient();
+export const getActiveOptionalEmployeeBenefits = async (employee_id: string, supabaseClient?: SupabaseClient) => {
+    const supabase = supabaseClient || createClient();
 
     const { data, error } = await supabase
         .from('employee_benefits')
@@ -49,26 +51,26 @@ export const getActiveOptionalEmployeeBenefits = async (employee_id: string) => 
         throw error;
     }
 
-    const optionalBenefits = (data || []).filter((row: any) => row.benefit?.type === 'OPTIONAL');
+    const optionalBenefits = (data || []).filter((row: { benefit?: { type: string } | null }) => row.benefit?.type === 'OPTIONAL');
 
     return optionalBenefits;
 }
 
 export const upsertEmployeeBenefit = async ({
-    employee_id,
     benefit_id,
     status
 }: {
-    employee_id: string;
     benefit_id: string;
     status: 'ACTIVE' | 'NOT_ENROLLED';
 }) => {
     const supabase = createClient();
 
+    const { employee } = await getCurrentEmployee();
+
     const { data, error } = await supabase
         .from('employee_benefits')
         .upsert({
-            employee_id,
+            employee_id: employee.id,
             benefit_id,
             status,
             updated_at: new Date().toISOString(),

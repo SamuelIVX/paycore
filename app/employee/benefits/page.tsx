@@ -9,10 +9,10 @@ import ImportantInfoCard from "./important-info-card/page"
 import {
   getCompanyBenefitsCount,
   getOptionalBenefitsCount,
-  getActiveOptionalEmployeeBenefits
+  getActiveOptionalEmployeeBenefits,
+  getOptionalBenefits,
 } from "@/lib/supabase/benefits"
 import { getCurrentEmployee } from "@/lib/supabase/employee"
-
 
 export default function BenefitsPage() {
   const [employeeId, setEmployeeId] = useState<string>("");
@@ -25,29 +25,40 @@ export default function BenefitsPage() {
 
   const [activeOptionals, setActiveOptionals] = useState<any[]>([])
   const [selectedOptional, setSelectedOptional] = useState<Record<string, boolean>>({})
+  const [optionalBenefits, setOptionalBenefits] = useState<any[]>([])
   const [companyCount, setCompanyCount] = useState(0)
   const [optionalCount, setOptionalCount] = useState(0)
 
   useEffect(() => {
     if (!employeeId) return;
+
     // Fetch counts and active optionals
     getCompanyBenefitsCount().then(setCompanyCount);
     getOptionalBenefitsCount().then(setOptionalCount);
+
+    getOptionalBenefits().then(setOptionalBenefits)
+
     getActiveOptionalEmployeeBenefits(employeeId).then((rows) => {
       setActiveOptionals(rows);
       // Set selectedOptional keyed by benefit_id
       const selected: Record<string, boolean> = {};
+
       rows.forEach((row: any) => {
-        if (row.status === 'ACTIVE' && row.benefit?.id) selected[row.benefit.id] = true;
+        if (row.status === 'ACTIVE' && row.benefit?.id) {
+          selected[row.benefit.id] = true;
+        }
       });
+
       setSelectedOptional(selected);
     });
   }, [employeeId]);
 
-  const monthlyDeduction = activeOptionals.reduce(
-    (sum, row) => sum + (row.benefit?.monthly_cost || 0),
-    0
-  )
+  const monthlyDeduction = optionalBenefits.reduce((sum, benefit) => {
+    if (selectedOptional[benefit.id]) {
+      return sum + (benefit.monthly_cost || 0)
+    }
+    return sum
+  }, 0)
 
   const selectedCount = Object.values(selectedOptional).filter(Boolean).length
   const activeTotal = companyCount + selectedCount

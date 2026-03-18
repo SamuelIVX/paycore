@@ -75,7 +75,7 @@ export type Database = {
           employee_id: string
           enrolled_at: string | null
           id: string
-          status: Database["public"]["Enums"]["employee_benefit_status"] | null
+          status: Database["public"]["Enums"]["employee_benefit_status"]
           updated_at: string | null
         }
         Insert: {
@@ -84,7 +84,7 @@ export type Database = {
           employee_id: string
           enrolled_at?: string | null
           id?: string
-          status?: Database["public"]["Enums"]["employee_benefit_status"] | null
+          status?: Database["public"]["Enums"]["employee_benefit_status"]
           updated_at?: string | null
         }
         Update: {
@@ -93,7 +93,7 @@ export type Database = {
           employee_id?: string
           enrolled_at?: string | null
           id?: string
-          status?: Database["public"]["Enums"]["employee_benefit_status"] | null
+          status?: Database["public"]["Enums"]["employee_benefit_status"]
           updated_at?: string | null
         }
         Relationships: [

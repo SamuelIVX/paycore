@@ -1,3 +1,5 @@
+'use client'
+
 import { createElement, useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { BENEFIT_ICONS } from "../constants"
@@ -6,19 +8,9 @@ import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import type { OptionalBenefitsCardProps } from "../types"
 import { getOptionalBenefits, upsertEmployeeBenefit } from "@/lib/supabase/benefits"
-import { getCurrentEmployee } from "@/lib/supabase/employee"
 
 export default function OptionalBenefitsCard({ selected_benefits, set_selected_benefits }: OptionalBenefitsCardProps) {
     const [optional_benefits, setOptionalBenefits] = useState<Awaited<ReturnType<typeof getOptionalBenefits>>>([]);
-
-    const [employeeId, setEmployeeId] = useState<string>("");
-
-    useEffect(() => {
-        getCurrentEmployee().then((emp) => {
-            setEmployeeId(emp?.employee.id || "");
-        });
-    }, []);
-
 
     useEffect(() => {
         getOptionalBenefits().then(setOptionalBenefits);
@@ -61,11 +53,14 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
                                             checked={enabled}
                                             onCheckedChange={async (v: boolean) => {
                                                 set_selected_benefits((prev) => ({ ...prev, [b.id]: v }))
-                                                await upsertEmployeeBenefit({
-                                                    employee_id: employeeId,
-                                                    benefit_id: b.id,
-                                                    status: v ? 'ACTIVE' : 'NOT_ENROLLED',
-                                                })
+                                                try {
+                                                    await upsertEmployeeBenefit({
+                                                        benefit_id: b.id,
+                                                        status: v ? 'ACTIVE' : 'NOT_ENROLLED',
+                                                    })
+                                                } catch {
+                                                    set_selected_benefits((prev) => ({ ...prev, [b.id]: !v }))
+                                                }
                                             }}
                                         />
                                     </div>

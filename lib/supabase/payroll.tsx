@@ -47,7 +47,8 @@ export const calculatePayRollForEmployee = (
     const federal_tax = gross_pay * (federal_tax_rate ?? 0);
     const state_tax = gross_pay * (state_tax_rate ?? 0);
     const social_security_tax = gross_pay * (social_security_tax_rate ?? 0);
-    const net_pay = gross_pay - federal_tax - state_tax - social_security_tax - benefitDeduction;
+    const perPeriodBenefitDeduction = (benefitDeduction * 12) / BI_WEEKLY_PAY_PERIODS;
+    const net_pay = gross_pay - federal_tax - state_tax - social_security_tax - perPeriodBenefitDeduction;
 
     return {
         employee_id: employee.id,
@@ -57,7 +58,7 @@ export const calculatePayRollForEmployee = (
         federal_tax,
         state_tax,
         social_security: social_security_tax,
-        benefit_deductions: benefitDeduction,
+        benefit_deductions: perPeriodBenefitDeduction,
         net_pay
     };
 };
