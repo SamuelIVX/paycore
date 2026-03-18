@@ -26,7 +26,7 @@ export default function CompanyBenefitsCard() {
 
             <CardHeader>
                 <CardTitle className="text-base">Company-Provided Benefits</CardTitle>
-                <CardDescription>Automatically included with employment at no costs</CardDescription>
+                <CardDescription>Automatically included with employment at no cost.</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-3">
