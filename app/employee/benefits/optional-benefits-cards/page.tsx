@@ -12,9 +12,17 @@ import { getOptionalBenefits, upsertEmployeeBenefit } from "@/lib/supabase/benef
 export default function OptionalBenefitsCard({ selected_benefits, set_selected_benefits }: OptionalBenefitsCardProps) {
     const [optional_benefits, setOptionalBenefits] = useState<Awaited<ReturnType<typeof getOptionalBenefits>>>([]);
     const [pendingBenefits, setPendingBenefits] = useState<Record<string, boolean>>({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        getOptionalBenefits().then(setOptionalBenefits);
+        getOptionalBenefits()
+            .then(setOptionalBenefits)
+            .catch((err) => {
+                console.error('Failed to fetch optional benefits:', err);
+                setError('Failed to load benefits');
+            })
+            .finally(() => setIsLoading(false));
     }, []);
 
     return (
@@ -26,6 +34,15 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
             </CardHeader>
 
             <CardContent className="space-y-3">
+                {isLoading && (
+                    <div aria-live="polite" className="text-sm text-muted-foreground">Loading optional benefits...</div>
+                )}
+
+
+                {error && (
+                    <div role="alert" className="text-sm text-destructive">{error}</div>
+                )}
+
                 {optional_benefits.map((b) => {
                     const enabled = !!selected_benefits[b.id]
                     const isPending = !!pendingBenefits[b.id]
@@ -39,6 +56,7 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
                                 enabled ? "border-green-400 bg-green-50" : "border-purple-300 hover:bg-purple-50",
                             ].join(" ")}
                         >
+
                             <div className="flex items-start gap-3">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-md bg-purple-200">
                                     {BENEFIT_ICONS[b.tag] && createElement(BENEFIT_ICONS[b.tag], { className: "h-4 w-4 text-purple-600" })}

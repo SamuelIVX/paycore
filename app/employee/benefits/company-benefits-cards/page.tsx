@@ -8,9 +8,17 @@ import { getCompanyBenefits } from "@/lib/supabase/benefits"
 
 export default function CompanyBenefitsCard() {
     const [company_benefits, setCompanyBenefits] = useState<Awaited<ReturnType<typeof getCompanyBenefits>>>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        getCompanyBenefits().then(setCompanyBenefits);
+        getCompanyBenefits()
+            .then(setCompanyBenefits)
+            .catch((err) => {
+                console.error('Failed to fetch company benefits:', err);
+                setError('Failed to load benefits');
+            })
+            .finally(() => setIsLoading(false));
     }, []);
 
     return (
@@ -22,6 +30,15 @@ export default function CompanyBenefitsCard() {
             </CardHeader>
 
             <CardContent className="space-y-3">
+                {isLoading && (
+                    <div aria-live="polite" className="text-sm text-muted-foreground">Loading company benefits...</div>
+                )}
+
+
+                {error && (
+                    <div role="alert" className="text-sm text-destructive">{error}</div>
+                )}
+
                 {company_benefits.map((b) => (
 
                     <div key={b.benefit} className="rounded-lg border hover:border-blue-300 hover:bg-blue-50 p-4">
