@@ -41,7 +41,7 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
                         >
                             <div className="flex items-start gap-3">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-md bg-purple-200">
-                                    {createElement(BENEFIT_ICONS[b.tag], { className: "h-4 w-4 text-purple-600" })}
+                                    {BENEFIT_ICONS[b.tag] && createElement(BENEFIT_ICONS[b.tag], { className: "h-4 w-4 text-purple-600" })}
                                 </div>
 
                                 <div className="flex-1">
