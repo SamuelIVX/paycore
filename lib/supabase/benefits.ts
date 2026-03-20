@@ -1,18 +1,12 @@
 import { createClient } from "@/utils/supabase/client";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { getCurrentEmployee } from "./employee";
+import { TablesInsert, TablesUpdate } from "../interfaces/database.types";
 
-type NewBenefit = {
-    benefit: string;
-    tag: string;
-    type: 'COMPANY' | 'OPTIONAL';
-    description?: string;
-    provider?: string;
-    monthly_cost?: number;
-    coverage?: string;
-};
+type BenefitInsert = TablesInsert<"benefits">;
+type BenefitUpdate = TablesUpdate<"benefits">;
 
-export const addBenefit = async (company_benefit: NewBenefit) => {
+export const addBenefit = async (company_benefit: BenefitInsert) => {
     const supabase = createClient();
     const { error } = await supabase
         .from("benefits")
@@ -119,7 +113,7 @@ export const deleteBenefit = async (id: string) => {
     }
 }
 
-export const updateBenefit = async (id: string, updates: Partial<NewBenefit>) => {
+export const updateBenefit = async (id: string, updates: BenefitUpdate) => {
     const supabase = createClient();
     const { error } = await supabase
         .from("benefits")

@@ -13,6 +13,12 @@ export function useAddBenefit(initialType: "COMPANY" | "OPTIONAL" = "COMPANY") {
     const [open, setOpen] = useState(false)
 
     const handleAddBenefit = async (): Promise<boolean> => {
+        if (!benefit.trim() || !tag) {
+            console.error("Benefit name and tag are required.")
+            return false
+
+        }
+
         setLoading(true)
         try {
             await addBenefit({

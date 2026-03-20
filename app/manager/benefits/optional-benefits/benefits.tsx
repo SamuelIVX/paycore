@@ -182,7 +182,7 @@ export default function OptionalBenefitsGrid() {
 
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {optional_benefits.map((b) => {
-                    const Icon = BENEFIT_ICONS[b.tag as keyof typeof BENEFIT_ICONS];
+                    const Icon = BENEFIT_ICONS[b.tag as keyof typeof BENEFIT_ICONS] ?? BENEFIT_ICONS.Other;
                     if (!Icon) return null;
 
                     return (
@@ -258,6 +258,7 @@ export default function OptionalBenefitsGrid() {
                                                                 </div>
                                                             </div>
                                                             <button
+                                                                type="button"
                                                                 className="text-red-400 hover:text-red-600 transition-colors"
                                                                 onClick={(e) => { e.stopPropagation(); setDeleteOpenId(b.id); }}
                                                             >
