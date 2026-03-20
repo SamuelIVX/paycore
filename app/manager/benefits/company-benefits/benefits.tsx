@@ -161,19 +161,19 @@ export default function CompanyBenefitsGrid() {
                     </Dialog>
                 </div>
             </CardHeader>
-            {isLoading && (
-                <div aria-live="polite" className="text-sm text-muted-foreground">Loading company benefits...</div>
-            )}
-
-
-            {error && (
-                <div role="alert" className="text-sm text-destructive">{error}</div>
-            )}
 
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {isLoading && (
+                    <div aria-live="polite" className="text-sm text-muted-foreground">Loading company benefits...</div>
+                )}
+
+
+                {error && (
+                    <div role="alert" className="text-sm text-destructive">{error}</div>
+                )}
+
                 {company_benefits.map((b) => {
                     const Icon = BENEFIT_ICONS[b.tag as keyof typeof BENEFIT_ICONS] ?? BENEFIT_ICONS.Other;
-                    if (!Icon) return null;
 
                     return (
                         <div key={b.id}>
@@ -339,6 +339,10 @@ export default function CompanyBenefitsGrid() {
                                             className="bg-blue-400"
                                             disabled={isSubmitting}
                                             onClick={async () => {
+                                                if (!editValues.benefit.trim() || !editValues.description || !editValues.coverage || !editValues.provider) {
+                                                    setError("Benefit name, coverage, description, and are required.");
+                                                    return;
+                                                }
                                                 setIsSubmitting(true);
                                                 try {
                                                     await updateBenefit(b.id, editValues);

@@ -3,8 +3,8 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { getCurrentEmployee } from "./employee";
 import { TablesInsert, TablesUpdate } from "../interfaces/database.types";
 
-type BenefitInsert = TablesInsert<"benefits">;
-type BenefitUpdate = TablesUpdate<"benefits">;
+export type BenefitInsert = TablesInsert<"benefits">;
+export type BenefitUpdate = TablesUpdate<"benefits">;
 
 export const addBenefit = async (company_benefit: BenefitInsert) => {
     const supabase = createClient();

@@ -27,7 +27,7 @@ export function useAddBenefit(initialType: "COMPANY" | "OPTIONAL" = "COMPANY") {
                 type,
                 description,
                 provider,
-                monthly_cost: monthlyCost,
+                monthly_cost: type === "OPTIONAL" ? monthlyCost : null,
                 coverage,
             })
             setOpen(false)

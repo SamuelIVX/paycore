@@ -171,19 +171,19 @@ export default function OptionalBenefitsGrid() {
                     </Dialog>
                 </div>
             </CardHeader>
-            {isLoading && (
-                <div aria-live="polite" className="text-sm text-muted-foreground">Loading optional benefits...</div>
-            )}
-
-
-            {error && (
-                <div role="alert" className="text-sm text-destructive">{error}</div>
-            )}
 
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {isLoading && (
+                    <div aria-live="polite" className="text-sm text-muted-foreground">Loading optional benefits...</div>
+                )}
+
+
+                {error && (
+                    <div role="alert" className="text-sm text-destructive">{error}</div>
+                )}
+
                 {optional_benefits.map((b) => {
                     const Icon = BENEFIT_ICONS[b.tag as keyof typeof BENEFIT_ICONS] ?? BENEFIT_ICONS.Other;
-                    if (!Icon) return null;
 
                     return (
                         <div key={b.id}>
@@ -353,6 +353,10 @@ export default function OptionalBenefitsGrid() {
                                             className="bg-purple-400"
                                             disabled={isSubmitting}
                                             onClick={async () => {
+                                                if (!editValues) {
+                                                    setError("All fields are required.");
+                                                    return;
+                                                }
                                                 setIsSubmitting(true);
                                                 try {
                                                     await updateBenefit(b.id, editValues);
