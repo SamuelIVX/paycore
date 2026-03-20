@@ -1,6 +1,22 @@
 import { createClient } from "@/utils/supabase/client";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { getCurrentEmployee } from "./employee";
+import { TablesInsert, TablesUpdate } from "../interfaces/database.types";
+
+export type BenefitInsert = TablesInsert<"benefits">;
+export type BenefitUpdate = TablesUpdate<"benefits">;
+
+export const addBenefit = async (company_benefit: BenefitInsert) => {
+    const supabase = createClient();
+    const { error } = await supabase
+        .from("benefits")
+        .insert(company_benefit)
+
+    if (error) {
+        console.error("Error inserting a new company benefit", error)
+        throw error;
+    }
+}
 
 export const getCompanyBenefits = async () => {
     const supabase = createClient();
@@ -83,6 +99,32 @@ export const upsertEmployeeBenefit = async ({
 
     return data;
 };
+
+export const deleteBenefit = async (id: string) => {
+    const supabase = createClient();
+    const { error } = await supabase
+        .from("benefits")
+        .delete()
+        .eq("id", id)
+
+    if (error) {
+        console.error("Error deleting benefit", error)
+        throw error;
+    }
+}
+
+export const updateBenefit = async (id: string, updates: BenefitUpdate) => {
+    const supabase = createClient();
+    const { error } = await supabase
+        .from("benefits")
+        .update(updates)
+        .eq("id", id)
+
+    if (error) {
+        console.error("Error updating benefit", error)
+        throw error;
+    }
+}
 
 export const getCompanyBenefitsCount = async () => {
     const supabase = createClient();

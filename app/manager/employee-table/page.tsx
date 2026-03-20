@@ -44,6 +44,7 @@ export default function EmployeeTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [editOpenId, setEditOpenId] = useState<Employee["id"] | null>(null);
     const [editValues, setEditValues] = useState({ first_name: "", last_name: "", position: "", pay_frequency: "", pay_rate: 0 });
+
     const [deleteOpenId, setDeleteOpenId] = useState<Employee["id"] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);

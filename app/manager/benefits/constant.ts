@@ -13,7 +13,7 @@ export interface Benefit {
     id: string;
     name: string;
     description: string;
-    type: "health" | "dental" | "vision" | "retirement" | "life" | "disability" | "wellness" | "other";
+    type: "Health" | "Dental" | "Vision" | "Retirement" | "Life" | "Disability" | "Wellness" | "Other";
     provider: string;
     monthlyPrice: number;
     isCompanyProvided: boolean;
@@ -21,12 +21,12 @@ export interface Benefit {
 }
 
 export const BENEFIT_ICONS: Record<Benefit["type"], LucideIcon> = {
-    health: Heart,
-    dental: Sparkles,
-    vision: Eye,
-    retirement: Wallet,
-    life: Shield,
-    disability: Umbrella,
-    wellness: Heart,
-    other: Info
+    Health: Heart,
+    Dental: Sparkles,
+    Vision: Eye,
+    Retirement: Wallet,
+    Life: Shield,
+    Disability: Umbrella,
+    Wellness: Heart,
+    Other: Info
 };
