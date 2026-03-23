@@ -20,7 +20,7 @@ export const getPayrollRuns = async () => {
 export const getPayrollRecords = async () => {
     const { data: payroll_records, error } = await supabase
         .from("payroll_records")
-        .select("*");
+        .select("*, employees!payroll_records_employee_id_fkey(pay_frequency)");
 
     if (error) {
         console.error("Error fetching payroll records:", error);
