@@ -131,13 +131,23 @@ export default function PayrollTable() {
                         {payrollRecords.map(record => (
                             <TableRow key={record.id}>
                                 <TableCell className="font-medium">{record.employee_id ?? "—"}</TableCell>
-                                <TableCell>{record.employees?.pay_frequency === "HOURLY" ? record.regular_hours : "—"}</TableCell>
-                                <TableCell>{record.employees?.pay_frequency === "HOURLY" ? record.overtime_hours : "—"}</TableCell>
+                                <TableCell>
+                                    {record.employees?.pay_frequency === "HOURLY"
+                                        ? (record.regular_hours ?? "—")
+                                        : (record.employees == null ? (record.regular_hours ?? "—") : "—")}
+                                </TableCell>
+                                <TableCell>
+                                    {record.employees?.pay_frequency === "HOURLY"
+                                        ? (record.overtime_hours ?? "—")
+                                        : (record.employees == null ? (record.overtime_hours ?? "—") : "—")}
+                                </TableCell>
                                 <TableCell>${record.gross_pay.toFixed(2)}</TableCell>
                                 <TableCell className="text-red-600">-${(record.federal_tax ?? 0).toFixed(2)}</TableCell>
                                 <TableCell className="text-red-600">-${(record.state_tax ?? 0).toFixed(2)}</TableCell>
                                 <TableCell className="text-red-600">-${(record.social_security ?? 0).toFixed(2)}</TableCell>
-                                <TableCell className="text-red-600">-${(record.benefit_deductions ?? 0).toFixed(2)}</TableCell>
+                                <TableCell className="text-red-600">
+                                    {record.benefit_deductions == null ? "—" : `-$${record.benefit_deductions.toFixed(2)}`}
+                                </TableCell>
                                 <TableCell className={`font-semibold ${record.net_pay > 0 ? "text-green-600" : "text-muted-foreground"}`}>${record.net_pay.toFixed(2)}</TableCell>
                                 <TableCell>{record.created_at ? new Date(record.created_at).toLocaleDateString() : "—"}</TableCell>
                             </TableRow>
