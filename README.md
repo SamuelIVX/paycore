@@ -78,7 +78,29 @@ paycore/
 │   │           └── types.ts
 │   │
 │   └── employee/                   # All employee-facing pages
-│       └── dashboard/page.tsx      # Employee dashboard
+│       ├── dashboard/page.tsx      # Employee dashboard
+│       ├── benefits/               # Benefit enrollment and coverage summary
+│       │   ├── page.tsx
+│       │   ├── types.ts
+│       │   ├── constants.ts
+│       │   ├── summary-cards/page.tsx
+│       │   ├── progress-bar/page.tsx
+│       │   ├── company-benefits-cards/page.tsx
+│       │   ├── optional-benefits-cards/page.tsx
+│       │   └── important-info-card/page.tsx
+│       ├── paystubs/               # Pay stub history with earnings/deductions breakdown
+│       │   ├── page.tsx
+│       │   └── types.ts
+│       ├── stat_cards/             # Dashboard KPI cards (weekly hours, targets)
+│       │   ├── page.tsx
+│       │   └── types.ts
+│       └── grid-content/           # Charts, timesheets, and weekly hours
+│           └── grid-cards/
+│               ├── quick-stats-card.tsx
+│               ├── recent-timesheets-card.tsx
+│               ├── weekly-hours-card.tsx
+│               ├── ytd-earnings-card.tsx
+│               └── types.ts
 │
 ├── components/                     # Reusable React components
 │   ├── SplitText.tsx               # GSAP-powered text split animation
@@ -104,10 +126,14 @@ paycore/
 │       └── primitives/             # Base animation primitives (slots, particles, toggles)
 │
 ├── lib/                            # Core business logic
-│   ├── payroll.tsx                 # Payroll calculations + client-side DB fetches
-│   ├── payroll-actions.ts          # Server actions — runPayroll orchestration
-│   ├── employee.tsx                # addEmployee Supabase action
-│   ├── utils.ts                    # General utility functions (cn, etc.)
+│   ├── supabase/                   # Supabase query functions and server actions
+│   │   ├── payroll.tsx             # calculatePayRollForEmployee + client-side DB fetches
+│   │   ├── payroll-actions.ts      # Server action — runPayroll orchestration
+│   │   ├── employee.tsx            # Employee CRUD + getCurrentEmployee
+│   │   ├── benefits.ts             # Benefits CRUD + employee enrollment
+│   │   ├── paystubs.ts             # Employee paystub queries
+│   │   └── time-entries.ts         # Time entry creation and fetching
+│   ├── utils.ts                    # General utility functions (cn, formatPayPeriod, etc.)
 │   ├── get-strict-context.tsx      # Type-safe React context factory
 │   └── interfaces/
 │       └── database.types.ts       # Auto-generated Supabase DB types
@@ -118,6 +144,7 @@ paycore/
 │
 ├── hooks/                          # Custom React hooks
 │   ├── use-add-employee.ts         # Manages add employee form state and submission
+│   ├── use-add-benefit.ts          # Manages add benefit form state and submission
 │   ├── use-controlled-state.tsx    # Generic controlled state hook
 │   └── use-is-in-view.tsx          # Intersection observer hook
 │
@@ -135,14 +162,14 @@ paycore/
 
 ## Core Algorithm — Payroll Calculation
 
-The payroll engine lives in two files: [`lib/payroll.tsx`](lib/payroll.tsx) (pure calculations) and [`lib/payroll-actions.ts`](lib/payroll-actions.ts) (orchestration).
+The payroll engine lives in two files: [`lib/supabase/payroll.tsx`](lib/supabase/payroll.tsx) (pure calculations) and [`lib/supabase/payroll-actions.ts`](lib/supabase/payroll-actions.ts) (orchestration).
 
 ### `calculatePayRollForEmployee`
 
-Located at [`lib/payroll.tsx`](lib/payroll.tsx). This is a **pure function** — no DB calls, no side effects. Given an employee, their time entries, and a payroll run, it returns a complete payroll record.
+Located at [`lib/supabase/payroll.tsx`](lib/supabase/payroll.tsx). This is a **pure function** — no DB calls, no side effects. Given an employee, their time entries, a payroll run, and an optional benefit deduction amount, it returns a complete payroll record.
 
 ```bash
-calculatePayRollForEmployee(employee, time_entries, payroll_run) → payroll_record
+calculatePayRollForEmployee(employee, time_entries, payroll_run, benefitDeduction?) → payroll_record
 ```
 
 #### Step 1 — Hours Worked
@@ -180,10 +207,20 @@ social_security   = gross_pay × (social_security_tax_rate ?? 0)
 
 Tax rates are stored per-employee in the `employees` table, so each employee can have different withholding.
 
-#### Step 4 — Net Pay
+#### Step 4 — Benefit Deductions
+
+Optional benefits an employee is enrolled in are summed by their `monthly_cost` and converted to a per-period amount:
 
 ```bash
-net_pay = gross_pay - federal_tax - state_tax - social_security
+perPeriodBenefitDeduction = (benefitDeduction × 12) ÷ 26
+```
+
+`benefitDeduction` is the total monthly cost of all active optional benefits for the employee, fetched upstream by `getActiveOptionalEmployeeBenefits` and passed into this function. Defaults to `0` if not provided.
+
+#### Step 5 — Net Pay
+
+```bash
+net_pay = gross_pay - federal_tax - state_tax - social_security - perPeriodBenefitDeduction
 ```
 
 #### Output Shape
@@ -192,11 +229,12 @@ net_pay = gross_pay - federal_tax - state_tax - social_security
 {
     employee_id,
     payroll_run_id,
-    regular_hours,   // summed employee hours; salaried gross pay ignores it
+    regular_hours,       // summed employee hours; salaried gross pay ignores it
     gross_pay,
     federal_tax,
     state_tax,
     social_security,
+    benefit_deductions,  // per-period benefit cost deducted from net pay
     net_pay
 }
 ```
@@ -205,7 +243,7 @@ net_pay = gross_pay - federal_tax - state_tax - social_security
 
 ### `runPayroll` — The Orchestrator
 
-Located at [`lib/payroll-actions.ts`](lib/payroll-actions.ts). A Next.js server action (`'use server'`) that runs the full payroll pipeline for a given pay period. Uses the server-side Supabase client so RLS policies are respected via the user's session cookie.
+Located at [`lib/supabase/payroll-actions.ts`](lib/supabase/payroll-actions.ts). A Next.js server action (`'use server'`) that runs the full payroll pipeline for a given pay period. Uses the server-side Supabase client so RLS policies are respected via the user's session cookie.
 
 #### Full Pipeline
 
@@ -216,9 +254,10 @@ Located at [`lib/payroll-actions.ts`](lib/payroll-actions.ts). A Next.js server 
 4. Insert payroll run  → create a record with status = "PROCESSING"
 5. Fetch employees     → all employees with employment_status = "ACTIVE"
 6. Fetch time entries  → all entries with status = "APPROVED" within the pay period date range
-7. Calculate records   → map each employee through calculatePayRollForEmployee
+7. Calculate records   → for each employee, fetch their active optional benefits, sum monthly costs,
+                         then pass the total into calculatePayRollForEmployee as benefitDeduction
 8. Insert records      → bulk insert all payroll records into payroll_records table
-9. Update payroll run  → compute totals, set status = "COMPLETED"
+9. Update payroll run  → compute totals (including total_benefit_deductions), set status = "COMPLETED"
 
 On any error between steps 4–9:
     → update payroll run status = "FAILED" (so it never stays stuck in PROCESSING)
@@ -241,9 +280,105 @@ The entire calculation and insertion block is wrapped in a `try/catch`. If anyth
 |---|---|
 | `employees` | Employee records including `pay_rate`, `pay_frequency`, and individual tax rates |
 | `time_entries` | Clock-in/out records with `hours_worked`, `work_date`, and `status` (PENDING / APPROVED) |
-| `payroll_runs` | One row per payroll run — tracks status, totals, and who ran it |
-| `payroll_records` | One row per employee per run — the computed output of `calculatePayRollForEmployee` |
+| `payroll_runs` | One row per payroll run — tracks status, totals (`total_gross`, `total_net`, `total_taxes`, `total_benefit_deductions`), and who ran it |
+| `payroll_records` | One row per employee per run — the computed output of `calculatePayRollForEmployee`, includes `benefit_deductions` |
+| `benefits` | Benefit definitions with `type` (COMPANY / OPTIONAL), `monthly_cost`, `provider`, and `coverage` |
+| `employee_benefits` | Junction table linking employees to benefits they are enrolled in — `status` is ACTIVE or NOT_ENROLLED |
+| `departments` | Department lookup table linked to employees via `department_id` |
 | `profiles` | User profile data linked to Supabase Auth |
+
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    profiles {
+        uuid    id          PK
+        string  role
+    }
+    departments {
+        uuid    id          PK
+        string  name
+        string  created_at
+    }
+    employees {
+        uuid    id                          PK
+        string  employee_number
+        string  first_name
+        string  last_name
+        string  position
+        string  role
+        float   pay_rate
+        string  pay_frequency
+        float   federal_tax_rate
+        float   state_tax_rate
+        float   social_security_tax_rate
+        string  employment_status
+        date    hire_date
+        uuid    department_id              FK
+        uuid    profile_id                 FK
+    }
+    time_entries {
+        uuid      id              PK
+        uuid      employee_id     FK
+        date      work_date
+        float     hours_worked
+        string    status
+        timestamp clock_in
+        timestamp clock_out
+        timestamp approved_at
+    }
+    benefits {
+        uuid    id              PK
+        string  benefit
+        string  tag
+        string  type
+        float   monthly_cost
+        string  coverage
+        string  provider
+        string  description
+    }
+    employee_benefits {
+        uuid      id              PK
+        uuid      employee_id     FK
+        uuid      benefit_id      FK
+        string    status
+        timestamp enrolled_at
+        timestamp updated_at
+    }
+    payroll_runs {
+        uuid    id                          PK
+        date    pay_period_start
+        date    pay_period_end
+        string  run_date
+        string  run_by
+        string  status
+        float   total_gross
+        float   total_net
+        float   total_taxes
+        float   total_benefit_deductions
+    }
+    payroll_records {
+        uuid    id                  PK
+        uuid    employee_id         FK
+        uuid    payroll_run_id      FK
+        float   regular_hours
+        float   overtime_hours
+        float   gross_pay
+        float   federal_tax
+        float   state_tax
+        float   social_security
+        float   benefit_deductions
+        float   net_pay
+    }
+
+    profiles             ||--o|  employees        : "linked to"
+    departments          ||--o{  employees        : "contains"
+    employees            ||--o{  time_entries     : "logs"
+    employees            ||--o{  employee_benefits : "enrolls in"
+    employees            ||--o{  payroll_records  : "receives"
+    benefits             ||--o{  employee_benefits : "offered as"
+    payroll_runs         ||--o{  payroll_records  : "generates"
+```
 
 All tables use Row Level Security (RLS). Reads and writes require authenticated sessions with the appropriate policies in place.
 
@@ -267,7 +402,7 @@ Tests live in [`lib/__tests__/`](lib/__tests__/). The framework is **Vitest** wi
 **12 tests** covering `calculatePayRollForEmployee` in full isolation. No Supabase, no network, no DB — pure function input/output.
 
 **Why the Supabase mock at the top:**
-`lib/payroll.tsx` calls `createClient()` at module scope when imported. Since tests have no real env vars, this would throw before any test runs. The mock replaces it with an empty object so the import succeeds cleanly.
+`lib/supabase/payroll.tsx` calls `createClient()` at module scope when imported. Since tests have no real env vars, this would throw before any test runs. The mock replaces it with an empty object so the import succeeds cleanly.
 
 **Fixtures:**
 `makeEmployee`, `makeTimeEntry`, and `makePayrollRun` are factory helpers that return complete objects with sensible defaults. Each test overrides only the fields it cares about — keeping tests focused and readable.
@@ -314,7 +449,7 @@ Verifies that `employee_id` and `payroll_run_id` on the returned record match th
 |---|---|
 | `next/headers` | The server Supabase client calls `cookies()` from Next.js headers — unavailable outside a request context |
 | `@/utils/supabase/server` | Replaced with `{ auth: mockAuth, from: mockFrom }` to control every DB response per test |
-| `@/utils/supabase/client` | Mocked to prevent the module-level `createClient()` crash in `lib/payroll.tsx` (imported transitively) |
+| `@/utils/supabase/client` | Mocked to prevent the module-level `createClient()` crash in `lib/supabase/payroll.tsx` (imported transitively) |
 
 **`beforeEach`:** Clears all mocks and resets `getUser` to return a valid authenticated user. Each test only needs to override what's relevant to its scenario.
 
