@@ -156,6 +156,68 @@ describe('calculatePayRollForEmployee', () => {
         });
     });
 
+    describe('weekly overtime logic (HOURLY and BI_WEEKLY)', () => {
+        it('BI_WEEKLY: 80h across two 40h weeks has no overtime', () => {
+            const employee = makeEmployee({ pay_rate: 30, pay_frequency: 'BI_WEEKLY' });
+            // Week 1: Mon 2026-01-12 through Fri 2026-01-16 (5 × 8h = 40h)
+            // Week 2: Mon 2026-01-19 through Fri 2026-01-23 (5 × 8h = 40h)
+            const entries = [
+                makeTimeEntry({ id: 'e1', work_date: '2026-01-12', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e2', work_date: '2026-01-13', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e3', work_date: '2026-01-14', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e4', work_date: '2026-01-15', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e5', work_date: '2026-01-16', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e6', work_date: '2026-01-19', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e7', work_date: '2026-01-20', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e8', work_date: '2026-01-21', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e9', work_date: '2026-01-22', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e10', work_date: '2026-01-23', hours_worked: 8 }),
+            ];
+            const result = calculatePayRollForEmployee(employee, entries, makePayrollRun());
+            expect(result.regular_hours).toBe(80);
+            expect(result.overtime_hours).toBe(0);
+            expect(result.gross_pay).toBe(2400); // 80 * 30
+        });
+
+        it('BI_WEEKLY: 50h in one week produces 10h overtime', () => {
+            const employee = makeEmployee({ pay_rate: 20, pay_frequency: 'BI_WEEKLY' });
+            const entries = [
+                makeTimeEntry({ id: 'e1', work_date: '2026-01-12', hours_worked: 10 }),
+                makeTimeEntry({ id: 'e2', work_date: '2026-01-13', hours_worked: 10 }),
+                makeTimeEntry({ id: 'e3', work_date: '2026-01-14', hours_worked: 10 }),
+                makeTimeEntry({ id: 'e4', work_date: '2026-01-15', hours_worked: 10 }),
+                makeTimeEntry({ id: 'e5', work_date: '2026-01-16', hours_worked: 10 }),
+            ];
+            const result = calculatePayRollForEmployee(employee, entries, makePayrollRun());
+            expect(result.regular_hours).toBe(40);
+            expect(result.overtime_hours).toBe(10);
+            expect(result.gross_pay).toBe(40 * 20 + 10 * 20 * 1.5); // 800 + 300 = 1100
+        });
+
+        it('HOURLY: 80h across two 40h weeks has no overtime', () => {
+            const employee = makeEmployee({ pay_rate: 25, pay_frequency: 'HOURLY' });
+            const entries = [
+                makeTimeEntry({ id: 'e1', work_date: '2026-01-12', hours_worked: 40 }),
+                makeTimeEntry({ id: 'e2', work_date: '2026-01-19', hours_worked: 40 }),
+            ];
+            const result = calculatePayRollForEmployee(employee, entries, makePayrollRun());
+            expect(result.regular_hours).toBe(80);
+            expect(result.overtime_hours).toBe(0);
+            expect(result.gross_pay).toBe(2000); // 80 * 25
+        });
+
+        it('entries with null work_date are skipped', () => {
+            const employee = makeEmployee({ pay_rate: 30, pay_frequency: 'BI_WEEKLY' });
+            const entries = [
+                makeTimeEntry({ id: 'e1', work_date: '2026-01-12', hours_worked: 8 }),
+                makeTimeEntry({ id: 'e2', work_date: null, hours_worked: 8 }),
+            ];
+            const result = calculatePayRollForEmployee(employee, entries, makePayrollRun());
+            expect(result.regular_hours).toBe(8);
+            expect(result.gross_pay).toBe(240); // only the entry with work_date
+        });
+    });
+
     describe('output shape', () => {
         it('returns the correct employee_id and payroll_run_id', () => {
             const employee = makeEmployee({ id: 'emp-42' });

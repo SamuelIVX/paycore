@@ -3,6 +3,7 @@ import { Tables } from "@/lib/interfaces/database.types";
 
 const supabase = createClient();
 const BI_WEEKLY_PAY_PERIODS = 26;
+const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
 
 export const getPayrollRuns = async () => {
     const { data: payroll_runs, error } = await supabase
@@ -45,7 +46,7 @@ function computeWeeklyOvertime(
     const weekMap = new Map<string, number>();
 
     for (const entry of entries) {
-        const dateStr = entry.work_date ?? entry.clock_in;
+        const dateStr = entry.work_date;
         if (!dateStr) continue;
         const key = getWeekStartKey(new Date(dateStr));
         weekMap.set(key, (weekMap.get(key) ?? 0) + entry.hours_worked);
@@ -87,24 +88,23 @@ export const calculatePayRollForEmployee = (
         ({ regularHours, overtimeHours, gross_pay } = computeWeeklyOvertime(employeeEntries, pay_rate));
     } else if (pay_frequency === "SALARY") {
         // Salaried employees get their annual salary / 26 pay periods
-        gross_pay = pay_rate / BI_WEEKLY_PAY_PERIODS;
+        gross_pay = roundMoney(pay_rate / BI_WEEKLY_PAY_PERIODS);
         regularHours = hoursWorked; // Track for records
         overtimeHours = 0;
     }
 
     // Calculate taxes
-    const federal_tax = gross_pay * (federal_tax_rate ?? 0);
-    const state_tax = gross_pay * (state_tax_rate ?? 0);
-    const social_security_tax = gross_pay * (social_security_tax_rate ?? 0);
+    const federal_tax = roundMoney(gross_pay * (federal_tax_rate ?? 0));
+    const state_tax = roundMoney(gross_pay * (state_tax_rate ?? 0));
+    const social_security_tax = roundMoney(gross_pay * (social_security_tax_rate ?? 0));
 
     // Calculate benefits deduction (convert monthly to bi-weekly)
     const perPeriodBenefitDeduction = gross_pay > 0
-        ? (benefitDeduction * 12) / BI_WEEKLY_PAY_PERIODS
+        ? roundMoney((benefitDeduction * 12) / BI_WEEKLY_PAY_PERIODS)
         : 0;  // Only deduct benefits when a run is actually paying the employee
 
-
     // Calculate net pay
-    const net_pay = gross_pay - federal_tax - state_tax - social_security_tax - perPeriodBenefitDeduction;
+    const net_pay = roundMoney(gross_pay - federal_tax - state_tax - social_security_tax - perPeriodBenefitDeduction);
 
     return {
         employee_id: employee.id,
