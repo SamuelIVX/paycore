@@ -32,9 +32,9 @@ export const getPayrollRecords = async () => {
 
 function getWeekStartKey(date: Date): string {
     const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
+    d.setUTCHours(0, 0, 0, 0);
     // Shift to Monday (week start)
-    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
     return d.toISOString().slice(0, 10);
 }
 
@@ -75,22 +75,15 @@ export const calculatePayRollForEmployee = (
 ) => {
     const { pay_rate, pay_frequency, federal_tax_rate, state_tax_rate, social_security_tax_rate } = employee;
 
-    const hoursWorked = time_entries
-        .filter((entry) => entry.employee_id === employee.id)
-        .reduce((total, entry) => total + entry.hours_worked, 0);
+    const employeeEntries = time_entries.filter((entry) => entry.employee_id === employee.id);
+    const hoursWorked = employeeEntries.reduce((total, entry) => total + entry.hours_worked, 0);
 
     let gross_pay = 0;
     let regularHours = 0;
     let overtimeHours = 0;
 
-
-    if (pay_frequency === "HOURLY") {
-        regularHours = Math.min(hoursWorked, 40);
-        overtimeHours = Math.max(hoursWorked - 40, 0);
-        gross_pay = (regularHours * pay_rate) + (overtimeHours * pay_rate * 1.5);
-    } else if (pay_frequency === "BI_WEEKLY") {
-        // Overtime must be computed per workweek, not across the full bi-weekly period
-        const employeeEntries = time_entries.filter((e) => e.employee_id === employee.id);
+    if (pay_frequency === "HOURLY" || pay_frequency === "BI_WEEKLY") {
+        // Overtime is computed per workweek to avoid overpaying across multi-week pay periods
         ({ regularHours, overtimeHours, gross_pay } = computeWeeklyOvertime(employeeEntries, pay_rate));
     } else if (pay_frequency === "SALARY") {
         // Salaried employees get their annual salary / 26 pay periods
