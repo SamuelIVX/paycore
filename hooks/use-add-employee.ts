@@ -21,6 +21,7 @@ export function useAddEmployee() {
                 position,
                 pay_frequency: payFrequency,
                 pay_rate: payRate,
+                employment_status: "ACTIVE",
             })
             setOpen(false)
             setFirstName("")
