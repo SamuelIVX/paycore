@@ -79,6 +79,8 @@ export default function PayrollTable() {
                                             <SelectItem value="2026-01-29_2026-02-11">Jan 29 - Feb 11, 2026</SelectItem>
                                             <SelectItem value="2026-02-12_2026-02-25">Feb 12 - Feb 25, 2026</SelectItem>
                                             <SelectItem value="2026-02-26_2026-03-11">Feb 26 - Mar 11, 2026</SelectItem>
+                                            <SelectItem value="2026-03-12_2026-03-25">Mar 12 - Mar 25, 2026</SelectItem>
+                                            <SelectItem value="2026-03-26_2026-04-08">Mar 26 - Apr 8, 2026</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

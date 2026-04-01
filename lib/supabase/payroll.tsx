@@ -43,17 +43,42 @@ export const calculatePayRollForEmployee = (
         .filter((entry) => entry.employee_id === employee.id)
         .reduce((total, entry) => total + entry.hours_worked, 0);
 
-    const gross_pay = pay_frequency === "HOURLY" ? hoursWorked * pay_rate : pay_rate / BI_WEEKLY_PAY_PERIODS;
+    let gross_pay = 0;
+    let regularHours = 0;
+    let overtimeHours = 0;
+
+
+    if (pay_frequency === "HOURLY" || pay_frequency === "BI_WEEKLY") {
+        // HOURLY and BI_WEEKLY both calculate based on hours worked
+        regularHours = Math.min(hoursWorked, 40);
+        overtimeHours = Math.max(hoursWorked - 40, 0);
+        gross_pay = (regularHours * pay_rate) + (overtimeHours * pay_rate * 1.5);
+
+    } else if (pay_frequency === "SALARY") {
+        // Salaried employees get their annual salary / 26 pay periods
+        gross_pay = pay_rate / BI_WEEKLY_PAY_PERIODS;
+        regularHours = hoursWorked; // Track for records
+        overtimeHours = 0;
+    }
+
+    // Calculate taxes
     const federal_tax = gross_pay * (federal_tax_rate ?? 0);
     const state_tax = gross_pay * (state_tax_rate ?? 0);
     const social_security_tax = gross_pay * (social_security_tax_rate ?? 0);
-    const perPeriodBenefitDeduction = (benefitDeduction * 12) / BI_WEEKLY_PAY_PERIODS;
+
+    // Calculate benefits deduction (convert monthly to bi-weekly)
+    const perPeriodBenefitDeduction = hoursWorked > 0
+        ? (benefitDeduction * 12) / BI_WEEKLY_PAY_PERIODS
+        : 0;  // Don't charge benefits if no hours worked
+
+    // Calculate net pay
     const net_pay = gross_pay - federal_tax - state_tax - social_security_tax - perPeriodBenefitDeduction;
 
     return {
         employee_id: employee.id,
         payroll_run_id: payroll_run.id,
-        regular_hours: hoursWorked,
+        regular_hours: regularHours,
+        overtime_hours: overtimeHours,
         gross_pay,
         federal_tax,
         state_tax,
