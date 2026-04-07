@@ -43,7 +43,7 @@ export default function SummaryCards({ company_count, optional_count, monthly_de
 
                     <SummaryCard
                         title="Total Deductions"
-                        value={`$${monthly_deduction.toFixed(2)}`}
+                        value={`$${(monthly_deduction ?? 0).toFixed(2)}`}
                         color="text-orange-600"
                         description="Per month"
                     />

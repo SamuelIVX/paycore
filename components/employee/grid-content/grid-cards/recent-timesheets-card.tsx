@@ -1,5 +1,6 @@
+'use client'
 import { useState } from "react";
-import { Button } from "@/components/animate-ui/components/buttons/button"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, AlertCircle, Clock, CheckCircle2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
@@ -11,7 +12,7 @@ import { getShortDay } from "@/lib/utils"
 import type { RecentTimesheetsCardProps } from "./types"
 
 export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHoursByDay }: RecentTimesheetsCardProps) {
-    const recentEntries = [...timeEntries]
+    const recentEntries = [...(timeEntries || [])]
         .sort((a, b) => b.date.localeCompare(a.date))
         .slice(0, 4)
 

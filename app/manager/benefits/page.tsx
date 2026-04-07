@@ -1,6 +1,6 @@
-import SummaryCards from "./summary-cards/cards"
-import CompanyBenefitsGrid from "./company-benefits/benefits"
-import OptionalBenefitsGrid from "./optional-benefits/benefits"
+import SummaryCards from "@/components/manager/summary-cards/SummaryCards"
+import CompanyBenefitsGrid from "@/components/manager/company-benefits/CompanyBenefits"
+import OptionalBenefitsGrid from "@/components/manager/optional-benefits/OptionalBenefits"
 
 export default function BenefitsPage() {
     return (
