@@ -78,9 +78,9 @@ function PayrollStatusContent() {
         runPayroll(startDate, endDate)
             .then(({ total_gross, total_net, total_taxes }) => {
                 setResults({
-                    total_gross: Number(total_gross),
-                    total_net: Number(total_net),
-                    total_taxes: Number(total_taxes)
+                    total_gross: Number(total_gross) || 0,
+                    total_net: Number(total_net) || 0,
+                    total_taxes: Number(total_taxes) || 0
                 });
                 setStatus("SUCCESS");
             })

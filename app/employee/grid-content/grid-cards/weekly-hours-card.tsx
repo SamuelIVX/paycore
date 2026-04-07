@@ -27,7 +27,7 @@ export default function WeeklyHoursCardBreakdown({ chartConfig, hoursByDay }: { 
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig} className="h-[220px] w-full">
-                    <BarChart data={hoursByDay || []}>
+                    <BarChart data={hoursByDay}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis
                             dataKey="day"
@@ -46,7 +46,7 @@ export default function WeeklyHoursCardBreakdown({ chartConfig, hoursByDay }: { 
 
                 <section className="sr-only" aria-label="Daily hours worked this week">
                     <ul>
-                        {(hoursByDay || []).map((entry) => (
+                        {(hoursByDay).map((entry) => (
                             <li key={entry.day}>
                                 {entry.day}: {entry.hours} hours
                             </li>
