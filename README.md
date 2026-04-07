@@ -8,7 +8,7 @@ A full-stack payroll management web application built with Next.js, React 19, Su
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 16 (App Router) |
+| Framework | Next.js 16 (App Router) with Turbopack |
 | Language | TypeScript |
 | Database / Auth | Supabase (PostgreSQL + RLS) |
 | Styling | TailwindCSS v4 + shadcn/ui |
@@ -47,60 +47,27 @@ paycore/
 │   ├── theme-provider.tsx          # Dark/light mode provider (next-themes)
 │   ├── navbar-wrapper.tsx          # Conditionally renders manager or employee navbar
 │   │
-│   ├── manager/                    # All manager-facing pages
-│   │   ├── dashboard/page.tsx      # Manager dashboard with stat cards and charts
-│   │   ├── employee-table/page.tsx # Table of all employees
-│   │   ├── payroll-records-table/  # Payroll records viewer with Run Payroll dialog
-│   │   │   └── page.tsx
-│   │   ├── payroll-status/         # Payroll run progress/result page
-│   │   │   ├── page.tsx
-│   │   │   └── types.ts
-│   │   ├── benefits/               # Benefits management section
-│   │   │   ├── page.tsx
-│   │   │   ├── types.ts
-│   │   │   ├── constant.ts
-│   │   │   ├── data.ts
-│   │   │   ├── company-benefits/benefits.tsx
-│   │   │   ├── optional-benefits/benefits.tsx
-│   │   │   └── summary-cards/cards.tsx
-│   │   ├── stat-cards/             # Dashboard KPI cards (total employees, payroll, etc.)
-│   │   │   ├── cards.tsx
-│   │   │   └── types.ts
-│   │   └── grid-content/           # Dashboard grid layout and chart cards
-│   │       ├── grid-content.tsx
-│   │       └── grid-cards/
-│   │           ├── payroll-chart.tsx
-│   │           ├── salary-distribution-chart.tsx
-│   │           ├── team-distribution.tsx
-│   │           ├── recent-activity.tsx
-│   │           ├── quick-actions-card.tsx
-│   │           ├── upcoming-tasks.tsx
-│   │           └── types.ts
+│   ├── manager/                    # Manager routable pages
+│   │   ├── dashboard/
+│   │   │   └── page.tsx            # Manager dashboard
+│   │   ├── employee-table/
+│   │   │   └── page.tsx            # Employee table
+│   │   ├── payroll-records-table/
+│   │   │   └── page.tsx            # Payroll records viewer
+│   │   ├── payroll-status/
+│   │   │   └── page.tsx            # Payroll run status page
+│   │   └── benefits/
+│   │       └── page.tsx            # Benefits management page
 │   │
-│   └── employee/                   # All employee-facing pages
-│       ├── dashboard/page.tsx      # Employee dashboard
-│       ├── benefits/               # Benefit enrollment and coverage summary
-│       │   ├── page.tsx
-│       │   ├── types.ts
-│       │   ├── constants.ts
-│       │   ├── summary-cards/page.tsx
-│       │   ├── progress-bar/page.tsx
-│       │   ├── company-benefits-cards/page.tsx
-│       │   ├── optional-benefits-cards/page.tsx
-│       │   └── important-info-card/page.tsx
-│       ├── paystubs/               # Pay stub history with earnings/deductions breakdown
-│       │   ├── page.tsx
-│       │   └── types.ts
-│       ├── stat_cards/             # Dashboard KPI cards (weekly hours, targets)
-│       │   ├── page.tsx
-│       │   └── types.ts
-│       └── grid-content/           # Charts, timesheets, and weekly hours
-│           └── grid-cards/
-│               ├── quick-stats-card.tsx
-│               ├── recent-timesheets-card.tsx
-│               ├── weekly-hours-card.tsx
-│               ├── ytd-earnings-card.tsx
-│               └── types.ts
+│   └── employee/                   # Employee routable pages
+│       ├── dashboard/
+│       │   └── page.tsx            # Employee dashboard
+│       ├── benefits/
+│       │   └── page.tsx            # Benefits enrollment page
+│       ├── paystubs/
+│       │   └── page.tsx            # Paystubs history page
+│       └── grid-content/
+│           └── page.tsx            # Grid content page
 │
 ├── components/                     # Reusable React components
 │   ├── SplitText.tsx               # GSAP-powered text split animation
@@ -121,6 +88,30 @@ paycore/
 │   │   └── navbars/
 │   │       ├── manager-navbar.tsx  # Navigation bar for managers
 │   │       └── employee-navbar.tsx # Navigation bar for employees
+│   ├── manager/                    # Manager-specific reusable UI components
+│   │   ├── stat-cards/             # Dashboard KPI cards
+│   │   │   ├── index.tsx
+│   │   │   └── types.ts
+│   │   ├── benefits/               # Benefits management components
+│   │   │   ├── summary-cards/
+│   │   │   ├── company-benefits/
+│   │   │   └── optional-benefits/
+│   │   └── grid-content/           # Dashboard grid components
+│   ├── employee/                   # Employee-specific reusable UI components
+│   │   ├── benefits/               # Benefits page components
+│   │   │   ├── summary-cards/
+│   │   │   ├── progress-bar/
+│   │   │   ├── company-benefits-cards/
+│   │   │   ├── optional-benefits-cards/
+│   │   │   └── important-info-card/
+│   │   ├── grid-content/           # Employee dashboard grid components
+│   │   │   └── grid-cards/
+│   │   │       ├── recent-timesheets-card.tsx
+│   │   │       ├── weekly-hours-card.tsx
+│   │   │       ├── ytd-earnings-card.tsx
+│   │   │       ├── quick-stats-card.tsx
+│   │   │       └── types.ts
+│   │   └── stat-cards/             # Employee stat cards
 │   └── animate-ui/                 # Animated UI component extensions
 │       ├── components/buttons/     # Animated button variants
 │       └── primitives/             # Base animation primitives (slots, particles, toggles)
