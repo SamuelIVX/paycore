@@ -1,9 +1,24 @@
+'use client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import type { HoursByDay } from "./types";
 
 export default function WeeklyHoursCardBreakdown({ chartConfig, hoursByDay }: { chartConfig: ChartConfig; hoursByDay: HoursByDay[] }) {
+    if (!chartConfig || !hoursByDay) {
+        return (
+            <Card className="shadow-sm">
+                <CardHeader>
+                    <CardTitle className="text-base">This Week&apos;s Hours</CardTitle>
+                    <CardDescription>Daily breakdown of hours worked</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-gray-500">Loading...</p>
+                </CardContent>
+            </Card>
+        )
+    }
+
     return (
         <Card className="shadow-sm">
             <CardHeader>
@@ -12,7 +27,7 @@ export default function WeeklyHoursCardBreakdown({ chartConfig, hoursByDay }: { 
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig} className="h-[220px] w-full">
-                    <BarChart data={hoursByDay}>
+                    <BarChart data={hoursByDay || []}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis
                             dataKey="day"
@@ -31,7 +46,7 @@ export default function WeeklyHoursCardBreakdown({ chartConfig, hoursByDay }: { 
 
                 <section className="sr-only" aria-label="Daily hours worked this week">
                     <ul>
-                        {hoursByDay.map((entry) => (
+                        {(hoursByDay || []).map((entry) => (
                             <li key={entry.day}>
                                 {entry.day}: {entry.hours} hours
                             </li>

@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner";
 import { Separator } from "@/components/ui/separator";
@@ -61,8 +62,7 @@ export function StatusCard({ text, icon, color, children }: StatusCardProps) {
     )
 }
 
-export default function PayrollStatusPage() {
-
+function PayrollStatusContent() {
     const searchParams = useSearchParams();
     const startDate = searchParams.get("startDate") ?? "";
     const endDate = searchParams.get("endDate") ?? "";
@@ -78,9 +78,9 @@ export default function PayrollStatusPage() {
         runPayroll(startDate, endDate)
             .then(({ total_gross, total_net, total_taxes }) => {
                 setResults({
-                    total_gross,
-                    total_net,
-                    total_taxes
+                    total_gross: Number(total_gross),
+                    total_net: Number(total_net),
+                    total_taxes: Number(total_taxes)
                 });
                 setStatus("SUCCESS");
             })
@@ -172,5 +172,29 @@ export default function PayrollStatusPage() {
 
             </div>
         </div>
+    )
+}
+
+export default function PayrollStatusPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="container mx-auto max-w-2xl">
+                    <StatusCard
+                        text={{
+                            title: "Loading Payroll Status...",
+                            description: "Please wait"
+                        }}
+                        icon={<Spinner className="w-24 h-24" variant="bars" />}
+                        color={{
+                            border: "",
+                            bg: "",
+                        }}
+                    />
+                </div>
+            </div>
+        }>
+            <PayrollStatusContent />
+        </Suspense>
     )
 }
