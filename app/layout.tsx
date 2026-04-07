@@ -7,6 +7,9 @@ import { ThemeProvider } from "./theme-provider";
 export const metadata: Metadata = {
   title: "PayCore",
   description: "A web-based payroll management system...",
+  icons: {
+    icon: '/favicon.ico',
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

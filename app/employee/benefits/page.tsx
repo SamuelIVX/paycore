@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import SummaryCards from "./summary-cards/page"
-import CompanyBenefitCards from "./company-benefits-cards/page"
-import OptionalBenefitsCard from "./optional-benefits-cards/page"
-import ProgressBarCard from "./progress-bar/page"
-import ImportantInfoCard from "./important-info-card/page"
+import SummaryCards from "@/components/employee/summary-cards/SummaryCards"
+import CompanyBenefitCards from "@/components/employee/company-benefits-cards/CompanyBenefits"
+import OptionalBenefitsCard from "@/components/employee/optional-benefits-cards/OptionalBenefits"
+import ProgressBarCard from "@/components/employee/progress-bar/ProgressBar"
+import ImportantInfoCard from "@/components/employee/important-info-card/ImportantInfoCard"
 import {
   getCompanyBenefitsCount,
   getOptionalBenefitsCount,

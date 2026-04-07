@@ -3,9 +3,9 @@
 import * as React from "react"
 
 import { type ChartConfig } from "@/components/ui/chart"
-import EmployeeStatCards from "../stat_cards/page"
-import GridContent from "../grid-content/page"
-import type { HoursByDay, TimeEntry } from "../grid-content/grid-cards/types"
+import EmployeeStatCards from "@/components/employee/stat_cards/StatCards"
+import GridContent from "@/components/employee/grid-content/GridContent"
+import type { HoursByDay, TimeEntry } from "@/components/employee/grid-content/grid-cards/types"
 
 const chartConfig = {
   hours: {

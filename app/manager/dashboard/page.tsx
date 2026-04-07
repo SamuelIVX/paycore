@@ -1,5 +1,5 @@
-import ManagerStatCards from "../stat-cards/cards"
-import GridContent from "../grid-content/grid-content"
+import ManagerStatCards from "@/components/manager/stat-cards/Statcards"
+import GridContent from "@/components/manager/grid-content/GridContent"
 
 export default function ManagerDashboardPage() {
     return (
