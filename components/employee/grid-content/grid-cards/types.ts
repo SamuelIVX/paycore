@@ -19,7 +19,7 @@ export interface QuickActionsCardProps {
 }
 
 export interface RecentTimesheetsCardProps {
-    timeEntries: TimeEntry[]
+    timeEntries?: TimeEntry[]
     setTimesheets: Dispatch<SetStateAction<TimeEntry[]>>
     setHoursByDay: Dispatch<SetStateAction<HoursByDay[]>>
 }

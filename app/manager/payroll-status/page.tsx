@@ -77,10 +77,18 @@ function PayrollStatusContent() {
 
         runPayroll(startDate, endDate)
             .then(({ total_gross, total_net, total_taxes }) => {
+                const gross = Number(total_gross);
+                const net = Number(total_net);
+                const taxes = Number(total_taxes);
+
+                if (![gross, net, taxes].every(Number.isFinite)) {
+                    throw new Error("Invalid payroll totals returned from runPayroll");
+                }
+
                 setResults({
-                    total_gross: Number(total_gross) || 0,
-                    total_net: Number(total_net) || 0,
-                    total_taxes: Number(total_taxes) || 0
+                    total_gross: gross,
+                    total_net: net,
+                    total_taxes: taxes
                 });
                 setStatus("SUCCESS");
             })

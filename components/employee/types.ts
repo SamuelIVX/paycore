@@ -10,7 +10,7 @@ export interface SummaryCardProps {
 export interface SummaryCardsProps {
     company_count: number;
     optional_count: number;
-    monthly_deduction: number;
+    monthly_deduction?: number;
 }
 
 export interface OptionalBenefitsCardProps {
