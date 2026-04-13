@@ -90,15 +90,6 @@ export interface PayStubRowProps {
 	isNegative?: boolean;
 	isBold?: boolean;
 }
-
-export interface PayStubRowProps {
-	label: string;
-	current: number;
-	ytd: number;
-	isNegative?: boolean;
-	isBold?: boolean;
-}
-
 export interface ProcessedPaystub extends CheckData {
 	id: string;
 	period: string;

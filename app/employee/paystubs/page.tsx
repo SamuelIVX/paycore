@@ -48,7 +48,14 @@ function PayStubCard({
     <Card className="shadow-md overflow-hidden pt-0">
       <div
         role="button"
+        tabIndex={0}
         onClick={onToggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
         className="w-full bg-green-900 text-white px-6 py-4 hover:bg-green-800 transition-colors flex justify-between items-center cursor-pointer"
       >
         <div className="text-left">
@@ -64,24 +71,7 @@ function PayStubCard({
           </div>
           {/* PDFDownloadLink is only mounted after the card is expanded to avoid
               generating all PDFs on page load. */}
-          {isExpanded ? (
-            <PDFDownloadLink
-              document={<CheckPDF data={stub} />}
-              fileName={`${stub.employeeName.replace(/\s+/g, "_")}_${stub.payDate}.pdf`}
-            >
-              {({ loading }) => (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={loading}
-                  className="text-white hover:bg-slate-600 h-8"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-              )}
-            </PDFDownloadLink>
-          ) : (
+          {!isExpanded && (
             <Button
               variant="ghost"
               size="sm"

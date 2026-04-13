@@ -17,9 +17,7 @@ function stableNumber(seed: string, min: number, range: number): number {
 }
 
 export function processPaystubData(row: RawPaystubRow): ProcessedPaystub {
-  const payrollRun = Array.isArray(row.payroll_runs)
-    ? row.payroll_runs[0]
-    : row.payroll_runs;
+  const payrollRun = row.payroll_runs;
   const employee = row.employees;
 
   const employeeName =
@@ -47,7 +45,7 @@ export function processPaystubData(row: RawPaystubRow): ProcessedPaystub {
   const federalTax = row.federal_tax || 0;
   const stateTax = row.state_tax || 0;
   const socialSecurity = row.social_security || 0;
-  const medicare = grossPay * 0.0145;
+  const medicare = row.medicare ?? grossPay * 0.0145;
   const benefitDeductions = row.benefit_deductions || 0;
 
   const totalDeductions =

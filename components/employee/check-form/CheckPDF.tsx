@@ -139,6 +139,9 @@ function formatCurrency(amount: number): string {
 function formatDate(dateStr: string): string {
 	if (!dateStr) return "";
 	const date = new Date(dateStr);
+
+	if (isNaN(date.getTime())) return dateStr;
+
 	return date.toLocaleDateString("en-US", {
 		year: "numeric",
 		month: "long",
@@ -222,7 +225,7 @@ export function CheckPDF({ data }: { data: CheckData }) {
 						{data.regularHours.toFixed(2)}
 					</Text>
 					<Text style={[styles.tableCell, { width: 70, textAlign: "right" }]}>
-						{(data.regularHours * 4).toFixed(2)}
+						{(data.regularHours * (data.ytdGross / data.grossPay || 1)).toFixed(2)}
 					</Text>
 				</View>
 				{data.overtimeHours > 0 && (
@@ -343,20 +346,20 @@ export function CheckPDF({ data }: { data: CheckData }) {
 						-
 						{formatCurrency(
 							data.federalTax +
-								data.stateTax +
-								data.socialSecurity +
-								data.medicare +
-								data.benefitDeductions,
+							data.stateTax +
+							data.socialSecurity +
+							data.medicare +
+							data.benefitDeductions,
 						)}
 					</Text>
 					<Text style={[styles.value, { width: 70, textAlign: "right" }]}>
 						-
 						{formatCurrency(
 							data.ytdFederalTax +
-								data.ytdStateTax +
-								data.ytdSocialSecurity +
-								data.ytdMedicare +
-								data.ytdBenefits,
+							data.ytdStateTax +
+							data.ytdSocialSecurity +
+							data.ytdMedicare +
+							data.ytdBenefits,
 						)}
 					</Text>
 				</View>
