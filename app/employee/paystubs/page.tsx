@@ -44,6 +44,9 @@ function PayStubCard({
   isExpanded: boolean;
   onToggle: () => void;
 }) {
+
+  const ytdMultiplier = stub.grossPay > 0 ? stub.ytdGross / stub.grossPay : 1;
+
   return (
     <Card className="shadow-md overflow-hidden pt-0">
       <div
@@ -69,8 +72,7 @@ function PayStubCard({
             </p>
             <p className="text-xs text-green-300">{stub.period}</p>
           </div>
-          {/* PDFDownloadLink is only mounted after the card is expanded to avoid
-              generating all PDFs on page load. */}
+
           {!isExpanded && (
             <Button
               variant="ghost"
@@ -155,23 +157,23 @@ function PayStubCard({
                 <PayStubRow
                   label="Regular Hours"
                   current={stub.regularHours}
-                  ytd={stub.regularHours * 4}
+                  ytd={stub.regularHours * ytdMultiplier}
                 />
                 <PayStubRow
                   label="Overtime Hours"
                   current={stub.overtimeHours}
-                  ytd={stub.overtimeHours * 4}
+                  ytd={stub.overtimeHours * ytdMultiplier}
                 />
                 <PayStubRow
                   label="Regular Pay"
                   current={stub.regularPay}
-                  ytd={stub.regularPay * 4}
+                  ytd={stub.regularPay * ytdMultiplier}
                 />
                 {stub.overtimeHours > 0 && (
                   <PayStubRow
                     label="Overtime Pay"
                     current={stub.overtimePay}
-                    ytd={stub.overtimePay * 4}
+                    ytd={stub.overtimePay * ytdMultiplier}
                   />
                 )}
                 <PayStubRow

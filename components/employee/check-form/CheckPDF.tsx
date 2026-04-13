@@ -150,6 +150,8 @@ function formatDate(dateStr: string): string {
 }
 
 export function CheckPDF({ data }: { data: CheckData }) {
+	const ytdMultiplier = data.grossPay > 0 ? data.ytdGross / data.grossPay : 1;
+
 	return (
 		<Document>
 			<Page size="LETTER" style={styles.page}>
@@ -225,7 +227,7 @@ export function CheckPDF({ data }: { data: CheckData }) {
 						{data.regularHours.toFixed(2)}
 					</Text>
 					<Text style={[styles.tableCell, { width: 70, textAlign: "right" }]}>
-						{(data.regularHours * (data.ytdGross / data.grossPay || 1)).toFixed(2)}
+						{(data.regularHours * ytdMultiplier).toFixed(2)}
 					</Text>
 				</View>
 				{data.overtimeHours > 0 && (
@@ -237,7 +239,7 @@ export function CheckPDF({ data }: { data: CheckData }) {
 							{data.overtimeHours.toFixed(2)}
 						</Text>
 						<Text style={[styles.tableCell, { width: 70, textAlign: "right" }]}>
-							{(data.overtimeHours * 4).toFixed(2)}
+							{(data.overtimeHours * ytdMultiplier).toFixed(2)}
 						</Text>
 					</View>
 				)}
@@ -249,7 +251,7 @@ export function CheckPDF({ data }: { data: CheckData }) {
 						{formatCurrency(data.regularPay)}
 					</Text>
 					<Text style={[styles.tableCell, { width: 70, textAlign: "right" }]}>
-						{formatCurrency(data.regularPay * 4)}
+						{formatCurrency(data.regularPay * ytdMultiplier)}
 					</Text>
 				</View>
 				{data.overtimePay > 0 && (
@@ -261,7 +263,7 @@ export function CheckPDF({ data }: { data: CheckData }) {
 							{formatCurrency(data.overtimePay)}
 						</Text>
 						<Text style={[styles.tableCell, { width: 70, textAlign: "right" }]}>
-							{formatCurrency(data.overtimePay * 4)}
+							{formatCurrency(data.overtimePay * ytdMultiplier)}
 						</Text>
 					</View>
 				)}

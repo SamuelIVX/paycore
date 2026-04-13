@@ -52,13 +52,14 @@ export function processPaystubData(row: RawPaystubRow): ProcessedPaystub {
     federalTax + stateTax + socialSecurity + medicare + benefitDeductions;
 
   const ytdMultiplier = stableNumber(row.id, 3, 5);
-  const ytdGross = grossPay * ytdMultiplier;
-  const ytdFederalTax = federalTax * ytdMultiplier;
-  const ytdStateTax = stateTax * ytdMultiplier;
-  const ytdSocialSecurity = socialSecurity * ytdMultiplier;
-  const ytdMedicare = medicare * ytdMultiplier;
-  const ytdBenefits = benefitDeductions * ytdMultiplier;
-  const ytdNetPay = netPay * ytdMultiplier;
+  const ytdGross = row.ytd_gross ?? grossPay * ytdMultiplier;
+  const ytdFederalTax = row.ytd_federal_tax ?? federalTax * ytdMultiplier;
+  const ytdStateTax = row.ytd_state_tax ?? stateTax * ytdMultiplier;
+  const ytdSocialSecurity =
+    row.ytd_social_security ?? socialSecurity * ytdMultiplier;
+  const ytdMedicare = row.ytd_medicare ?? medicare * ytdMultiplier;
+  const ytdBenefits = row.ytd_benefits ?? benefitDeductions * ytdMultiplier;
+  const ytdNetPay = row.ytd_net_pay ?? netPay * ytdMultiplier;
   const ytdTotalDeductions =
     ytdFederalTax +
     ytdStateTax +
