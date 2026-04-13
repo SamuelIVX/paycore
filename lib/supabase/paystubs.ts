@@ -1,13 +1,13 @@
-import { createClient } from "@/utils/supabase/client"
-import { getCurrentEmployee } from "./employee"
+import { createClient } from "@/utils/supabase/client";
+import { getCurrentEmployee } from "./employee";
 
 export async function getEmployeePaystubs() {
-  const supabase = createClient()
-  const { employee } = await getCurrentEmployee()
+	const supabase = createClient();
+	const { employee } = await getCurrentEmployee();
 
-  const { data, error } = await supabase
-    .from("payroll_records")
-    .select(`
+	const { data, error } = await supabase
+		.from("payroll_records")
+		.select(`
       id,
       regular_hours,
       overtime_hours,
@@ -24,14 +24,25 @@ export async function getEmployeePaystubs() {
         pay_period_end,
         run_date,
         status
+      ),
+      employees (
+        pay_rate,
+        pay_frequency,
+        first_name,
+        last_name,
+        address_line,
+        city,
+        state,
+        zip_code,
+        phone
       )
     `)
-    .eq("employee_id", employee.id)
-    .order("created_at", { ascending: false })
+		.eq("employee_id", employee.id)
+		.order("created_at", { ascending: false });
 
-  if (error) {
-    throw error
-  }
+	if (error) {
+		throw error;
+	}
 
-  return data ?? []
+	return data ?? [];
 }
