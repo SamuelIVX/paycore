@@ -27,23 +27,29 @@ export default function RecentActivityCard() {
             <CardContent>
                 <div className="space-y-3">
                     {payrollRecords.slice(0, 4).map(record => (
-                        <div key={record.id} className="flex items-center justify-between p-3 border border-yellow-200 bg-yellow-50 rounded-lg hover:border-yellow-500 transition-colors">
+                        <div
+                            key={record.id}
+                            className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${record.status === "pending"
+                                ? "bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800 hover:border-orange-500 dark:hover:border-orange-500"
+                                : "bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-800 hover:border-green-500 dark:hover:border-green-500"
+                                }`}
+                        >
                             <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${record.status === "pending" ? "bg-orange-100" :
-                                    record.status === "approved" ? "bg-green-100" : "bg-blue-100"
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${record.status === "pending"
+                                    ? "bg-orange-100 dark:bg-orange-900/50"
+                                    : "bg-green-100 dark:bg-green-900/50"
                                     }`}>
-                                    {record.status === "pending" ? (
-                                        <Clock className="w-5 h-5 text-orange-600" />
-                                    ) : record.status === "approved" ? (
-                                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                    {record.status === "approved" ? (
+                                        <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
                                     ) : (
-                                        < Clock className="w-5 h-5 text-blue-600" />
+                                        <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                                     )}
                                 </div>
-
                                 <div>
-                                    <p className="font-medium">{record.employeeName}</p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className={`font-medium ${record.status === "pending" ? "text-orange-900 dark:text-orange-200" : "text-green-900 dark:text-green-200"}`}>
+                                        {record.employeeName}
+                                    </p>
+                                    <p className={`text-sm ${record.status === "pending" ? "text-orange-700 dark:text-orange-300" : "text-green-700 dark:text-green-300"}`}>
                                         Net Pay: ${record.netPay.toFixed(2)}
                                     </p>
                                 </div>

@@ -25,7 +25,7 @@ import { useAddBenefit } from "@/hooks/use-add-benefit";
 export function CompanyBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
         <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-white">{title}</span>
+            <span className="text-blue-900 dark:text-blue-200">{title}</span>
             <span className="font-medium">{value}</span>
         </div>
     )
@@ -63,7 +63,7 @@ export default function CompanyBenefitsGrid() {
     }, []);
 
     return (
-        <Card className="bg-blue-100 border-blue-400">
+        <Card className="bg-blue-100 dark:bg-blue-950/40 border-blue-400 dark:border-blue-800">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
@@ -72,7 +72,7 @@ export default function CompanyBenefitsGrid() {
                     </div>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
-                            <Button className="bg-blue-400">
+                            <Button className="bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600">
                                 <Plus className="w-4 h-4" />
                                 Add Company Benefit
                             </Button>
@@ -232,10 +232,10 @@ export default function CompanyBenefitsGrid() {
                                 }}
                             >
                                 <DialogTrigger asChild>
-                                    <Card className="hover:bg-blue-50 hover:border-blue-300 transition-all hover:cursor-pointer">
+                                    <Card className="hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-600 transition-all hover:cursor-pointer">
                                         <CardContent>
                                             <div className="flex items-start gap-4">
-                                                <div className="shrink-0 w-12 h-12 rounded-lg bg-blue-500 flex items-center justify-center">
+                                                <div className="shrink-0 w-12 h-12 rounded-lg bg-blue-500 dark:bg-blue-700 flex items-center justify-center">
                                                     <Icon className="w-6 h-6 text-white" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -248,14 +248,14 @@ export default function CompanyBenefitsGrid() {
                                                             </Badge>
                                                             <button
                                                                 type="button"
-                                                                className="text-red-400 hover:text-red-600 transition-colors"
+                                                                className="text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 transition-colors"
                                                                 onClick={(e) => { e.stopPropagation(); setDeleteOpenId(b.id); }}
                                                             >
                                                                 <CircleMinus className="w-5 h-5" />
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <p className="text-sm text-gray-700 dark:text-zinc-300 mb-3">{b.description}</p>
+                                                    <p className="text-sm text-blue-900 dark:text-blue-200 mb-3">{b.description}</p>
                                                     <div className="space-y-1 text-sm">
                                                         <CompanyBenefitDetails
                                                             title="Provider:"
@@ -336,7 +336,7 @@ export default function CompanyBenefitsGrid() {
                                     </div>
                                     <DialogFooter>
                                         <Button
-                                            className="bg-blue-400"
+                                            className="bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600"
                                             disabled={isSubmitting}
                                             onClick={async () => {
                                                 if (!editValues.benefit.trim() || !editValues.description || !editValues.coverage || !editValues.provider) {

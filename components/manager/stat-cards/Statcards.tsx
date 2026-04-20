@@ -7,13 +7,13 @@ export function ManagerStatCard({ title, icon, value, description }: ManagerStat
         <Card>
 
             <CardHeader className="flex flex-row items-center justify-between pb-2 rounded-lg">
-                <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">{title}</CardTitle>
                 {icon}
             </CardHeader>
 
             <CardContent>
                 <div className="text-3xl font-bold">{value}</div>
-                <p className="text-xs text-gray-600 mt-1">{description}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{description}</p>
             </CardContent>
 
         </Card>
@@ -26,21 +26,21 @@ export default function ManagerStatCards() {
 
             <ManagerStatCard
                 title="Total Employees"
-                icon={<Users className="text-blue-500 h-5 w-5" />}
+                icon={<Users className="text-blue-500 dark:text-blue-400 h-5 w-5" />}
                 value="5"
                 description="Active in system"
             />
 
             <ManagerStatCard
                 title="Pending Approvals"
-                icon={<Clock className="text-orange-500 h-5 w-5" />}
+                icon={<Clock className="text-orange-500 dark:text-orange-400 h-5 w-5" />}
                 value="2"
                 description="Payroll Records"
             />
 
             <ManagerStatCard
                 title="Total Payroll"
-                icon={<DollarSign className="text-green-500 h-5 w-5" />}
+                icon={<DollarSign className="text-green-500 dark:text-green-400 h-5 w-5" />}
                 value="$325,000"
                 description="Annual Salary"
             />

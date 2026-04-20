@@ -28,31 +28,31 @@ export default function UpcomingTasksCard() {
                     <TaskCard
                         title="Payroll Submission"
                         description="Due: February 15, 2026"
-                        icon={<Calendar className="w-5 h-5 text-blue-600 mt-0.5" />}
+                        icon={<Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />}
                         color={{
-                            bg: "bg-blue-50",
-                            border: "border-blue-200 hover:border-blue-500",
-                            text: "text-blue-900"
+                            bg: "bg-blue-50 dark:bg-blue-950/40",
+                            border: "border-blue-200 hover:border-blue-500 dark:border-blue-800 dark:hover:border-blue-500",
+                            text: "text-blue-900 dark:text-blue-200"
                         }}
                     />
                     <TaskCard
                         title="Tax Filing Deadline"
                         description="Due: February 28, 2026"
-                        icon={<FileCheck className="w-5 h-5 text-purple-600 mt-0.5" />}
+                        icon={<FileCheck className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5" />}
                         color={{
-                            bg: "bg-purple-50",
-                            border: "border-purple-200 hover:border-purple-500",
-                            text: "text-purple-900"
+                            bg: "bg-purple-50 dark:bg-purple-950/40",
+                            border: "border-purple-200 hover:border-purple-500 dark:border-purple-800 dark:hover:border-purple-500",
+                            text: "text-purple-900 dark:text-purple-200"
                         }}
                     />
                     <TaskCard
                         title="Benefits Open Enrollment"
                         description="Starts: March 1, 2026"
-                        icon={<Heart className="w-5 h-5 text-green-600 mt-0.5" />}
+                        icon={<Heart className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />}
                         color={{
-                            bg: "bg-green-50",
-                            border: "border-green-200 hover:border-green-500",
-                            text: "text-green-900"
+                            bg: "bg-green-50 dark:bg-green-950/40",
+                            border: "border-green-200 hover:border-green-500 dark:border-green-800 dark:hover:border-green-500",
+                            text: "text-green-900 dark:text-green-200"
                         }}
                     />
                 </div>

@@ -24,7 +24,7 @@ import { useAddBenefit } from "@/hooks/use-add-benefit";
 export function OptionalBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
         <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-white">{title}</span>
+            <span className="text-purple-900 dark:text-purple-200">{title}</span>
             <span className="font-medium">{value}</span>
         </div>
     )
@@ -63,7 +63,7 @@ export default function OptionalBenefitsGrid() {
     }, []);
 
     return (
-        <Card className="mt-8 bg-purple-100 border-purple-400">
+        <Card className="mt-8 bg-purple-100 dark:bg-purple-950/40 border-purple-400 dark:border-purple-800">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
@@ -72,7 +72,7 @@ export default function OptionalBenefitsGrid() {
                     </div>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
-                            <Button className="bg-purple-400">
+                            <Button className="bg-purple-400 dark:bg-purple-700 dark:hover:bg-purple-600">
                                 <Plus className="w-4 h-4" />
                                 Add Optional Benefit
                             </Button>
@@ -242,31 +242,31 @@ export default function OptionalBenefitsGrid() {
                                 }}
                             >
                                 <DialogTrigger asChild>
-                                    <Card className="hover:bg-purple-50 hover:border-purple-300 transition-all hover:cursor-pointer">
+                                    <Card className="hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:border-purple-300 dark:hover:border-purple-600 transition-all hover:cursor-pointer">
                                         <CardContent>
                                             <div className="flex items-start gap-4">
-                                                <div className="shrink-0 w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
-                                                    <Icon className="w-6 h-6 text-purple-600" />
+                                                <div className="shrink-0 w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
+                                                    <Icon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-start justify-between gap-2 mb-2">
                                                         <h3 className="font-semibold text-lg">{b.benefit}</h3>
                                                         <div className="flex items-center gap-2">
                                                             <div className="text-right">
-                                                                <div className="text-lg font-bold text-purple-600">
-                                                                    ${b.monthly_cost} <span className="text-xs text-purple-300">/month</span>
+                                                                <div className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                                                                    ${b.monthly_cost} <span className="text-xs text-purple-300 dark:text-purple-500">/month</span>
                                                                 </div>
                                                             </div>
                                                             <button
                                                                 type="button"
-                                                                className="text-red-400 hover:text-red-600 transition-colors"
+                                                                className="text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 transition-colors"
                                                                 onClick={(e) => { e.stopPropagation(); setDeleteOpenId(b.id); }}
                                                             >
                                                                 <CircleMinus className="w-4 h-4" />
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <p className="text-sm text-gray-600 dark:text-zinc-300 mb-3">{b.description}</p>
+                                                    <p className="text-sm text-purple-900 dark:text-purple-200 mb-3">{b.description}</p>
                                                     <div className="space-y-1 text-sm">
                                                         <OptionalBenefitDetails title="Provider:" value={b.provider || ""} />
                                                         {b.coverage && (
@@ -350,7 +350,7 @@ export default function OptionalBenefitsGrid() {
                                     </div>
                                     <DialogFooter>
                                         <Button
-                                            className="bg-purple-400"
+                                            className="bg-purple-400 dark:bg-purple-700 dark:hover:bg-purple-600"
                                             disabled={isSubmitting}
                                             onClick={async () => {
                                                 if (!editValues) {

@@ -23,7 +23,7 @@ export function PayrollSection({ title, value, icon, color }: PayrollSectionProp
         <>
             <div className="flex items-center gap-2">
                 {icon}
-                <span className="text-gray-500">{title}:</span>
+                <span className="text-gray-500 dark:text-gray-400">{title}:</span>
             </div>
             <div className={`font-semibold text-right ${color}`}>{value}</div>
         </>
@@ -40,16 +40,16 @@ export function StatusCard({ text, icon, color, children }: StatusCardProps) {
                     </div>
                     <div>
                         <h2 className="font-bold text-2xl mb-2">{text.title}</h2>
-                        <p className="text-gray-500">{text.description}</p>
+                        <p className="text-gray-500 dark:text-gray-400">{text.description}</p>
                     </div>
 
                     {children &&
                         <>
-                            <div className="w-full bg-white rounded-lg p-6 mb-4">
+                            <div className="w-full bg-white dark:bg-card rounded-lg p-6 mb-4">
                                 {children}
                             </div>
 
-                            <Button className="bg-black p-4" asChild>
+                            <Button className="bg-black dark:bg-primary p-4" asChild>
                                 <Link href="/manager/dashboard">
                                     <Home className="w-4 h-4" /> Back To Dashboard
                                 </Link>
@@ -138,13 +138,13 @@ function PayrollStatusContent() {
                                     <PayrollSection
                                         title="Total Gross Pay"
                                         value={`$${results.total_gross.toLocaleString()}`}
-                                        icon={<FileText className="w-4 h-4 text-gray-500" />}
+                                        icon={<FileText className="w-4 h-4 text-gray-500 dark:text-gray-400" />}
                                     />
 
                                     <PayrollSection
                                         title="Total Deductions"
                                         value={`-$${results.total_taxes.toLocaleString()}`}
-                                        icon={<FileText className="w-4 h-4 text-gray-500" />}
+                                        icon={<FileText className="w-4 h-4 text-gray-500 dark:text-gray-400" />}
                                         color="text-red-500"
                                     />
 
@@ -153,7 +153,7 @@ function PayrollStatusContent() {
                                     <PayrollSection
                                         title="Total Net Pay"
                                         value={`$${results.total_net.toLocaleString()}`}
-                                        icon={<DollarSign className="w-4 h-4 text-green-600" />}
+                                        icon={<DollarSign className="w-4 h-4 text-green-600 dark:text-green-400" />}
                                         color="text-green-500"
                                     />
 

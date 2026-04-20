@@ -53,13 +53,13 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
                             key={b.id}
                             className={[
                                 "rounded-lg border p-4 transition-colors",
-                                enabled ? "border-green-400 bg-green-50" : "border-purple-300 hover:bg-purple-50",
+                                enabled ? "border-green-400 bg-green-50 dark:border-green-700 dark:bg-green-950/40" : "border-purple-300 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/40",
                             ].join(" ")}
                         >
 
                             <div className="flex items-start gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-purple-200">
-                                    {BENEFIT_ICONS[b.tag] && createElement(BENEFIT_ICONS[b.tag], { className: "h-4 w-4 text-purple-600" })}
+                                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-purple-200 dark:bg-purple-800">
+                                    {BENEFIT_ICONS[b.tag] && createElement(BENEFIT_ICONS[b.tag], { className: "h-4 w-4 text-purple-600 dark:text-purple-300" })}
                                 </div>
 
                                 <div className="flex-1">

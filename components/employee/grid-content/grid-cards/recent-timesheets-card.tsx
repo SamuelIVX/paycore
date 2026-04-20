@@ -85,25 +85,31 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
 
                 <CardContent className="space-y-3">
                     {recentEntries.length === 0 ? (
-                        <p className="text-center text-gray-500 py-4">No recent timesheets</p>
+                        <p className="text-center text-gray-500 dark:text-gray-400 py-4">No recent timesheets</p>
                     ) : (
                         <>
                             {recentEntries.map(entry => (
-                                <div key={entry.id} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                <div key={entry.id} className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                                    entry.status === "REJECTED"
+                                        ? "bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800 hover:border-orange-400 dark:hover:border-orange-600"
+                                        : entry.status === "PENDING"
+                                        ? "bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600"
+                                        : "bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-800 hover:border-green-400 dark:hover:border-green-600"
+                                }`}>
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${entry.status === "REJECTED" ? "bg-orange-100" :
-                                            entry.status === "PENDING" ? "bg-blue-100" : "bg-green-100"
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${entry.status === "REJECTED" ? "bg-orange-100 dark:bg-orange-900/30" :
+                                            entry.status === "PENDING" ? "bg-blue-100 dark:bg-blue-900/30" : "bg-green-100 dark:bg-green-900/30"
                                             }`}>
                                             {entry.status === "REJECTED" ? (
-                                                <AlertCircle className="w-5 h-5 text-orange-600" />
+                                                <AlertCircle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                                             ) : entry.status === "PENDING" ? (
-                                                <Clock className="w-5 h-5 text-blue-600" />
+                                                <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                             ) : (
-                                                <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                                <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
                                             )}
                                         </div>
                                         <div>
-                                            <p className="font-medium dark:text-black">
+                                            <p className="font-medium">
                                                 {(() => {
                                                     const [year, month, day] = entry.date.split("-").map(Number)
                                                     return new Date(year, month - 1, day).toLocaleDateString('en-US', {
@@ -114,7 +120,7 @@ export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHo
                                                 })()}
 
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
                                                 {entry.hoursWorked} hours
                                             </p>
                                         </div>
