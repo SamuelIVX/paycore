@@ -49,8 +49,6 @@ export function DataTable<T>({
   error = null,
   pageSize = 10,
 }: DataTableProps<T>) {
-  "use no memo";
-
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
 

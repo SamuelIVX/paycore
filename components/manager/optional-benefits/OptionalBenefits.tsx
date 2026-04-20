@@ -353,8 +353,8 @@ export default function OptionalBenefitsGrid() {
                                             className="bg-purple-400 dark:bg-purple-700 dark:hover:bg-purple-600"
                                             disabled={isSubmitting}
                                             onClick={async () => {
-                                                if (!editValues) {
-                                                    setError("All fields are required.");
+                                                if (!editValues.benefit.trim() || !editValues.description || !editValues.provider) {
+                                                    setError("Benefit name, description, and provider are required.");
                                                     return;
                                                 }
                                                 setIsSubmitting(true);

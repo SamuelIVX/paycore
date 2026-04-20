@@ -36,6 +36,12 @@ function getStatusBadgeClass(status: string | null) {
   }
 }
 
+const PAY_FREQUENCY_LABELS: Record<string, string> = {
+  HOURLY: "Hourly",
+  BI_WEEKLY: "Bi-Weekly",
+  SALARY: "Salary",
+};
+
 function ActionsCell({ employee, onUpdate, onDelete, onError }: {
   employee: Employee;
   onUpdate: (updates: Partial<Employee>) => Promise<void>;
@@ -93,14 +99,17 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
                   <Label htmlFor="edit-position">Position</Label>
                   <Input id="edit-position" value={editValues.position} onChange={(e) => setEditValues((v) => ({ ...v, position: e.target.value }))} />
                 </div>
-                <Select value={editValues.pay_frequency} onValueChange={(value) => setEditValues((v) => ({ ...v, pay_frequency: value }))}>
-                  <SelectTrigger><SelectValue placeholder="Choose..." /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="HOURLY">Hourly</SelectItem>
-                    <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
-                    <SelectItem value="SALARY">Salary</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-payFrequency">Pay Frequency</Label>
+                  <Select value={editValues.pay_frequency} onValueChange={(value) => setEditValues((v) => ({ ...v, pay_frequency: value }))}>
+                    <SelectTrigger><SelectValue placeholder="Choose..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="HOURLY">Hourly</SelectItem>
+                      <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
+                      <SelectItem value="SALARY">Salary</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-payRate">Pay</Label>
                   <Input id="edit-payRate" type="number" value={editValues.pay_rate} onChange={(e) => setEditValues((v) => ({ ...v, pay_rate: Number(e.target.value) }))} />
@@ -211,7 +220,10 @@ export default function EmployeeTable() {
     {
       accessorKey: "pay_frequency",
       header: ({ column }) => <SortableHeader column={column} label="Pay Type" />,
-      cell: ({ row }) => row.original.pay_frequency ?? "—",
+      cell: ({ row }) => {
+        const pf = row.original.pay_frequency;
+        return pf ? (PAY_FREQUENCY_LABELS[pf] ?? pf) : "—";
+      },
     },
     {
       accessorKey: "pay_rate",

@@ -125,8 +125,8 @@ function PayrollStatusContent() {
                         }}
                         icon={<CircleCheck className="w-24 h-24 text-green-500" />}
                         color={{
-                            border: "border-green-300",
-                            bg: "bg-green-50",
+                            border: "border-green-300 dark:border-green-800",
+                            bg: "bg-green-50 dark:bg-green-950/40",
                         }}
                     >
                         {results &&
@@ -172,8 +172,8 @@ function PayrollStatusContent() {
                         }}
                         icon={<CircleX className="w-24 h-24 text-red-500" />}
                         color={{
-                            border: "border-red-300",
-                            bg: "bg-red-50",
+                            border: "border-red-300 dark:border-red-800",
+                            bg: "bg-red-50 dark:bg-red-950/40",
                         }}
                     />
                 )}

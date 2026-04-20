@@ -15,11 +15,15 @@ import { getPayrollRecords } from "@/lib/supabase/payroll";
 import { PayrollRecordType } from "./types";
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
 
-function hoursCell(record: PayrollRecordType, field: "regular_hours" | "overtime_hours") {
+function hoursValue(record: PayrollRecordType, field: "regular_hours" | "overtime_hours"): number | null {
   if (record.employees?.pay_frequency === "HOURLY" || record.employees == null) {
-    return record[field] ?? "—";
+    return record[field] ?? null;
   }
-  return "—";
+  return null;
+}
+
+function formatHours(value: number | null): string {
+  return value == null ? "—" : String(value);
 }
 
 export default function PayrollTable() {
@@ -44,20 +48,20 @@ export default function PayrollTable() {
     },
     {
       id: "regular_hours",
-      accessorFn: (row) => hoursCell(row, "regular_hours"),
+      accessorFn: (row) => hoursValue(row, "regular_hours"),
       header: ({ column }) => <SortableHeader column={column} label="Hours Worked" />,
-      cell: ({ row }) => hoursCell(row.original, "regular_hours"),
+      cell: ({ row }) => formatHours(hoursValue(row.original, "regular_hours")),
     },
     {
       id: "overtime_hours",
-      accessorFn: (row) => hoursCell(row, "overtime_hours"),
+      accessorFn: (row) => hoursValue(row, "overtime_hours"),
       header: ({ column }) => <SortableHeader column={column} label="Overtime Hours" />,
-      cell: ({ row }) => hoursCell(row.original, "overtime_hours"),
+      cell: ({ row }) => formatHours(hoursValue(row.original, "overtime_hours")),
     },
     {
       accessorKey: "gross_pay",
       header: ({ column }) => <SortableHeader column={column} label="Gross Pay" />,
-      cell: ({ row }) => `$${row.original.gross_pay.toFixed(2)}`,
+      cell: ({ row }) => `$${(row.original.gross_pay ?? 0).toFixed(2)}`,
     },
     {
       accessorKey: "federal_tax",
@@ -86,8 +90,8 @@ export default function PayrollTable() {
       accessorKey: "net_pay",
       header: ({ column }) => <SortableHeader column={column} label="Net Pay" />,
       cell: ({ row }) => (
-        <span className={`font-semibold ${row.original.net_pay > 0 ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
-          ${row.original.net_pay.toFixed(2)}
+        <span className={`font-semibold ${(row.original.net_pay ?? 0) > 0 ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
+          ${(row.original.net_pay ?? 0).toFixed(2)}
         </span>
       ),
     },
@@ -140,8 +144,11 @@ export default function PayrollTable() {
           </div>
         </div>
         <DialogFooter>
-          <BaseButton asChild>
-            <Link href={`/manager/payroll-status?startDate=${startDate}&endDate=${endDate}`}>
+          <BaseButton asChild disabled={!startDate || !endDate}>
+            <Link
+              href={`/manager/payroll-status?startDate=${startDate}&endDate=${endDate}`}
+              aria-disabled={!startDate || !endDate}
+            >
               Run Payroll
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
