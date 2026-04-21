@@ -55,7 +55,7 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
     last_name: employee.last_name ?? "",
     position: employee.position ?? "",
     pay_frequency: employee.pay_frequency ?? "",
-    pay_rate: employee.pay_rate,
+    pay_rate: employee.pay_rate ?? 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -74,7 +74,7 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
               last_name: employee.last_name ?? "",
               position: employee.position ?? "",
               pay_frequency: employee.pay_frequency ?? "",
-              pay_rate: employee.pay_rate,
+              pay_rate: employee.pay_rate ?? 0,
             });
             setEditOpen(open);
           }}>
@@ -228,7 +228,10 @@ export default function EmployeeTable() {
     {
       accessorKey: "pay_rate",
       header: ({ column }) => <SortableHeader column={column} label="Pay" />,
-      cell: ({ row }) => `$${row.original.pay_rate.toLocaleString()}`,
+      cell: ({ row }) =>
+        row.original.pay_rate == null
+          ? "—"
+          : `$${row.original.pay_rate.toLocaleString()}`,
     },
     {
       accessorKey: "employment_status",

@@ -144,15 +144,19 @@ export default function PayrollTable() {
           </div>
         </div>
         <DialogFooter>
-          <BaseButton asChild disabled={!startDate || !endDate}>
-            <Link
-              href={`/manager/payroll-status?startDate=${startDate}&endDate=${endDate}`}
-              aria-disabled={!startDate || !endDate}
-            >
+          {(!startDate || !endDate) ? (
+            <BaseButton disabled aria-disabled="true">
               Run Payroll
               <ArrowRight className="w-4 h-4 ml-2" />
-            </Link>
-          </BaseButton>
+            </BaseButton>
+          ) : (
+            <BaseButton asChild>
+              <Link href={`/manager/payroll-status?startDate=${startDate}&endDate=${endDate}`}>
+                Run Payroll
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            </BaseButton>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
