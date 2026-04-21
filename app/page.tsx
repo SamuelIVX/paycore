@@ -163,15 +163,6 @@ export default function LoginPage() {
           </form>
         </CardContent>
 
-        <div
-          className="text-sm text-center p-4 bg-blue-100 rounded-md m-4"
-          style={{ color: "var(--muted-foreground)" }}
-        >
-          <p className="font-medium mb-1">Demo Credentials:</p>
-          <p>Manager: <span className="font-mono">johnsmith@paycore.com</span></p>
-          <p>Employee: <span className="font-mono">emilydavis@paycore.com</span></p>
-        </div>
-
       </Card>
     </div >
   )

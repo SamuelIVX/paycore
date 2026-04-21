@@ -41,16 +41,16 @@ export default function CompanyBenefitsCard() {
 
                 {company_benefits.map((b) => (
 
-                    <div key={b.benefit} className="rounded-lg border hover:border-blue-300 hover:bg-blue-50 p-4">
+                    <div key={b.benefit} className="rounded-lg border hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/40 p-4">
                         <div className="flex items-start gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 dark:bg-blue-700">
                                 {createElement(BENEFIT_ICONS[b.tag], { className: "h-4 w-4 text-white" })}
                             </div>
 
                             <div className="flex-1">
                                 <div className="flex items-center gap-2">
                                     <div className="font-semibold">{b.benefit}</div>
-                                    <Badge className="rounded-full bg-blue-400">
+                                    <Badge className="rounded-full bg-blue-400 dark:bg-blue-600 text-blue-950 dark:text-blue-100">
                                         {b.tag}
                                     </Badge>
                                 </div>
