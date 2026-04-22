@@ -7,7 +7,7 @@ A full-stack payroll management web application built with Next.js, React 19, Su
 ## Tech Stack
 
 | Layer | Technology |
-|---|---|
+| ------ | ------------ |
 | Framework | Next.js 16 (App Router) with Turbopack |
 | Language | TypeScript |
 | Database / Auth | Supabase (PostgreSQL + RLS) |
@@ -268,7 +268,7 @@ The entire calculation and insertion block is wrapped in a `try/catch`. If anyth
 ## Database Tables
 
 | Table | Purpose |
-|---|---|
+| ----- | ------- |
 | `employees` | Employee records including `pay_rate`, `pay_frequency`, and individual tax rates |
 | `time_entries` | Clock-in/out records with `hours_worked`, `work_date`, and `status` (PENDING / APPROVED) |
 | `payroll_runs` | One row per payroll run — tracks status, totals (`total_gross`, `total_net`, `total_taxes`, `total_benefit_deductions`), and who ran it |
@@ -401,7 +401,7 @@ Tests live in [`lib/__tests__/`](lib/__tests__/). The framework is **Vitest** wi
 #### HOURLY employees (4 tests)
 
 | Test | Input | Expected |
-|---|---|---|
+| ----- | ---------------- | --------- |
 | Basic gross pay | 8hrs @ $30/hr | `gross_pay = 240` |
 | Multi-entry summing | entries of 8hrs + 6hrs @ $25/hr | `gross_pay = 350`, `regular_hours = 14` |
 | Employee isolation | emp-1 (8hrs) + emp-2 (8hrs) mixed together | Only emp-1's hours count → `gross_pay = 240` |
@@ -410,14 +410,14 @@ Tests live in [`lib/__tests__/`](lib/__tests__/). The framework is **Vitest** wi
 #### SALARIED employees (2 tests)
 
 | Test | Input | Expected |
-|---|---|---|
+| ----- | ---------------- | --------- |
 | Bi-weekly pay | `pay_rate = 100000` | `gross_pay ≈ 3846.15` (100000 ÷ 26) |
 | Time entries ignored | salary employee with 80hrs passed in | `gross_pay` unchanged — still `≈ 3846.15` |
 
 #### Tax calculations (5 tests)
 
 | Test | Input | Expected |
-|---|---|---|
+| ----- | ---------------- | --------- |
 | Federal tax | 8hrs @ $30, `federal_tax_rate = 0.22` | `federal_tax ≈ 52.80` |
 | State tax | 8hrs @ $30, `state_tax_rate = 0.093` | `state_tax ≈ 22.32` |
 | Social security | 8hrs @ $30, `social_security_tax_rate = 0.062` | `social_security ≈ 14.88` |
@@ -437,7 +437,7 @@ Verifies that `employee_id` and `payroll_run_id` on the returned record match th
 **What's mocked and why:**
 
 | Mock | Reason |
-|---|---|
+| ----- | ------ |
 | `next/headers` | The server Supabase client calls `cookies()` from Next.js headers — unavailable outside a request context |
 | `@/utils/supabase/server` | Replaced with `{ auth: mockAuth, from: mockFrom }` to control every DB response per test |
 | `@/utils/supabase/client` | Mocked to prevent the module-level `createClient()` crash in `lib/supabase/payroll.tsx` (imported transitively) |
@@ -459,7 +459,7 @@ call 6 → update payroll run totals
 #### Tests
 
 | Test | Scenario | Assertion |
-|---|---|---|
+| ----- | ---------------- | --------- |
 | Auth guard | `getUser` returns `null` | Throws `"User must be authenticated"` |
 | Invalid dates | `'not-a-date'` passed as start | Throws `"Invalid pay period dates"` |
 | Start after end | `'2026-01-28'` / `'2026-01-15'` | Throws `"start date must be before"` |
@@ -474,7 +474,7 @@ The `stderr` line printed during the FAILED rollback test (`Error fetching activ
 ## Scripts
 
 | Command | Description |
-|---|---|
+| ------- | ----------- |
 | `npm run dev` | Start local development server |
 | `npm run build` | Production build |
 | `npm run lint` | Run ESLint |
