@@ -99,6 +99,7 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
   (
     {
       className,
+      logo,
       logoHref = "/employee/dashboard",
       navigationLinks = defaultNavigationLinks,
       logoutText = "Log Out",
@@ -207,13 +208,15 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
                 className="flex items-center gap-3 text-primary hover:text-primary/90 transition-colors cursor-pointer"
               >
                 <div className="shrink-0">
-                  <Image
-                    src="/logo.png"
-                    alt="PayCore Logo"
-                    className="size-15 rounded-full object-cover"
-                    width={60}
-                    height={60}
-                  />
+                  {logo ?? (
+                    <Image
+                      src="/logo.png"
+                      alt="PayCore Logo"
+                      className="size-15 rounded-full object-cover"
+                      width={60}
+                      height={60}
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-col items-start justify-center">

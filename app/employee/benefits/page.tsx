@@ -13,24 +13,7 @@ import {
   getOptionalBenefits,
 } from "@/lib/supabase/benefits"
 import { getCurrentEmployee } from "@/lib/supabase/employee"
-
-interface BenefitOption {
-  id: string;
-  benefit: string;
-  monthly_cost?: number | null;
-  type: string;
-  [key: string]: unknown;
-}
-
-interface EmployeeBenefit {
-  benefit_id: string;
-  status: 'ACTIVE' | 'NOT_ENROLLED';
-  benefit?: {
-    id: string;
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-}
+import { EmployeeBenefit, BenefitOption } from "@/app/employee/benefits/types"
 
 export default function BenefitsPage() {
   const [employeeId, setEmployeeId] = useState<string>("");

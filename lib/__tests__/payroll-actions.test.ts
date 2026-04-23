@@ -102,6 +102,19 @@ describe('runPayroll', () => {
 
     it('returns totals on a successful payroll run', async () => {
         let callCount = 0;
+        const mockOptionalBenefit = {
+            id: 'employee-benefit-1',
+            employee_id: 'emp-1',
+            benefit_id: 'benefit-1',
+            status: 'ACTIVE',
+            benefit: {
+                id: 'benefit-1',
+                type: 'OPTIONAL',
+                monthly_cost: 25,
+            },
+        };
+        const mockInsertPayrollRecords = vi.fn().mockResolvedValue({ data: null, error: null });
+
         mockFrom.mockImplementation(() => {
             callCount++;
 
@@ -132,9 +145,8 @@ describe('runPayroll', () => {
             };
             // 5th call: getActiveOptionalEmployeeBenefits (per employee in Promise.all)
             if (callCount === 5) {
-                // Create chaining eq that returns itself but also resolves
                 const firstEq = vi.fn().mockReturnValue({
-                    eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+                    eq: vi.fn().mockResolvedValue({ data: [mockOptionalBenefit], error: null }),
                 });
                 return {
                     select: vi.fn().mockReturnValue({
@@ -144,7 +156,7 @@ describe('runPayroll', () => {
             }
             // 6th call: insertPayrollRecords
             if (callCount === 6) return {
-                insert: vi.fn().mockResolvedValue({ data: null, error: null }),
+                insert: mockInsertPayrollRecords,
             };
             // 7th call: updatePayrollRun
             if (callCount === 7) return {
@@ -165,6 +177,11 @@ describe('runPayroll', () => {
         expect(result.total_taxes).toBeDefined();
         // 8 hours * $30/hr = $240 gross
         expect(Number(result.total_gross)).toBeCloseTo(240);
+        expect(mockInsertPayrollRecords).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.objectContaining({ benefit_deductions: 11.54 }),
+            ]),
+        );
     });
 
     it('marks the payroll run as FAILED when an error occurs mid-run', async () => {

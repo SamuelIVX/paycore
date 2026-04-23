@@ -17,6 +17,26 @@ export type SpinnerProps = LucideProps & {
 
 type SpinnerVariantProps = Omit<SpinnerProps, "variant">
 
+const lucideSvgProps = [
+  "absoluteStrokeWidth",
+  "absoluteMenuButtonWidth",
+  "absoluteRight",
+  "absoluteSize",
+  "fill",
+  "strokeWidth",
+] as const
+
+const toNativeSvgProps = (
+  props: SpinnerVariantProps,
+): React.SVGProps<SVGSVGElement> => {
+  const { size: _size, ...rest } = props
+  const svgProps: Record<string, unknown> = { ...rest }
+  for (const key of lucideSvgProps) {
+    delete svgProps[key]
+  }
+  return svgProps as React.SVGProps<SVGSVGElement>
+}
+
 const Default = ({ className, ...props }: SpinnerVariantProps) => (
   <LoaderIcon className={cn("animate-spin", className)} {...props} />
 )
@@ -47,13 +67,14 @@ const CircleFilled = ({ className, size = 24, ...props }: SpinnerVariantProps) =
 )
 
 const Ellipsis = ({ size = 24, ...props }: SpinnerVariantProps) => {
+  const svgProps = toNativeSvgProps(props)
   return (
     <svg
       height={size}
       viewBox="0 0 24 24"
       width={size}
       xmlns="http://www.w3.org/2000/svg"
-      {...props}
+      {...svgProps}
     >
       <title>Loading...</title>
       <circle cx="4" cy="12" fill="currentColor" r="2">
@@ -92,15 +113,17 @@ const Ellipsis = ({ size = 24, ...props }: SpinnerVariantProps) => {
   )
 }
 
-const Ring = ({ size = 24, ...props }: SpinnerVariantProps) => (
-  <svg
-    height={size}
-    stroke="currentColor"
-    viewBox="0 0 44 44"
-    width={size}
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
+const Ring = ({ size = 24, ...props }: SpinnerVariantProps) => {
+  const svgProps = toNativeSvgProps(props)
+  return (
+    <svg
+      height={size}
+      stroke="currentColor"
+      viewBox="0 0 44 44"
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
+      {...svgProps}
+    >
     <title>Loading...</title>
     <g fill="none" fillRule="evenodd" strokeWidth="2">
       <circle cx="22" cy="22" r="1">
@@ -146,19 +169,22 @@ const Ring = ({ size = 24, ...props }: SpinnerVariantProps) => (
           repeatCount="indefinite"
           values="1; 0"
         />
-      </circle>
-    </g>
-  </svg>
-)
+</circle>
+      </g>
+    </svg>
+  )
+}
 
-const Bars = ({ size = 24, ...props }: SpinnerVariantProps) => (
-  <svg
-    height={size}
-    viewBox="0 0 24 24"
-    width={size}
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
+const Bars = ({ size = 24, ...props }: SpinnerVariantProps) => {
+  const svgProps = toNativeSvgProps(props)
+  return (
+    <svg
+      height={size}
+      viewBox="0 0 24 24"
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
+      {...svgProps}
+    >
     <title>Loading...</title>
     <style>{`
       .spinner-bar {
@@ -201,17 +227,20 @@ const Bars = ({ size = 24, ...props }: SpinnerVariantProps) => (
       y="1"
     />
   </svg>
-)
+  )
+}
 
-const Infinite = ({ size = 24, ...props }: SpinnerVariantProps) => (
-  <svg
-    height={size}
-    preserveAspectRatio="xMidYMid"
-    viewBox="0 0 100 100"
-    width={size}
-    xmlns="http://www.w3.org/2000/svg"
-    {...(props as React.SVGProps<SVGSVGElement>)}
-  >
+const Infinite = ({ size = 24, ...props }: SpinnerVariantProps) => {
+  const svgProps = toNativeSvgProps(props)
+  return (
+    <svg
+      height={size}
+      preserveAspectRatio="xMidYMid"
+      viewBox="0 0 100 100"
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
+      {...svgProps}
+    >
     <title>Loading...</title>
     <path
       d="M24.3 30C11.4 30 5 43.3 5 50s6.4 20 19.3 20c19.3 0 32.1-40 51.4-40 C88.6 30 95 43.3 95 50s-6.4 20-19.3 20C56.4 70 43.6 30 24.3 30z"
@@ -234,7 +263,8 @@ const Infinite = ({ size = 24, ...props }: SpinnerVariantProps) => (
       />
     </path>
   </svg>
-)
+  )
+}
 
 export const Spinner = ({ variant, ...props }: SpinnerProps) => {
   switch (variant) {

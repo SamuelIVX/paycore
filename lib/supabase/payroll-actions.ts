@@ -6,17 +6,9 @@ import { TablesInsert, Tables } from "@/lib/interfaces/database.types";
 import { calculatePayRollForEmployee } from "@/lib/supabase/payroll";
 import { getActiveOptionalEmployeeBenefits } from "@/lib/supabase/benefits";
 
-interface EmployeeBenefitRow {
-    id: string;
-    employee_id: string;
-    benefit_id: string;
-    benefit?: {
-        id: string;
-        type: string;
-        monthly_cost: number | null;
-    } | null;
-    status: 'ACTIVE' | 'NOT_ENROLLED';
-}
+type EmployeeBenefitRow = Tables<"employee_benefits"> & {
+    benefit?: Pick<Tables<"benefits">, "id" | "type" | "monthly_cost"> | null;
+};
 
 export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string, user: string) => {
     const { data: run, error: runError } = await supabase

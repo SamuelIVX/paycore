@@ -102,8 +102,9 @@ const defaultNavigationLinks: ManagerNavbarNavLink[] = [
 export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
   (
     {
-      // TODO (Backend team) - fix navigation links for logout button and icons (via Next.js Link component)
       className,
+      logo,
+      logoHref = "/manager/dashboard",
       navigationLinks = defaultNavigationLinks,
       logoutText = "Log Out",
       logoutHref = "/",
@@ -209,26 +210,27 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
 
             {/* Main nav */}
             <div className="flex items-center gap-6">
-              <button
-                type="button"
+              <Link
+                href={logoHref}
                 className="flex items-center gap-3 text-primary hover:text-primary/90 transition-colors cursor-pointer"
-                onClick={e => e.preventDefault()}
               >
                 <div className="shrink-0">
-                  <Image
-                    src="/logo.png"
-                    alt="PayCore Logo"
-                    className="size-15 rounded-full object-cover"
-                    width={60}
-                    height={60}
-                  />
+                  {logo ?? (
+                    <Image
+                      src="/logo.png"
+                      alt="PayCore Logo"
+                      className="size-15 rounded-full object-cover"
+                      width={60}
+                      height={60}
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-col items-start justify-center">
                   <h1 className="font-semibold text-lg leading-tight">PayCore</h1>
                   <p className="text-xs text-muted-foreground leading-tight">Manager Dashboard</p>
                 </div>
-              </button>
+              </Link>
 
               {/* Navigation menu */}
               {!isMobile && (
