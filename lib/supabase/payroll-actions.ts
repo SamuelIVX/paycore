@@ -6,6 +6,10 @@ import { TablesInsert, Tables } from "@/lib/interfaces/database.types";
 import { calculatePayRollForEmployee } from "@/lib/supabase/payroll";
 import { getActiveOptionalEmployeeBenefits } from "@/lib/supabase/benefits";
 
+type EmployeeBenefitRow = Tables<"employee_benefits"> & {
+    benefit?: Pick<Tables<"benefits">, "id" | "type" | "monthly_cost"> | null;
+};
+
 export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string, user: string) => {
     const { data: run, error: runError } = await supabase
         .from("payroll_runs")
@@ -145,7 +149,7 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
         const employeeRecords = await Promise.all(
             employees.map(async (employee) => {
                 const benefits = await getActiveOptionalEmployeeBenefits(employee.id, supabase);
-                const benefitDeduction = benefits.reduce((sum: number, row: any) => sum + (row.benefit?.monthly_cost || 0), 0);
+                const benefitDeduction = benefits.reduce((sum: number, row: EmployeeBenefitRow) => sum + (row.benefit?.monthly_cost || 0), 0);
                 return calculatePayRollForEmployee(employee, time_entries, payroll_run, benefitDeduction);
             })
         );

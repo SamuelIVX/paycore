@@ -102,8 +102,22 @@ describe('runPayroll', () => {
 
     it('returns totals on a successful payroll run', async () => {
         let callCount = 0;
+        const mockOptionalBenefit = {
+            id: 'employee-benefit-1',
+            employee_id: 'emp-1',
+            benefit_id: 'benefit-1',
+            status: 'ACTIVE',
+            benefit: {
+                id: 'benefit-1',
+                type: 'OPTIONAL',
+                monthly_cost: 25,
+            },
+        };
+        const mockInsertPayrollRecords = vi.fn().mockResolvedValue({ data: null, error: null });
+
         mockFrom.mockImplementation(() => {
             callCount++;
+
             // 1st call: idempotency check — no existing run
             if (callCount === 1) return {
                 select: vi.fn().mockReturnThis(),
@@ -129,12 +143,28 @@ describe('runPayroll', () => {
                 lte: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockResolvedValue({ data: [mockTimeEntry], error: null }),
             };
-            // 5th call: insertPayrollRecords
-            if (callCount === 5) return {
-                insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-            };
-            // 6th call: updatePayrollRun
+            // 5th call: getActiveOptionalEmployeeBenefits (per employee in Promise.all)
+            if (callCount === 5) {
+                const firstEq = vi.fn().mockReturnValue({
+                    eq: vi.fn().mockResolvedValue({ data: [mockOptionalBenefit], error: null }),
+                });
+                return {
+                    select: vi.fn().mockReturnValue({
+                        eq: firstEq,
+                    }),
+                };
+            }
+            // 6th call: insertPayrollRecords
             if (callCount === 6) return {
+                insert: mockInsertPayrollRecords,
+            };
+            // 7th call: updatePayrollRun
+            if (callCount === 7) return {
+                update: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockResolvedValue({ data: null, error: null }),
+            };
+            // 8th call: mark FAILED on catch (safety net)
+            if (callCount === 8) return {
                 update: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockResolvedValue({ data: null, error: null }),
             };
@@ -147,6 +177,11 @@ describe('runPayroll', () => {
         expect(result.total_taxes).toBeDefined();
         // 8 hours * $30/hr = $240 gross
         expect(Number(result.total_gross)).toBeCloseTo(240);
+        expect(mockInsertPayrollRecords).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.objectContaining({ benefit_deductions: 11.54 }),
+            ]),
+        );
     });
 
     it('marks the payroll run as FAILED when an error occurs mid-run', async () => {

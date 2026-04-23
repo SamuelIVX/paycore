@@ -13,6 +13,7 @@ import {
   getOptionalBenefits,
 } from "@/lib/supabase/benefits"
 import { getCurrentEmployee } from "@/lib/supabase/employee"
+import type { EmployeeBenefit, BenefitOption } from "@/app/employee/benefits/types"
 
 export default function BenefitsPage() {
   const [employeeId, setEmployeeId] = useState<string>("");
@@ -26,7 +27,7 @@ export default function BenefitsPage() {
   }, []);
 
   const [selectedOptional, setSelectedOptional] = useState<Record<string, boolean>>({})
-  const [optionalBenefits, setOptionalBenefits] = useState<any[]>([])
+  const [optionalBenefits, setOptionalBenefits] = useState<BenefitOption[]>([])
   const [companyCount, setCompanyCount] = useState(0)
   const [optionalCount, setOptionalCount] = useState(0)
 
@@ -45,7 +46,7 @@ export default function BenefitsPage() {
       // Set selectedOptional keyed by benefit_id
       const selected: Record<string, boolean> = {};
 
-      rows.forEach((row: any) => {
+      rows.forEach((row: EmployeeBenefit) => {
         if (row.status === 'ACTIVE' && row.benefit?.id) {
           selected[row.benefit.id] = true;
         }

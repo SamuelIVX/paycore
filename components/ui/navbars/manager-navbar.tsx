@@ -34,7 +34,7 @@ const Logo = (props: React.SVGAttributes<SVGElement>) => {
       viewBox="0 0 324 323"
       width="1em"
       xmlns="http://www.w3.org/2000/svg"
-      {...(props as any)}
+      {...props}
     >
       <rect fill="currentColor" height="323" rx="161.5" width="323" x="0.5" />
       <circle cx="162" cy="161.5" fill="white" r="60" className="dark:fill-black" />
@@ -57,7 +57,7 @@ const HamburgerIcon = ({ className, ...props }: React.SVGAttributes<SVGElement>)
     viewBox="0 0 24 24"
     width={16}
     xmlns="http://www.w3.org/2000/svg"
-    {...(props as any)}
+    {...props}
   >
     <path
       className="origin-center -translate-y-1.75 transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-315"
@@ -102,9 +102,9 @@ const defaultNavigationLinks: ManagerNavbarNavLink[] = [
 export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
   (
     {
-      // TODO (Backend team) - fix navigation links for logout button and icons (via Next.js Link component)
       className,
-      logoHref = "#",
+      logo,
+      logoHref = "/manager/dashboard",
       navigationLinks = defaultNavigationLinks,
       logoutText = "Log Out",
       logoutHref = "/",
@@ -163,7 +163,7 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
           className,
         )}
         ref={combinedRef}
-        {...(props as any)}
+        {...props}
       >
         <div className="container mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-4">
 
@@ -210,26 +210,27 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
 
             {/* Main nav */}
             <div className="flex items-center gap-6">
-              <button
-                type="button"
+              <Link
+                href={logoHref}
                 className="flex items-center gap-3 text-primary hover:text-primary/90 transition-colors cursor-pointer"
-                onClick={e => e.preventDefault()}
               >
                 <div className="shrink-0">
-                  <Image
-                    src="/logo.png"
-                    alt="PayCore Logo"
-                    className="size-15 rounded-full object-cover"
-                    width={60}
-                    height={60}
-                  />
+                  {logo ?? (
+                    <Image
+                      src="/logo.png"
+                      alt="PayCore Logo"
+                      className="size-15 rounded-full object-cover"
+                      width={60}
+                      height={60}
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-col items-start justify-center">
                   <h1 className="font-semibold text-lg leading-tight">PayCore</h1>
                   <p className="text-xs text-muted-foreground leading-tight">Manager Dashboard</p>
                 </div>
-              </button>
+              </Link>
 
               {/* Navigation menu */}
               {!isMobile && (
@@ -267,7 +268,7 @@ export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
 
             <Button
               className="text-sm font-medium hover:bg-accent hover:text-accent-foreground border border-border rounded-md cursor-pointer"
-              onClick={e => {
+              onClick={_e => {
                 if (onLogoutClick) {
                   onLogoutClick()
                 }
