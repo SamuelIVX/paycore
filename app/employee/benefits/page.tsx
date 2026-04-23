@@ -13,7 +13,7 @@ import {
   getOptionalBenefits,
 } from "@/lib/supabase/benefits"
 import { getCurrentEmployee } from "@/lib/supabase/employee"
-import { EmployeeBenefit, BenefitOption } from "@/app/employee/benefits/types"
+import type { EmployeeBenefit, BenefitOption } from "@/app/employee/benefits/types"
 
 export default function BenefitsPage() {
   const [employeeId, setEmployeeId] = useState<string>("");
