@@ -18,15 +18,15 @@ export type SpinnerProps = LucideProps & {
 type SpinnerVariantProps = Omit<SpinnerProps, "variant">
 
 const Default = ({ className, ...props }: SpinnerVariantProps) => (
-  <LoaderIcon className={cn("animate-spin", className)} {...(props as any)} />
+  <LoaderIcon className={cn("animate-spin", className)} {...props} />
 )
 
 const Circle = ({ className, ...props }: SpinnerVariantProps) => (
-  <LoaderCircleIcon className={cn("animate-spin", className)} {...(props as any)} />
+  <LoaderCircleIcon className={cn("animate-spin", className)} {...props} />
 )
 
 const Pinwheel = ({ className, ...props }: SpinnerVariantProps) => (
-  <LoaderPinwheelIcon className={cn("animate-spin", className)} {...(props as any)} />
+  <LoaderPinwheelIcon className={cn("animate-spin", className)} {...props} />
 )
 
 const CircleFilled = ({ className, size = 24, ...props }: SpinnerVariantProps) => (
@@ -35,13 +35,13 @@ const CircleFilled = ({ className, size = 24, ...props }: SpinnerVariantProps) =
       <LoaderCircleIcon
         className={cn("animate-spin", className, "text-foreground opacity-20")}
         size={size}
-        {...(props as any)}
+        {...props}
       />
     </div>
     <LoaderCircleIcon
       className={cn("relative animate-spin", className)}
       size={size}
-      {...(props as any)}
+      {...props}
     />
   </div>
 )
@@ -53,7 +53,7 @@ const Ellipsis = ({ size = 24, ...props }: SpinnerVariantProps) => {
       viewBox="0 0 24 24"
       width={size}
       xmlns="http://www.w3.org/2000/svg"
-      {...(props as any)}
+      {...props}
     >
       <title>Loading...</title>
       <circle cx="4" cy="12" fill="currentColor" r="2">
@@ -99,7 +99,7 @@ const Ring = ({ size = 24, ...props }: SpinnerVariantProps) => (
     viewBox="0 0 44 44"
     width={size}
     xmlns="http://www.w3.org/2000/svg"
-    {...(props as any)}
+    {...props}
   >
     <title>Loading...</title>
     <g fill="none" fillRule="evenodd" strokeWidth="2">
@@ -157,7 +157,7 @@ const Bars = ({ size = 24, ...props }: SpinnerVariantProps) => (
     viewBox="0 0 24 24"
     width={size}
     xmlns="http://www.w3.org/2000/svg"
-    {...(props as any)}
+    {...props}
   >
     <title>Loading...</title>
     <style>{`
@@ -210,7 +210,7 @@ const Infinite = ({ size = 24, ...props }: SpinnerVariantProps) => (
     viewBox="0 0 100 100"
     width={size}
     xmlns="http://www.w3.org/2000/svg"
-    {...(props as any)}
+    {...(props as React.SVGProps<SVGSVGElement>)}
   >
     <title>Loading...</title>
     <path
@@ -239,20 +239,20 @@ const Infinite = ({ size = 24, ...props }: SpinnerVariantProps) => (
 export const Spinner = ({ variant, ...props }: SpinnerProps) => {
   switch (variant) {
     case "circle":
-      return <Circle {...(props as any)} />
+      return <Circle {...props} />
     case "pinwheel":
-      return <Pinwheel {...(props as any)} />
+      return <Pinwheel {...props} />
     case "circle-filled":
-      return <CircleFilled {...(props as any)} />
+      return <CircleFilled {...props} />
     case "ellipsis":
-      return <Ellipsis {...(props as any)} />
+      return <Ellipsis {...props} />
     case "ring":
-      return <Ring {...(props as any)} />
+      return <Ring {...props} />
     case "bars":
-      return <Bars {...(props as any)} />
+      return <Bars {...props} />
     case "infinite":
-      return <Infinite {...(props as any)} />
+      return <Infinite {...props} />
     default:
-      return <Default {...(props as any)} />
+      return <Default {...props} />
   }
 }

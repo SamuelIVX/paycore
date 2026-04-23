@@ -104,6 +104,7 @@ describe('runPayroll', () => {
         let callCount = 0;
         mockFrom.mockImplementation(() => {
             callCount++;
+
             // 1st call: idempotency check — no existing run
             if (callCount === 1) return {
                 select: vi.fn().mockReturnThis(),
@@ -129,12 +130,29 @@ describe('runPayroll', () => {
                 lte: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockResolvedValue({ data: [mockTimeEntry], error: null }),
             };
-            // 5th call: insertPayrollRecords
-            if (callCount === 5) return {
+            // 5th call: getActiveOptionalEmployeeBenefits (per employee in Promise.all)
+            if (callCount === 5) {
+                // Create chaining eq that returns itself but also resolves
+                const firstEq = vi.fn().mockReturnValue({
+                    eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+                });
+                return {
+                    select: vi.fn().mockReturnValue({
+                        eq: firstEq,
+                    }),
+                };
+            }
+            // 6th call: insertPayrollRecords
+            if (callCount === 6) return {
                 insert: vi.fn().mockResolvedValue({ data: null, error: null }),
             };
-            // 6th call: updatePayrollRun
-            if (callCount === 6) return {
+            // 7th call: updatePayrollRun
+            if (callCount === 7) return {
+                update: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockResolvedValue({ data: null, error: null }),
+            };
+            // 8th call: mark FAILED on catch (safety net)
+            if (callCount === 8) return {
                 update: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockResolvedValue({ data: null, error: null }),
             };

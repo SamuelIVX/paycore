@@ -33,7 +33,7 @@ const Logo = (props: React.SVGAttributes<SVGElement>) => {
       viewBox="0 0 324 323"
       width="1em"
       xmlns="http://www.w3.org/2000/svg"
-      {...(props as any)}
+      {...props}
     >
       <rect fill="currentColor" height="323" rx="161.5" width="323" x="0.5" />
       <circle cx="162" cy="161.5" fill="white" r="60" className="dark:fill-black" />
@@ -56,7 +56,7 @@ const HamburgerIcon = ({ className, ...props }: React.SVGAttributes<SVGElement>)
     viewBox="0 0 24 24"
     width={16}
     xmlns="http://www.w3.org/2000/svg"
-    {...(props as any)}
+    {...props}
   >
     <path
       className="origin-center -translate-y-1.75 transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-315"
@@ -155,7 +155,7 @@ export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>
           className,
         )}
         ref={combinedRef}
-        {...(props as any)}
+        {...props}
       >
         <div className="container mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-4">
           {/* Left side */}
