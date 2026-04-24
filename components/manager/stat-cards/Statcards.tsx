@@ -1,6 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ManagerStatCardProps } from "./types";
+import { ManagerStatCardProps, ManagerStatCardsProps } from "./types";
 import { Users, Clock, DollarSign } from "lucide-react";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export function ManagerStatCard({ title, icon, value, description }: ManagerStatCardProps) {
     return (
@@ -20,14 +21,14 @@ export function ManagerStatCard({ title, icon, value, description }: ManagerStat
     )
 }
 
-export default function ManagerStatCards() {
+export default function ManagerStatCards({ totalEmployees, totalAnnualPayroll }: ManagerStatCardsProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 mt-4">
 
             <ManagerStatCard
                 title="Total Employees"
                 icon={<Users className="text-blue-500 dark:text-blue-400 h-5 w-5" />}
-                value="5"
+                value={totalEmployees ?? "—"}
                 description="Active in system"
             />
 
@@ -41,7 +42,7 @@ export default function ManagerStatCards() {
             <ManagerStatCard
                 title="Total Payroll"
                 icon={<DollarSign className="text-green-500 dark:text-green-400 h-5 w-5" />}
-                value="$325,000"
+                value={totalAnnualPayroll != null ? formatCurrency(totalAnnualPayroll) : "—"}
                 description="Annual Salary"
             />
 

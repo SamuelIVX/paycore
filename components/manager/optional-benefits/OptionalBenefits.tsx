@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { BenefitDetailsProps } from "../types";
 import { BENEFIT_ICONS } from "../constant";
@@ -31,6 +32,7 @@ export function OptionalBenefitDetails({ title, value }: BenefitDetailsProps) {
 }
 
 export default function OptionalBenefitsGrid() {
+    const router = useRouter();
     const [optional_benefits, setOptionalBenefits] = useState<Awaited<ReturnType<typeof getOptionalBenefits>>>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -158,6 +160,7 @@ export default function OptionalBenefitsGrid() {
                                             const updated = await getOptionalBenefits();
                                             setOptionalBenefits(updated ?? []);
                                             setError(null);
+                                            router.refresh();
                                         } catch {
                                             setError("Benefit was added, but failed to refresh list.");
                                         }
@@ -209,6 +212,7 @@ export default function OptionalBenefitsGrid() {
                                                     setOptionalBenefits((prev) => prev.filter((item) => item.id !== b.id));
                                                     setDeleteOpenId(null);
                                                     setError(null);
+                                                    router.refresh();
                                                 } catch {
                                                     setError("Failed to delete benefit.");
                                                 } finally {
@@ -367,6 +371,7 @@ export default function OptionalBenefitsGrid() {
                                                     );
                                                     setEditOpenId(null);
                                                     setError(null);
+                                                    router.refresh();
                                                 } catch {
                                                     setError("Failed to update benefit.");
                                                 } finally {

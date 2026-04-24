@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Plus, CircleMinus, CheckCircle2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { BenefitDetailsProps } from "../types";
 import { BENEFIT_ICONS } from "../constant";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Plus, CircleMinus } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import { Label } from "@/components/ui/label";
@@ -32,6 +33,7 @@ export function CompanyBenefitDetails({ title, value }: BenefitDetailsProps) {
 }
 
 export default function CompanyBenefitsGrid() {
+    const router = useRouter();
     const [company_benefits, setCompanyBenefits] = useState<Awaited<ReturnType<typeof getCompanyBenefits>>>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -148,6 +150,7 @@ export default function CompanyBenefitsGrid() {
                                             const updated = await getCompanyBenefits();
                                             setCompanyBenefits(updated ?? []);
                                             setError(null);
+                                            router.refresh();
                                         } catch {
                                             setError("Benefit was added, but failed to refresh list.");
                                         }
@@ -199,6 +202,7 @@ export default function CompanyBenefitsGrid() {
                                                     setCompanyBenefits((prev) => prev.filter((item) => item.id !== b.id));
                                                     setDeleteOpenId(null);
                                                     setError(null);
+                                                    router.refresh();
                                                 } catch {
                                                     setError("Failed to delete benefit.");
                                                 } finally {
@@ -340,7 +344,7 @@ export default function CompanyBenefitsGrid() {
                                             disabled={isSubmitting}
                                             onClick={async () => {
                                                 if (!editValues.benefit.trim() || !editValues.description || !editValues.coverage || !editValues.provider) {
-                                                    setError("Benefit name, coverage, description, and are required.");
+                                                    setError("Benefit name, coverage, and provider are required.");
                                                     return;
                                                 }
                                                 setIsSubmitting(true);
@@ -353,6 +357,7 @@ export default function CompanyBenefitsGrid() {
                                                     );
                                                     setEditOpenId(null);
                                                     setError(null);
+                                                    router.refresh();
                                                 } catch {
                                                     setError("Failed to update benefit.");
                                                 } finally {
