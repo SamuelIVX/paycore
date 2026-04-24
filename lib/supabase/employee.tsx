@@ -39,7 +39,7 @@ export const getActiveEmployeesCount = async () => {
         throw error;
     }
 
-    return count || 0;
+    return count ?? 0;
 }
 
 export const getTotalAnnualPayroll = async () => {
@@ -62,8 +62,9 @@ export const getTotalAnnualPayroll = async () => {
     for (const employee of employees) {
         const { pay_rate, pay_frequency } = employee;
 
+        if (pay_rate == null) continue;
         if (pay_frequency === "SALARY") {
-            totalAnnual += pay_rate * 26;
+            totalAnnual += pay_rate;
         } else if (pay_frequency === "BI_WEEKLY") {
             totalAnnual += pay_rate * 26;
         } else if (pay_frequency === "HOURLY") {

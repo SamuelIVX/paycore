@@ -121,19 +121,27 @@ export const calculatePayRollForEmployee = (
 };
 
 export const getAverageBenefitDeductions = async () => {
+    const supabase = createClient()
+    const LATEST_PAY_PERIODS = 6
+
     const { data, error } = await supabase
         .from("payroll_records")
-        .select("benefit_deductions");
+        .select(`
+            benefit_deductions,
+            payroll_runs!payroll_records_payroll_run_id_fkey(pay_period_start)
+        `)
+        .order("payroll_runs(pay_period_start)", { ascending: false })
+        .limit(LATEST_PAY_PERIODS)
 
     if (error) {
-        console.error("Error fetching benefit deductions:", error);
-        throw error;
+        console.error("Error fetching benefit deductions:", error)
+        throw error
     }
 
     if (!data || data.length === 0) {
-        return 0;
+        return 0
     }
 
-    const total = data.reduce((sum, record) => sum + (record.benefit_deductions || 0), 0);
-    return total / data.length;
-};
+    const total = data.reduce((sum, record) => sum + (record.benefit_deductions || 0), 0)
+    return total / data.length
+}

@@ -42,7 +42,7 @@ export default function ManagerStatCards({ totalEmployees, totalAnnualPayroll }:
             <ManagerStatCard
                 title="Total Payroll"
                 icon={<DollarSign className="text-green-500 dark:text-green-400 h-5 w-5" />}
-                value={totalAnnualPayroll !== undefined ? formatCurrency(totalAnnualPayroll) : "—"}
+                value={totalAnnualPayroll != null ? formatCurrency(totalAnnualPayroll) : "—"}
                 description="Annual Salary"
             />
 

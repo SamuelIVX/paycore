@@ -51,7 +51,7 @@ export default function SummaryCards({
                 title="Avg. Deductions"
                 icon={<DollarSign className="h-5 w-5 text-orange-600 dark:text-orange-400" />}
                 count={avgDeductions !== undefined ? formatCurrency(avgDeductions) : "—"}
-                description="Per employee/month"
+                description="Per pay period (bi-weekly)"
             />
 
         </div>

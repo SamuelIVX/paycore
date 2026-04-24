@@ -344,7 +344,7 @@ export default function CompanyBenefitsGrid() {
                                             disabled={isSubmitting}
                                             onClick={async () => {
                                                 if (!editValues.benefit.trim() || !editValues.description || !editValues.coverage || !editValues.provider) {
-                                                    setError("Benefit name, coverage, description, and are required.");
+                                                    setError("Benefit name, coverage, and provider are required.");
                                                     return;
                                                 }
                                                 setIsSubmitting(true);

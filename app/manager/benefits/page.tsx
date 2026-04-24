@@ -7,11 +7,15 @@ import { getAverageBenefitDeductions } from "@/lib/supabase/payroll"
 export const dynamic = "force-dynamic"
 
 export default async function BenefitsPage() {
-    const [companyBenefitsCount, optionalBenefitsCount, avgDeductions] = await Promise.all([
+    const results = await Promise.allSettled([
         getCompanyBenefitsCount(),
         getOptionalBenefitsCount(),
         getAverageBenefitDeductions()
     ])
+
+    const companyBenefitsCount = results[0].status === "fulfilled" ? results[0].value : undefined
+    const optionalBenefitsCount = results[1].status === "fulfilled" ? results[1].value : undefined
+    const avgDeductions = results[2].status === "fulfilled" ? results[2].value : undefined
 
     return (
         <div className="container mx-auto py-6">
