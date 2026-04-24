@@ -28,6 +28,52 @@ export const getEmployees = async () => {
     return employees;
 }
 
+export const getActiveEmployeesCount = async () => {
+    const { count, error } = await supabase
+        .from("employees")
+        .select("*", { count: "exact", head: true })
+        .eq("employment_status", "ACTIVE");
+
+    if (error) {
+        console.error("Error fetching active employees count:", error);
+        throw error;
+    }
+
+    return count || 0;
+}
+
+export const getTotalAnnualPayroll = async () => {
+    const { data: employees, error } = await supabase
+        .from("employees")
+        .select("id, pay_rate, pay_frequency")
+        .eq("employment_status", "ACTIVE");
+
+    if (error) {
+        console.error("Error fetching active employees for annual payroll:", error);
+        throw error;
+    }
+
+    if (!employees || employees.length === 0) {
+        return 0;
+    }
+
+    let totalAnnual = 0;
+
+    for (const employee of employees) {
+        const { pay_rate, pay_frequency } = employee;
+
+        if (pay_frequency === "SALARY") {
+            totalAnnual += pay_rate * 26;
+        } else if (pay_frequency === "BI_WEEKLY") {
+            totalAnnual += pay_rate * 26;
+        } else if (pay_frequency === "HOURLY") {
+            totalAnnual += pay_rate * 40 * 26;
+        }
+    }
+
+    return totalAnnual;
+}
+
 export const updateEmployee = async (id: string, updates: Partial<EmployeeInsert>) => {
     const { error } = await supabase
         .from("employees")

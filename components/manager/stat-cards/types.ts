@@ -6,3 +6,8 @@ export interface ManagerStatCardProps {
     value: string | number;
     description?: string;
 }
+
+export interface ManagerStatCardsProps {
+    totalEmployees?: number;
+    totalAnnualPayroll?: number;
+}

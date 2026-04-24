@@ -119,3 +119,21 @@ export const calculatePayRollForEmployee = (
         net_pay
     };
 };
+
+export const getAverageBenefitDeductions = async () => {
+    const { data, error } = await supabase
+        .from("payroll_records")
+        .select("benefit_deductions");
+
+    if (error) {
+        console.error("Error fetching benefit deductions:", error);
+        throw error;
+    }
+
+    if (!data || data.length === 0) {
+        return 0;
+    }
+
+    const total = data.reduce((sum, record) => sum + (record.benefit_deductions || 0), 0);
+    return total / data.length;
+};

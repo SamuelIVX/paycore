@@ -1,18 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { AVAILABLE_BENEFITS } from "../data";
 import { BenefitSummaryCardProps } from "../types";
 import {
     Heart,
     TrendingUp,
     DollarSign,
 } from "lucide-react"
-
-// TODO (Backend): Remove all hardcoded and fetch/display data from Supabase
-const payrollRecords = ([
-    { id: "1", employeeName: "John Smith", grossPay: 7083.33, taxes: 1770.83, benefitDeductions: 32.00, netPay: 5280.50, status: "pending", date: "2026-02-01" },
-    { id: "2", employeeName: "Sarah Johnson", grossPay: 7916.67, taxes: 1979.17, benefitDeductions: 45.00, netPay: 5892.50, status: "pending", date: "2026-02-01" },
-    { id: "3", employeeName: "Mike Chen", grossPay: 6250.00, taxes: 1562.50, benefitDeductions: 0.00, netPay: 4687.50, status: "approved", date: "2026-01-15" },
-]);
+import { SummaryCardsProps } from "./types";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export function BenefitSummaryCard({ title, icon, count, description }: BenefitSummaryCardProps) {
     return (
@@ -31,28 +25,32 @@ export function BenefitSummaryCard({ title, icon, count, description }: BenefitS
     )
 }
 
-export default function SummaryCards() {
+export default function SummaryCards({
+    companyBenefitsCount,
+    optionalBenefitsCount,
+    avgDeductions
+}: SummaryCardsProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 mt-4">
 
             <BenefitSummaryCard
                 title="Company Benefits"
                 icon={<Heart className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
-                count={AVAILABLE_BENEFITS.filter(b => b.isCompanyProvided).length}
+                count={companyBenefitsCount ?? "—"}
                 description="Provided to all employees"
             />
 
             <BenefitSummaryCard
                 title="Optional Benefits"
                 icon={<TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />}
-                count={AVAILABLE_BENEFITS.filter(b => !b.isCompanyProvided).length}
+                count={optionalBenefitsCount ?? "—"}
                 description="Available for purchase"
             />
 
             <BenefitSummaryCard
                 title="Avg. Deductions"
                 icon={<DollarSign className="h-5 w-5 text-orange-600 dark:text-orange-400" />}
-                count={`$${payrollRecords.length > 0 ? (payrollRecords.reduce((sum, r) => sum + r.benefitDeductions, 0) / payrollRecords.length).toFixed(2) : "0.00"}`}
+                count={avgDeductions !== undefined ? formatCurrency(avgDeductions) : "—"}
                 description="Per employee/month"
             />
 
