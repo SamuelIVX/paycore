@@ -56,8 +56,7 @@ export default function TeamDistributionPieChart() {
                         <Pie data={chartData} dataKey="value" label nameKey="name">
                             {chartData.map((entry) => {
                                 const configKey = entry.name.replace(/ /g, "_") as keyof typeof chartConfig
-                                const config = chartConfig[configKey]
-                                const color = ("color" in config ? config.color : null) ?? "var(--chart-1)"
+                                const color = chartConfig[configKey]?.color ?? "var(--chart-1)"
                                 return <Cell key={entry.name} fill={color} />
                             })}
                         </Pie>

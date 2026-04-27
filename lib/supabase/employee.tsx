@@ -143,7 +143,7 @@ export const getEmployeeByDepartment = async () => {
         .not("departments", "is", null);
 
     if (error) {
-        throw new Error("Error fetching employees by department: ", error);
+        throw error;
     }
 
     const grouped = (data ?? []).reduce((acc, emp) => {
@@ -153,4 +153,34 @@ export const getEmployeeByDepartment = async () => {
     }, {} as Record<string, number>);
 
     return grouped;
+}
+
+export const getEmployeeSalaryByPosition = async () => {
+    const { data, error } = await supabase
+        .from("employees")
+        .select("pay_rate, pay_frequency, position");
+
+    if (error) {
+        throw error;
+    }
+
+    const salaryByPosition: Record<string, number> = {};
+
+    (data ?? []).forEach(emp => {
+        const { pay_rate, pay_frequency, position } = emp;
+        if (pay_rate == null || position == null) return;
+
+        let annualSalary = 0;
+        if (pay_frequency === "SALARY") {
+            annualSalary = pay_rate;
+        } else if (pay_frequency === "BI_WEEKLY") {
+            annualSalary = pay_rate * 26;
+        } else if (pay_frequency === "HOURLY") {
+            annualSalary = (pay_rate * 40) * 26;
+        }
+
+        salaryByPosition[position] = (salaryByPosition[position] || 0) + annualSalary;
+    });
+
+    return salaryByPosition;
 }

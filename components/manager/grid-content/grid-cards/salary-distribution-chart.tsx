@@ -13,45 +13,77 @@ import {
     ChartTooltipContent,
     type ChartConfig,
 } from "@/components/ui/chart"
-export const description = "A bar chart"
-const chartData = [
-    { month: "January", desktop: 186 },
-    { month: "February", desktop: 305 },
-    { month: "March", desktop: 237 },
-    { month: "April", desktop: 73 },
-    { month: "May", desktop: 209 },
-    { month: "June", desktop: 214 },
-]
+import { getEmployeeSalaryByPosition } from "@/lib/supabase/employee"
+import { useEffect, useState } from "react"
+import { ChartData } from "./types"
+
+// const chartData = [
+//     { month: "January", desktop: 186 },
+//     { month: "February", desktop: 305 },
+//     { month: "March", desktop: 237 },
+//     { month: "April", desktop: 73 },
+//     { month: "May", desktop: 209 },
+//     { month: "June", desktop: 214 },
+// ]
+
 const chartConfig = {
-    desktop: {
-        label: "Desktop",
+    salary: {
+        label: "Annual Salary",
         color: "var(--chart-1)",
     },
 } satisfies ChartConfig
 
 export default function SalaryDistributionBarChart() {
+
+    const [chartData, setChartData] = useState<ChartData[]>([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await getEmployeeSalaryByPosition()
+                console.log("Fetched salary distribution data: ", data)
+
+                const chartFormattedData = Object.entries(data).map(([position, salary]) => ({
+                    name: position,
+                    value: salary as number,
+                }))
+                setChartData(chartFormattedData)
+            } catch (error) {
+                console.error("Error fetching salary distribution: ", error)
+            }
+        }
+        fetchData()
+    }, [])
+
     return (
         <Card>
             <CardHeader>
                 <CardTitle>Salary Distribution</CardTitle>
-                <CardDescription>Annual Salary by Role</CardDescription>
+                <CardDescription>Annual Salary by Position</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig} className="h-50 w-full">
-                    <BarChart accessibilityLayer data={chartData}>
+                <ChartContainer config={chartConfig} className="h-80 w-full">
+                    <BarChart
+                        accessibilityLayer
+                        data={chartData}
+                        margin={{ bottom: 80 }}
+                    >
                         <CartesianGrid vertical={false} />
                         <XAxis
-                            dataKey="month"
+                            dataKey="name"
                             tickLine={false}
                             tickMargin={10}
                             axisLine={false}
-                            tickFormatter={(value) => value.slice(0, 3)}
+                            angle={-45}
+                            textAnchor="end"
+                            height={100}
                         />
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}
+                            formatter={(value) => [`$${Number(value).toLocaleString()}`, "Annual Salary"]}
                         />
-                        <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8} />
+                        <Bar dataKey="value" fill="var(--color-salary)" radius={8} />
                     </BarChart>
                 </ChartContainer>
             </CardContent>

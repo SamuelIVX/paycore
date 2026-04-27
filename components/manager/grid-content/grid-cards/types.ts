@@ -18,6 +18,7 @@ export interface ChartData {
 export const chartConfig = {
     total: {
         label: "Total Employees",
+        color: "var(--chart-1)",
     },
     Human_Resources: {
         label: "Human Resources",
