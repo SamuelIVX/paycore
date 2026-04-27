@@ -17,7 +17,7 @@ import {
 export const description = "A line chart"
 
 const chartData = [
-    { month: "January ", payroll: 186 },
+    { month: "January", payroll: 186 },
     { month: "February", payroll: 305 },
     { month: "March", payroll: 237 },
     { month: "April", payroll: 73 },

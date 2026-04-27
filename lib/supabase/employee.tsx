@@ -68,7 +68,7 @@ export const getTotalAnnualPayroll = async () => {
         } else if (pay_frequency === "BI_WEEKLY") {
             totalAnnual += pay_rate * 26;
         } else if (pay_frequency === "HOURLY") {
-            totalAnnual += pay_rate * 40 * 26;
+            totalAnnual += (pay_rate * 40) * 52;
         }
     }
 
@@ -176,7 +176,7 @@ export const getEmployeeSalaryByPosition = async () => {
         } else if (pay_frequency === "BI_WEEKLY") {
             annualSalary = pay_rate * 26;
         } else if (pay_frequency === "HOURLY") {
-            annualSalary = (pay_rate * 40) * 26;
+            annualSalary = (pay_rate * 40) * 52;
         }
 
         salaryByPosition[position] = (salaryByPosition[position] || 0) + annualSalary;

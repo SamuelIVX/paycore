@@ -17,15 +17,6 @@ import { getEmployeeSalaryByPosition } from "@/lib/supabase/employee"
 import { useEffect, useState } from "react"
 import { ChartData } from "./types"
 
-// const chartData = [
-//     { month: "January", desktop: 186 },
-//     { month: "February", desktop: 305 },
-//     { month: "March", desktop: 237 },
-//     { month: "April", desktop: 73 },
-//     { month: "May", desktop: 209 },
-//     { month: "June", desktop: 214 },
-// ]
-
 const chartConfig = {
     salary: {
         label: "Annual Salary",
@@ -41,7 +32,6 @@ export default function SalaryDistributionBarChart() {
         const fetchData = async () => {
             try {
                 const data = await getEmployeeSalaryByPosition()
-                console.log("Fetched salary distribution data: ", data)
 
                 const chartFormattedData = Object.entries(data).map(([position, salary]) => ({
                     name: position,
