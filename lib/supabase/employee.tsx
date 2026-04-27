@@ -135,3 +135,22 @@ export async function getCurrentEmployee() {
         employee,
     }
 }
+
+export const getEmployeeByDepartment = async () => {
+    const { data, error } = await supabase
+        .from("employees")
+        .select("*, departments(name)")
+        .not("departments", "is", null);
+
+    if (error) {
+        throw new Error("Error fetching employees by department: ", error);
+    }
+
+    const grouped = (data ?? []).reduce((acc, emp) => {
+        const deptName = emp.departments?.name || "Unknown";
+        acc[deptName] = (acc[deptName] || 0) + 1;
+        return acc;
+    }, {} as Record<string, number>);
+
+    return grouped;
+}
