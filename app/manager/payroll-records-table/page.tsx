@@ -42,9 +42,19 @@ export default function PayrollTable() {
 
   const columns = useMemo<ColumnDef<PayrollRecordType, unknown>[]>(() => [
     {
-      accessorKey: "employee_id",
-      header: ({ column }) => <SortableHeader column={column} label="Employee ID" />,
-      cell: ({ row }) => <span className="font-medium">{row.original.employee_id ?? "—"}</span>,
+      id: "employee_name",
+      accessorFn: (row) => {
+        const firstName = row.employees?.first_name ?? "";
+        const lastName = row.employees?.last_name ?? "";
+        return `${firstName} ${lastName}`.trim();
+      },
+      header: ({ column }) => <SortableHeader column={column} label="Employee Name" />,
+      cell: ({ row }) => {
+        const firstName = row.original.employees?.first_name ?? "";
+        const lastName = row.original.employees?.last_name ?? "";
+        const displayName = `${firstName} ${lastName}`.trim() || "—";
+        return <span className="font-medium">{displayName}</span>;
+      },
     },
     {
       id: "regular_hours",

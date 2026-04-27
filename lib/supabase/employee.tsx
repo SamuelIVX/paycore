@@ -68,7 +68,7 @@ export const getTotalAnnualPayroll = async () => {
         } else if (pay_frequency === "BI_WEEKLY") {
             totalAnnual += pay_rate * 26;
         } else if (pay_frequency === "HOURLY") {
-            totalAnnual += pay_rate * 40 * 26;
+            totalAnnual += (pay_rate * 40) * 52;
         }
     }
 
@@ -134,4 +134,53 @@ export async function getCurrentEmployee() {
         profile,
         employee,
     }
+}
+
+export const getEmployeeByDepartment = async () => {
+    const { data, error } = await supabase
+        .from("employees")
+        .select("*, departments(name)")
+        .not("departments", "is", null);
+
+    if (error) {
+        throw error;
+    }
+
+    const grouped = (data ?? []).reduce((acc, emp) => {
+        const deptName = emp.departments?.name || "Unknown";
+        acc[deptName] = (acc[deptName] || 0) + 1;
+        return acc;
+    }, {} as Record<string, number>);
+
+    return grouped;
+}
+
+export const getEmployeeSalaryByPosition = async () => {
+    const { data, error } = await supabase
+        .from("employees")
+        .select("pay_rate, pay_frequency, position");
+
+    if (error) {
+        throw error;
+    }
+
+    const salaryByPosition: Record<string, number> = {};
+
+    (data ?? []).forEach(emp => {
+        const { pay_rate, pay_frequency, position } = emp;
+        if (pay_rate == null || position == null) return;
+
+        let annualSalary = 0;
+        if (pay_frequency === "SALARY") {
+            annualSalary = pay_rate;
+        } else if (pay_frequency === "BI_WEEKLY") {
+            annualSalary = pay_rate * 26;
+        } else if (pay_frequency === "HOURLY") {
+            annualSalary = (pay_rate * 40) * 52;
+        }
+
+        salaryByPosition[position] = (salaryByPosition[position] || 0) + annualSalary;
+    });
+
+    return salaryByPosition;
 }

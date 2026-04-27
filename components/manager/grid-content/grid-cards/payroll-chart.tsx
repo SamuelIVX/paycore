@@ -17,17 +17,16 @@ import {
 export const description = "A line chart"
 
 const chartData = [
-    { month: "January", desktop: 186 },
-    { month: "February", desktop: 305 },
-    { month: "March", desktop: 237 },
-    { month: "April", desktop: 73 },
-    { month: "May", desktop: 209 },
-    { month: "June", desktop: 214 },
+    { month: "January", payroll: 186 },
+    { month: "February", payroll: 305 },
+    { month: "March", payroll: 237 },
+    { month: "April", payroll: 73 },
+    { month: "May", payroll: 209 },
 ]
 
 const chartConfig = {
-    desktop: {
-        label: "Desktop",
+    payroll: {
+        label: "Payroll Amount",
         color: "var(--chart-1)",
     },
 } satisfies ChartConfig
@@ -62,9 +61,9 @@ export default function PayrollTrendChart() {
                             content={<ChartTooltipContent hideLabel />}
                         />
                         <Line
-                            dataKey="desktop"
+                            dataKey="payroll"
                             type="natural"
-                            stroke="var(--color-desktop)"
+                            stroke="var(--color-payroll)"
                             strokeWidth={2}
                             dot={false}
                         />
