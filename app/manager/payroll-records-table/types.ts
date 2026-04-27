@@ -10,6 +10,6 @@ export type PayrollRecordType = {
     social_security: number | null;
     benefit_deductions: number | null;
     net_pay: number;
-    employees: { pay_frequency: string } | null;
+    employees: { pay_frequency: string; first_name: string | null; last_name: string | null } | null;
     created_at: string | null;
 };
