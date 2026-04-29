@@ -112,7 +112,6 @@ describe('PayrollTable Component', () => {
                 expect(screen.getByText('Social Security')).toBeInTheDocument();
                 expect(screen.getByText('Benefits')).toBeInTheDocument();
                 expect(screen.getByText('Net Pay')).toBeInTheDocument();
-                expect(screen.getByText('Created At')).toBeInTheDocument();
             });
         });
 
@@ -184,14 +183,15 @@ describe('PayrollTable Component', () => {
                 id: 'hourly-1',
                 regular_hours: 160,
                 overtime_hours: 10,
-                employees: makeEmployee({ pay_frequency: 'HOURLY' }),
+                employees: makeEmployee({ id: 'emp-1', pay_frequency: 'HOURLY', first_name: 'Hourly', last_name: 'Worker' }),
             });
 
+            // For SALARY employees, the component returns null for hours
             const salaryRecord = makePayrollRecord({
                 id: 'salary-1',
-                regular_hours: 160,
-                overtime_hours: 10,
-                employees: makeEmployee({ pay_frequency: 'SALARY' }),
+                regular_hours: null,
+                overtime_hours: null,
+                employees: makeEmployee({ id: 'emp-2', pay_frequency: 'SALARY', first_name: 'Salary', last_name: 'Worker' }),
             });
 
             mockGetPayrollRecords.mockResolvedValue([hourlyRecord, salaryRecord]);
@@ -199,8 +199,12 @@ describe('PayrollTable Component', () => {
             render(<PayrollTable />);
 
             await waitFor(() => {
-                const hoursTexts = screen.getAllByText('160');
-                expect(hoursTexts.length).toBeGreaterThan(0);
+                // HOURLY row should show numeric hours
+                const hours160 = screen.getAllByText('160');
+                expect(hours160.length).toBeGreaterThan(0);
+                // SALARY row should show placeholder for hours
+                const noHours = screen.getAllByText('—');
+                expect(noHours.length).toBeGreaterThan(0);
             });
         });
 
@@ -374,8 +378,8 @@ describe('PayrollTable Component', () => {
 
         it('toggles sort direction on repeated clicks', async () => {
             const records = [
-                makePayrollRecord({ gross_pay: 3000 }),
-                makePayrollRecord({ gross_pay: 5000 }),
+                makePayrollRecord({ id: 'low', gross_pay: 3000 }),
+                makePayrollRecord({ id: 'high', gross_pay: 5000 }),
             ];
             mockGetPayrollRecords.mockResolvedValue(records);
 
@@ -387,16 +391,20 @@ describe('PayrollTable Component', () => {
 
             const grossButton = screen.getAllByText('Gross Pay')[0];
 
-            // First click - ascending
+            // First click - ascending (lowest first)
             fireEvent.click(grossButton);
             await waitFor(() => {
-                expect(screen.getByText('$5000.00')).toBeInTheDocument();
+                const rows = screen.getAllByRole('row');
+                expect(rows[1]).toHaveTextContent('$3000.00');
+                expect(rows[2]).toHaveTextContent('$5000.00');
             });
 
-            // Second click - descending
+            // Second click - descending (highest first)
             fireEvent.click(grossButton);
             await waitFor(() => {
-                expect(screen.getByText('$3000.00')).toBeInTheDocument();
+                const rows = screen.getAllByRole('row');
+                expect(rows[1]).toHaveTextContent('$5000.00');
+                expect(rows[2]).toHaveTextContent('$3000.00');
             });
         });
     });

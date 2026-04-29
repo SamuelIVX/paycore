@@ -7,7 +7,7 @@ A full-stack payroll management web application built with Next.js, React 19, Su
 ## Tech Stack
 
 | Layer | Technology |
-|---|---|
+| --- | --- |
 | Framework | Next.js 16 (App Router) with Turbopack |
 | Language | TypeScript |
 | Database / Auth | Supabase (PostgreSQL + RLS) |
@@ -131,12 +131,12 @@ paycore/
 │
 ├── lib/__tests__/                  # Test suite - utilities & data layer
 │   ├── payroll.test.ts              # 18 tests - calculatePayRollForEmployee
-│   ├── payroll-actions.test.ts    # 6 tests - runPayroll orchestration
+│   ├── payroll-actions.test.ts      # 6 tests - runPayroll orchestration
 │   └── supabase/                 # Data layer tests
 │       ├── benefits.test.ts      # 16 tests - benefits CRUD & enrollment
 │       ├── employee.test.ts     # 13 tests - employee CRUD
 │       ├── paystubs.test.ts     # 5 tests - paystub queries
-│       └── time-entries.test.ts  # 11 tests - time entry creation
+│       └── time-entries.test.ts  # 7 tests - time entry creation
 │
 ├── components/                    # Co-located component tests
 │   ├── manager/
@@ -147,12 +147,12 @@ paycore/
 │   │   └── optional-benefits/
 │   │       ├── OptionalBenefits.tsx
 │   │       └── __tests__/
-│   │           └── OptionalBenefits.test.tsx   # 46 tests
+│   │           └── OptionalBenefits.test.tsx   # 38 tests (8 skipped)
 │   └── employee/
 │       ├── optional-benefits-cards/
 │       │   ├── OptionalBenefits.tsx
 │       │   └── __tests__/
-│       │       └── OptionalBenefitsCard.test.tsx   # 38 tests
+│       │       └── OptionalBenefitsCard.test.tsx   # 20 tests
 │       └── summary-cards/
 │           ├── SummaryCards.tsx
 │           └── __tests__/
@@ -163,11 +163,11 @@ paycore/
 │   │   ├── employee-table/
 │   │   │   ├── page.tsx
 │   │   │   └── __tests__/
-│   │   │       └── EmployeeTable.test.tsx   # 42 tests
+│   │   │       └── EmployeeTable.test.tsx   # 22 tests (6 skipped)
 │   │   └── payroll-records-table/
 │   │       ├── page.tsx
 │   │       └── __tests__/
-│   │           └── PayrollRecords.test.tsx   # 34 tests
+│   │           └── PayrollRecords.test.tsx   # 22 tests (3 skipped)
 │   └── employee/
 │       ├── dashboard/
 │       │   └── page.tsx
@@ -286,7 +286,7 @@ Located at [`lib/supabase/payroll-actions.ts`](lib/supabase/payroll-actions.ts).
 
 #### Full Pipeline
 
-```
+```text
 1. Auth check          → reject if no authenticated user
 2. Date validation     → reject if dates are invalid or start > end
 3. Idempotency check   → reject if a PROCESSING or COMPLETED run already exists for this period
@@ -316,7 +316,7 @@ The entire calculation and insertion block is wrapped in a `try/catch`. If anyth
 ## Database Tables
 
 | Table | Purpose |
-|---|---|
+| --- | --- |
 | `employees` | Employee records including `pay_rate`, `pay_frequency`, and individual tax rates |
 | `time_entries` | Clock-in/out records with `hours_worked`, `work_date`, and `status` (PENDING / APPROVED) |
 | `payroll_runs` | One row per payroll run — tracks status, totals (`total_gross`, `total_net`, `total_taxes`, `total_benefit_deductions`), and who ran it |
@@ -447,7 +447,7 @@ lib/__tests__/             # Utilities & data layer (stay centralized)
 ### Test Coverage Summary (April 2026)
 
 | Area | Test File | Tests | Passing | Skipped |
-|------|---------|-------|--------|---------|
+| --- | --- | --- | --- | --- |
 | **lib/** | | | | |
 | Payroll utils | `lib/__tests__/payroll.test.ts` | 18 | 18 | 0 |
 | Payroll actions | `lib/__tests__/payroll-actions.test.ts` | 6 | 6 | 0 |
@@ -475,7 +475,7 @@ lib/__tests__/             # Utilities & data layer (stay centralized)
 ### By Feature Area
 
 | Feature Area | Tests | Description |
-|------------|-------|-------------|
+| --- | --- | --- |
 | Payroll calculations | 24 | HOURLY/SALARY/BI_WEEKLY, tax calculations, benefits deductions |
 | Table components | 76 | Employee table, payroll records table — sorting, filtering, pagination |
 | Benefits management | 104 | Company benefits, optional benefits — CRUD, enrollment |
@@ -499,7 +499,7 @@ The following sections document the original test patterns. Current tests follow
 #### HOURLY employees (4 tests)
 
 | Test | Input | Expected |
-|---|---|---|
+| --- | --- | --- |
 | Basic gross pay | 8hrs @ $30/hr | `gross_pay = 240` |
 | Multi-entry summing | entries of 8hrs + 6hrs @ $25/hr | `gross_pay = 350`, `regular_hours = 14` |
 | Employee isolation | emp-1 (8hrs) + emp-2 (8hrs) mixed together | Only emp-1's hours count → `gross_pay = 240` |
@@ -508,14 +508,14 @@ The following sections document the original test patterns. Current tests follow
 #### SALARIED employees (2 tests)
 
 | Test | Input | Expected |
-|---|---|---|
+| --- | --- | --- |
 | Bi-weekly pay | `pay_rate = 100000` | `gross_pay ≈ 3846.15` (100000 ÷ 26) |
 | Time entries ignored | salary employee with 80hrs passed in | `gross_pay` unchanged — still `≈ 3846.15` |
 
 #### Tax calculations (5 tests)
 
 | Test | Input | Expected |
-|---|---|---|
+| --- | --- | --- |
 | Federal tax | 8hrs @ $30, `federal_tax_rate = 0.22` | `federal_tax ≈ 52.80` |
 | State tax | 8hrs @ $30, `state_tax_rate = 0.093` | `state_tax ≈ 22.32` |
 | Social security | 8hrs @ $30, `social_security_tax_rate = 0.062` | `social_security ≈ 14.88` |
@@ -535,7 +535,7 @@ Verifies that `employee_id` and `payroll_run_id` on the returned record match th
 **What's mocked and why:**
 
 | Mock | Reason |
-|---|---|
+| --- | --- |
 | `next/headers` | The server Supabase client calls `cookies()` from Next.js headers — unavailable outside a request context |
 | `@/utils/supabase/server` | Replaced with `{ auth: mockAuth, from: mockFrom }` to control every DB response per test |
 | `@/utils/supabase/client` | Mocked to prevent the module-level `createClient()` crash in `lib/supabase/payroll.tsx` (imported transitively) |
@@ -554,10 +554,10 @@ call 5 → insert payroll records
 call 6 → update payroll run totals
 ```
 
-#### Tests
+#### Test Scenarios
 
 | Test | Scenario | Assertion |
-|---|---|---|
+| --- | --- | --- |
 | Auth guard | `getUser` returns `null` | Throws `"User must be authenticated"` |
 | Invalid dates | `'not-a-date'` passed as start | Throws `"Invalid pay period dates"` |
 | Start after end | `'2026-01-28'` / `'2026-01-15'` | Throws `"start date must be before"` |
@@ -572,7 +572,7 @@ The `stderr` line printed during the FAILED rollback test (`Error fetching activ
 ## Scripts
 
 | Command | Description |
-|---|---|
+| --- | --- |
 | `npm run dev` | Start local development server |
 | `npm run build` | Production build |
 | `npm run lint` | Run ESLint |

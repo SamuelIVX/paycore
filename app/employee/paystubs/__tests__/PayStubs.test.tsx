@@ -44,7 +44,7 @@ vi.mock('@/lib/utils', () => ({
 }));
 
 vi.mock('@react-pdf/renderer', () => ({
-    PDFDownloadLink: ({ children }: { children: React.ReactNode }) => children({ loading: false }),
+    PDFDownloadLink: ({ children }: { children: (args: { loading: boolean }) => React.ReactNode }) => children({ loading: false }),
 }));
 
 vi.mock('@/components/employee/check-form/CheckPDF', () => ({

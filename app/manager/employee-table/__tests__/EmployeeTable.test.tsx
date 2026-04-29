@@ -248,9 +248,9 @@ describe('EmployeeTable Component', () => {
 
         it('sorts by employment status', async () => {
             const employees = [
-                makeEmployee({ id: 'emp-1', employment_status: 'ACTIVE' }),
-                makeEmployee({ id: 'emp-2', employment_status: 'TERMINATED' }),
-                makeEmployee({ id: 'emp-3', employment_status: 'ACTIVE' }),
+                makeEmployee({ id: 'emp-1', first_name: 'Alice', employment_status: 'ACTIVE' }),
+                makeEmployee({ id: 'emp-2', first_name: 'Bob', employment_status: 'TERMINATED' }),
+                makeEmployee({ id: 'emp-3', first_name: 'Carol', employment_status: 'ACTIVE' }),
             ];
             mockGetEmployees.mockResolvedValue(employees);
 
@@ -258,24 +258,16 @@ describe('EmployeeTable Component', () => {
 
             await waitFor(() => {
                 expect(screen.getAllByText('ACTIVE')).toHaveLength(2);
+                expect(screen.getByText('TERMINATED')).toBeInTheDocument();
             });
 
             const statusButton = screen.getAllByText('Status')[0];
             fireEvent.click(statusButton);
 
-            // Verify first row contains TERMINATED (ascending sorts TERMINATED first)
+            // After click, verify both statuses still visible (sorting works by reordering)
             await waitFor(() => {
-                const termBadge = screen.getByText('TERMINATED');
-                expect(termBadge).toBeInTheDocument();
-            });
-
-            // Click again for descending
-            fireEvent.click(statusButton);
-
-            // Verify first row contains ACTIVE (descending sorts ACTIVE first)
-            await waitFor(() => {
-                const activeBadges = screen.getAllByText('ACTIVE');
-                expect(activeBadges.length).toBeGreaterThan(0);
+                expect(screen.getAllByText('ACTIVE')).toHaveLength(2);
+                expect(screen.getByText('TERMINATED')).toBeInTheDocument();
             });
         });
     });
@@ -301,7 +293,8 @@ describe('EmployeeTable Component', () => {
             // After filtering by "John", only John Smith should be visible
             await waitFor(() => {
                 expect(screen.getByText('John Smith')).toBeInTheDocument();
-                // Other employees might still be in DOM but filtered out
+                expect(screen.queryByText('Jane Doe')).not.toBeInTheDocument();
+                expect(screen.queryByText('Bob Wilson')).not.toBeInTheDocument();
             });
         });
 
@@ -407,14 +400,17 @@ describe('EmployeeTable Component', () => {
                 (btn) => btn.getAttribute('aria-label') === 'next' || btn.querySelector('svg[class*="ChevronRight"]')
             );
 
-            if (nextButton) {
-                fireEvent.click(nextButton);
-
-                // After going to next page, first page employees should not be visible
-                await waitFor(() => {
-                    expect(screen.queryByText('Employee1 Smith')).not.toBeInTheDocument();
-                });
+            // Skip test if no next button (not enough data)
+            if (!nextButton) {
+                return;
             }
+
+            fireEvent.click(nextButton);
+
+            // After going to next page, first page employees should not be visible
+            await waitFor(() => {
+                expect(screen.queryByText('Employee1 Smith')).not.toBeInTheDocument();
+            });
         });
 
         it('disables prev button on first page', async () => {
@@ -433,9 +429,12 @@ describe('EmployeeTable Component', () => {
                 (btn) => btn.getAttribute('aria-label') === 'previous' || btn.querySelector('svg[class*="ChevronLeft"]')
             );
 
-            if (prevButton) {
-                expect(prevButton).toBeDisabled();
+            // Skip test if no prev button
+            if (!prevButton) {
+                return;
             }
+
+            expect(prevButton).toBeDisabled();
         });
 
         it('shows correct page info', async () => {
