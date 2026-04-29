@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { processPaystubData, COMPANY_INFO } from '@/app/employee/paystubs/utils';
-import type { ProcessedPaystub, RawPaystubRow } from '@/app/employee/paystubs/types';
+import { COMPANY_INFO } from '@/app/employee/paystubs/utils';
+import type { RawPaystubRow } from '@/app/employee/paystubs/types';
 
 const { mockGetEmployeePaystubs, mockFormatPayPeriod, mockFormatPaidOn } = vi.hoisted(() => ({
     mockGetEmployeePaystubs: vi.fn(),
