@@ -174,7 +174,7 @@ describe('PayStubsPage', () => {
 
     describe('PayStubCard Display', () => {
         it('displays company name in card header', async () => {
-            const paystubs = [makeProcessedPaystub()];
+            const paystubs = [makeRawPaystubRow()];
             mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
@@ -339,9 +339,9 @@ describe('PayStubsPage', () => {
         });
 
         it('displays payment details section', async () => {
-            const paystubs = [makeProcessedPaystub({
+            const paystubs = [makeRawPaystubRow({
                 id: 'payroll-1',
-                payType: 'HOURLY',
+                pay_frequency: 'HOURLY',
             })];
             mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
@@ -354,9 +354,9 @@ describe('PayStubsPage', () => {
         });
 
         it('displays earnings section with gross pay', async () => {
-            const paystubs = [makeProcessedPaystub({
+            const paystubs = [makeRawPaystubRow({
                 id: 'payroll-1',
-                grossPay: 3000,
+                gross_pay: 3000,
             })];
             mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
@@ -369,7 +369,7 @@ describe('PayStubsPage', () => {
         });
 
         it('displays deductions section', async () => {
-            const paystubs = [makeProcessedPaystub({
+            const paystubs = [makeRawPaystubRow({
                 id: 'payroll-1',
             })];
             mockGetEmployeePaystubs.mockResolvedValue(paystubs);
@@ -383,9 +383,9 @@ describe('PayStubsPage', () => {
         });
 
         it('displays net pay section', async () => {
-            const paystubs = [makeProcessedPaystub({
+            const paystubs = [makeRawPaystubRow({
                 id: 'payroll-1',
-                netPay: 1781.50,
+                net_pay: 1781.50,
             })];
             mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
@@ -397,9 +397,9 @@ describe('PayStubsPage', () => {
         });
 
         it('displays YTD values in expanded view', async () => {
-            const paystubs = [makeProcessedPaystub({
+            const paystubs = [makeRawPaystubRow({
                 id: 'payroll-1',
-                ytdGross: 12000,
+                ytd_gross: 12000,
             })];
             mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 

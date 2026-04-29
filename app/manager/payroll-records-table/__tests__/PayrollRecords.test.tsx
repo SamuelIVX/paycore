@@ -112,6 +112,7 @@ describe('PayrollTable Component', () => {
                 expect(screen.getByText('Social Security')).toBeInTheDocument();
                 expect(screen.getByText('Benefits')).toBeInTheDocument();
                 expect(screen.getByText('Net Pay')).toBeInTheDocument();
+                expect(screen.getByText('Created At')).toBeInTheDocument();
             });
         });
 
@@ -199,16 +200,17 @@ describe('PayrollTable Component', () => {
             render(<PayrollTable />);
 
             await waitFor(() => {
-                // Verify both employee names are displayed
                 expect(screen.getByText('Hourly Worker')).toBeInTheDocument();
                 expect(screen.getByText('Salary Worker')).toBeInTheDocument();
 
-                // Verify numeric hours in HOURLY row
-                expect(screen.getByText('160')).toBeInTheDocument();
+                const hourlyRow = screen.getByText('Hourly Worker').closest('tr') as HTMLElement;
+                const salaryRow = screen.getByText('Salary Worker').closest('tr') as HTMLElement;
 
-                // Verify placeholder for SALARY row hours (should show "—")
-                const dashElements = screen.getAllByText('—');
-                expect(dashElements.length).toBeGreaterThanOrEqual(2);
+                expect(within(hourlyRow).getByText('160')).toBeInTheDocument();
+                expect(within(hourlyRow).getByText('10')).toBeInTheDocument();
+
+                const salaryDashes = within(salaryRow).getAllByText('—');
+                expect(salaryDashes.length).toBeGreaterThanOrEqual(2);
             });
         });
 
