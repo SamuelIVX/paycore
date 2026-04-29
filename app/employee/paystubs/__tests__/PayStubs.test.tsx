@@ -281,6 +281,33 @@ describe('PayStubsPage', () => {
             await waitFor(() => {
                 expect(screen.queryByText('EARNINGS')).not.toBeInTheDocument();
             });
+
+            // Test keyboard toggle with Enter key
+            if (header) {
+                fireEvent.keyDown(header, { key: 'Enter', code: 'Enter' });
+            }
+
+            await waitFor(() => {
+                expect(screen.getByText('EARNINGS')).toBeInTheDocument();
+            });
+
+            // Collapse with Enter key
+            if (header) {
+                fireEvent.keyDown(header, { key: 'Enter', code: 'Enter' });
+            }
+
+            await waitFor(() => {
+                expect(screen.queryByText('EARNINGS')).not.toBeInTheDocument();
+            });
+
+            // Test keyboard toggle with Space key
+            if (header) {
+                fireEvent.keyDown(header, { key: ' ', code: 'Space' });
+            }
+
+            await waitFor(() => {
+                expect(screen.getByText('EARNINGS')).toBeInTheDocument();
+            });
         });
     });
 
@@ -296,6 +323,7 @@ describe('PayStubsPage', () => {
                     city: 'San Francisco',
                     state: 'CA',
                     zip_code: '94105',
+                    phone: '555-1234',
                     pay_frequency: 'HOURLY',
                     pay_rate: 30,
                 },

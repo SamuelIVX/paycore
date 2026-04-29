@@ -510,7 +510,7 @@ The following sections document the original test patterns. Current tests follow
 | Test | Input | Expected |
 | --- | --- | --- |
 | Bi-weekly pay | `pay_rate = 100000` | `gross_pay ≈ 3846.15` (100000 ÷ 26) |
-| Time entries ignored | salary employee with 80hrs passed in | `gross_pay` unchanged — still `≈ 3846.15` |
+| Time entries ignored | salary employee with 80 hrs passed in | `gross_pay` unchanged — still `≈ 3846.15` |
 
 #### Tax calculations (5 tests)
 
