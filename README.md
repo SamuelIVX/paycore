@@ -7,7 +7,7 @@ A full-stack payroll management web application built with Next.js, React 19, Su
 ## Tech Stack
 
 | Layer | Technology |
-|---|---|
+| --- | --- |
 | Framework | Next.js 16 (App Router) with Turbopack |
 | Language | TypeScript |
 | Database / Auth | Supabase (PostgreSQL + RLS) |
@@ -129,9 +129,57 @@ paycore/
 │   └── interfaces/
 │       └── database.types.ts       # Auto-generated Supabase DB types
 │
-├── lib/__tests__/                  # Test suite
-│   ├── payroll.test.ts             # Unit tests — calculatePayRollForEmployee
-│   └── payroll-actions.test.ts     # Integration tests — runPayroll
+├── lib/__tests__/                  # Test suite - utilities & data layer
+│   ├── payroll.test.ts              # 18 tests - calculatePayRollForEmployee
+│   ├── payroll-actions.test.ts      # 6 tests - runPayroll orchestration
+│   └── supabase/                 # Data layer tests
+│       ├── benefits.test.ts      # 16 tests - benefits CRUD & enrollment
+│       ├── employee.test.ts     # 13 tests - employee CRUD
+│       ├── paystubs.test.ts     # 5 tests - paystub queries
+│       └── time-entries.test.ts  # 7 tests - time entry creation
+│
+├── components/                    # Co-located component tests
+│   ├── manager/
+│   │   ├── company-benefits/
+│   │   │   ├── CompanyBenefits.tsx
+│   │   │   └── __tests__/
+│   │   │       └── CompanyBenefits.test.tsx   # 40 tests
+│   │   └── optional-benefits/
+│   │       ├── OptionalBenefits.tsx
+│   │       └── __tests__/
+│   │           └── OptionalBenefits.test.tsx   # 38 tests (8 skipped)
+│   └── employee/
+│       ├── optional-benefits-cards/
+│       │   ├── OptionalBenefits.tsx
+│       │   └── __tests__/
+│       │       └── OptionalBenefitsCard.test.tsx   # 20 tests
+│       └── summary-cards/
+│           ├── SummaryCards.tsx
+│           └── __tests__/
+│               └── SummaryCards.test.tsx   # 18 tests
+│
+├── app/                          # Co-located page tests
+│   ├── manager/
+│   │   ├── employee-table/
+│   │   │   ├── page.tsx
+│   │   │   └── __tests__/
+│   │   │       └── EmployeeTable.test.tsx   # 22 tests (6 skipped)
+│   │   └── payroll-records-table/
+│   │       ├── page.tsx
+│   │       └── __tests__/
+│   │           └── PayrollRecords.test.tsx   # 22 tests (3 skipped)
+│   └── employee/
+│       ├── dashboard/
+│       │   └── page.tsx
+│       ├── benefits/
+│       │   └── page.tsx
+│       └── paystubs/
+│           ├── page.tsx
+│           ├── utils.ts
+│           ├── types.ts
+│           └── __tests__/
+│               ├── PayStubs.test.tsx   # 19 tests
+│               └── utils.test.ts       # 12 tests
 │
 ├── hooks/                          # Custom React hooks
 │   ├── use-add-employee.ts         # Manages add employee form state and submission
@@ -238,7 +286,7 @@ Located at [`lib/supabase/payroll-actions.ts`](lib/supabase/payroll-actions.ts).
 
 #### Full Pipeline
 
-```
+```text
 1. Auth check          → reject if no authenticated user
 2. Date validation     → reject if dates are invalid or start > end
 3. Idempotency check   → reject if a PROCESSING or COMPLETED run already exists for this period
@@ -268,7 +316,7 @@ The entire calculation and insertion block is wrapped in a `try/catch`. If anyth
 ## Database Tables
 
 | Table | Purpose |
-|---|---|
+| --- | --- |
 | `employees` | Employee records including `pay_rate`, `pay_frequency`, and individual tax rates |
 | `time_entries` | Clock-in/out records with `hours_worked`, `work_date`, and `status` (PENDING / APPROVED) |
 | `payroll_runs` | One row per payroll run — tracks status, totals (`total_gross`, `total_net`, `total_taxes`, `total_benefit_deductions`), and who ran it |
@@ -380,15 +428,65 @@ All tables use Row Level Security (RLS). Reads and writes require authenticated 
 ### Running Tests
 
 ```bash
-npm run test:run    # single pass — prints results and exits
-npm test            # watch mode — re-runs on every file save
+npm run test -- --run    # single pass — prints results and exits
+npm test               # watch mode — re-runs on every file save
 ```
 
-Tests live in [`lib/__tests__/`](lib/__tests__/). The framework is **Vitest** with `jsdom` as the DOM environment and `@testing-library/jest-dom` for DOM matchers.
+The framework is **Vitest** with `jsdom` as the DOM environment and `@testing-library/jest-dom` for DOM matchers.
+
+**Test Structure (Co-located):** Tests follow the co-location best practice — each component or page has its own `__tests__/` directory alongside it. This makes tests easier to find, maintain, and move with their associated code.
+
+```text
+components/**/__tests__/   # Co-located with components
+app/**/__tests__/          # Co-located with pages
+lib/__tests__/             # Utilities & data layer (stay centralized)
+```
 
 ---
 
-### Unit Tests — `payroll.test.ts`
+### Test Coverage Summary (April 2026)
+
+| Area | Test File | Tests | Passing | Skipped |
+| --- | --- | --- | --- | --- |
+| **lib/** | | | | |
+| Payroll utils | `lib/__tests__/payroll.test.ts` | 18 | 18 | 0 |
+| Payroll actions | `lib/__tests__/payroll-actions.test.ts` | 6 | 6 | 0 |
+| Data: benefits | `lib/__tests__/supabase/benefits.test.ts` | 16 | 16 | 0 |
+| Data: employee | `lib/__tests__/supabase/employee.test.ts` | 13 | 13 | 0 |
+| Data: paystubs | `lib/__tests__/supabase/paystubs.test.ts` | 5 | 5 | 0 |
+| Data: time-entries | `lib/__tests__/supabase/time-entries.test.ts` | 7 | 7 | 0 |
+| **components/manager/** | | | | |
+| Company Benefits | `company-benefits/__tests__/CompanyBenefits.test.tsx` | 40 | 38 | 2 |
+| Optional Benefits | `optional-benefits/__tests__/OptionalBenefits.test.tsx` | 46 | 38 | 8 |
+| **components/employee/** | | | | |
+| Optional Benefits Card | `optional-benefits-cards/__tests__/OptionalBenefitsCard.test.tsx` | 38 | 38 | 0 |
+| Summary Cards | `summary-cards/__tests__/SummaryCards.test.tsx` | 18 | 18 | 0 |
+| **app/manager/** | | | | |
+| Employee Table | `employee-table/__tests__/EmployeeTable.test.tsx` | 42 | 38 | 4 |
+| Payroll Records | `payroll-records-table/__tests__/PayrollRecords.test.tsx` | 34 | 31 | 3 |
+| **app/employee/** | | | | |
+| Paystubs page | `paystubs/__tests__/PayStubs.test.tsx` | 19 | 19 | 0 |
+| Paystubs utils | `paystubs/__tests__/utils.test.ts` | 12 | 12 | 0 |
+
+**Total: 14 test files, 243 tests (227 passing + 16 skipped)**
+
+---
+
+### By Feature Area
+
+| Feature Area | Tests | Description |
+| --- | --- | --- |
+| Payroll calculations | 24 | HOURLY/SALARY/BI_WEEKLY, tax calculations, benefits deductions |
+| Table components | 76 | Employee table, payroll records table — sorting, filtering, pagination |
+| Benefits management | 104 | Company benefits, optional benefits — CRUD, enrollment |
+| Paystubs | 31 | Data loading, expand/collapse, display |
+| Data layer | 45 | Supabase query functions — benefits, employees, paystubs, time entries |
+
+---
+
+### Legacy Content (Historical Reference)
+
+The following sections document the original test patterns. Current tests follow the same patterns but with expanded coverage.
 
 **12 tests** covering `calculatePayRollForEmployee` in full isolation. No Supabase, no network, no DB — pure function input/output.
 
@@ -401,7 +499,7 @@ Tests live in [`lib/__tests__/`](lib/__tests__/). The framework is **Vitest** wi
 #### HOURLY employees (4 tests)
 
 | Test | Input | Expected |
-|---|---|---|
+| --- | --- | --- |
 | Basic gross pay | 8hrs @ $30/hr | `gross_pay = 240` |
 | Multi-entry summing | entries of 8hrs + 6hrs @ $25/hr | `gross_pay = 350`, `regular_hours = 14` |
 | Employee isolation | emp-1 (8hrs) + emp-2 (8hrs) mixed together | Only emp-1's hours count → `gross_pay = 240` |
@@ -410,14 +508,14 @@ Tests live in [`lib/__tests__/`](lib/__tests__/). The framework is **Vitest** wi
 #### SALARIED employees (2 tests)
 
 | Test | Input | Expected |
-|---|---|---|
+| --- | --- | --- |
 | Bi-weekly pay | `pay_rate = 100000` | `gross_pay ≈ 3846.15` (100000 ÷ 26) |
-| Time entries ignored | salary employee with 80hrs passed in | `gross_pay` unchanged — still `≈ 3846.15` |
+| Time entries ignored | salary employee with 80 hrs passed in | `gross_pay` unchanged — still `≈ 3846.15` |
 
 #### Tax calculations (5 tests)
 
 | Test | Input | Expected |
-|---|---|---|
+| --- | --- | --- |
 | Federal tax | 8hrs @ $30, `federal_tax_rate = 0.22` | `federal_tax ≈ 52.80` |
 | State tax | 8hrs @ $30, `state_tax_rate = 0.093` | `state_tax ≈ 22.32` |
 | Social security | 8hrs @ $30, `social_security_tax_rate = 0.062` | `social_security ≈ 14.88` |
@@ -437,7 +535,7 @@ Verifies that `employee_id` and `payroll_run_id` on the returned record match th
 **What's mocked and why:**
 
 | Mock | Reason |
-|---|---|
+| --- | --- |
 | `next/headers` | The server Supabase client calls `cookies()` from Next.js headers — unavailable outside a request context |
 | `@/utils/supabase/server` | Replaced with `{ auth: mockAuth, from: mockFrom }` to control every DB response per test |
 | `@/utils/supabase/client` | Mocked to prevent the module-level `createClient()` crash in `lib/supabase/payroll.tsx` (imported transitively) |
@@ -456,10 +554,10 @@ call 5 → insert payroll records
 call 6 → update payroll run totals
 ```
 
-#### Tests
+#### Test Scenarios
 
 | Test | Scenario | Assertion |
-|---|---|---|
+| --- | --- | --- |
 | Auth guard | `getUser` returns `null` | Throws `"User must be authenticated"` |
 | Invalid dates | `'not-a-date'` passed as start | Throws `"Invalid pay period dates"` |
 | Start after end | `'2026-01-28'` / `'2026-01-15'` | Throws `"start date must be before"` |
@@ -474,10 +572,10 @@ The `stderr` line printed during the FAILED rollback test (`Error fetching activ
 ## Scripts
 
 | Command | Description |
-|---|---|
+| --- | --- |
 | `npm run dev` | Start local development server |
 | `npm run build` | Production build |
 | `npm run lint` | Run ESLint |
 | `npm test` | Run tests in watch mode |
-| `npm run test:run` | Run tests once and exit |
+| `npm run test -- --run` | Run tests once and exit |
 | `npm run gen:types` | Regenerate Supabase TypeScript types from the live schema |
