@@ -129,9 +129,57 @@ paycore/
 │   └── interfaces/
 │       └── database.types.ts       # Auto-generated Supabase DB types
 │
-├── lib/__tests__/                  # Test suite
-│   ├── payroll.test.ts             # Unit tests — calculatePayRollForEmployee
-│   └── payroll-actions.test.ts     # Integration tests — runPayroll
+├── lib/__tests__/                  # Test suite - utilities & data layer
+│   ├── payroll.test.ts              # 18 tests - calculatePayRollForEmployee
+│   ├── payroll-actions.test.ts    # 6 tests - runPayroll orchestration
+│   └── supabase/                 # Data layer tests
+│       ├── benefits.test.ts      # 16 tests - benefits CRUD & enrollment
+│       ├── employee.test.ts     # 13 tests - employee CRUD
+│       ├── paystubs.test.ts     # 5 tests - paystub queries
+│       └── time-entries.test.ts  # 11 tests - time entry creation
+│
+├── components/                    # Co-located component tests
+│   ├── manager/
+│   │   ├── company-benefits/
+│   │   │   ├── CompanyBenefits.tsx
+│   │   │   └── __tests__/
+│   │   │       └── CompanyBenefits.test.tsx   # 40 tests
+│   │   └── optional-benefits/
+│   │       ├── OptionalBenefits.tsx
+│   │       └── __tests__/
+│   │           └── OptionalBenefits.test.tsx   # 46 tests
+│   └── employee/
+│       ├── optional-benefits-cards/
+│       │   ├── OptionalBenefits.tsx
+│       │   └── __tests__/
+│       │       └── OptionalBenefitsCard.test.tsx   # 38 tests
+│       └── summary-cards/
+│           ├── SummaryCards.tsx
+│           └── __tests__/
+│               └── SummaryCards.test.tsx   # 18 tests
+│
+├── app/                          # Co-located page tests
+│   ├── manager/
+│   │   ├── employee-table/
+│   │   │   ├── page.tsx
+│   │   │   └── __tests__/
+│   │   │       └── EmployeeTable.test.tsx   # 42 tests
+│   │   └── payroll-records-table/
+│   │       ├── page.tsx
+│   │       └── __tests__/
+│   │           └── PayrollRecords.test.tsx   # 34 tests
+│   └── employee/
+│       ├── dashboard/
+│       │   └── page.tsx
+│       ├── benefits/
+│       │   └── page.tsx
+│       └── paystubs/
+│           ├── page.tsx
+│           ├── utils.ts
+│           ├── types.ts
+│           └── __tests__/
+│               ├── PayStubs.test.tsx   # 19 tests
+│               └── utils.test.ts       # 12 tests
 │
 ├── hooks/                          # Custom React hooks
 │   ├── use-add-employee.ts         # Manages add employee form state and submission
@@ -380,15 +428,65 @@ All tables use Row Level Security (RLS). Reads and writes require authenticated 
 ### Running Tests
 
 ```bash
-npm run test:run    # single pass — prints results and exits
-npm test            # watch mode — re-runs on every file save
+npm run test -- --run    # single pass — prints results and exits
+npm test               # watch mode — re-runs on every file save
 ```
 
-Tests live in [`lib/__tests__/`](lib/__tests__/). The framework is **Vitest** with `jsdom` as the DOM environment and `@testing-library/jest-dom` for DOM matchers.
+The framework is **Vitest** with `jsdom` as the DOM environment and `@testing-library/jest-dom` for DOM matchers.
+
+**Test Structure (Co-located):** Tests follow the co-location best practice — each component or page has its own `__tests__/` directory alongside it. This makes tests easier to find, maintain, and move with their associated code.
+
+```
+components/*/__tests__/    # Co-located with components
+app/*/*/__tests__/      # Co-located with pages
+lib/__tests__/          # Utilities & data layer (stay centralized)
+```
 
 ---
 
-### Unit Tests — `payroll.test.ts`
+### Test Coverage Summary (April 2026)
+
+| Area | Test File | Tests | Passing | Skipped |
+|------|---------|-------|--------|---------|
+| **lib/** | | | | | |
+| Payroll utils | `lib/__tests__/payroll.test.ts` | 18 | 18 | 0 |
+| Payroll actions | `lib/__tests__/payroll-actions.test.ts` | 6 | 6 | 0 |
+| Data: benefits | `lib/__tests__/supabase/benefits.test.ts` | 16 | 16 | 0 |
+| Data: employee | `lib/__tests__/supabase/employee.test.ts` | 13 | 13 | 0 |
+| Data: paystubs | `lib/__tests__/supabase/paystubs.test.ts` | 5 | 5 | 0 |
+| Data: time-entries | `lib/__tests__/supabase/time-entries.test.ts` | 11 | 11 | 0 |
+| **components/manager/** | | | | | |
+| Company Benefits | `company-benefits/__tests__/CompanyBenefits.test.tsx` | 40 | 38 | 2 |
+| Optional Benefits | `optional-benefits/__tests__/OptionalBenefits.test.tsx` | 46 | 38 | 8 |
+| **components/employee/** | | | | | |
+| Optional Benefits Card | `optional-benefits-cards/__tests__/OptionalBenefitsCard.test.tsx` | 38 | 38 | 0 |
+| Summary Cards | `summary-cards/__tests__/SummaryCards.test.tsx` | 18 | 18 | 0 |
+| **app/manager/** | | | | |
+| Employee Table | `employee-table/__tests__/EmployeeTable.test.tsx` | 42 | 38 | 4 |
+| Payroll Records | `payroll-records-table/__tests__/PayrollRecords.test.tsx` | 34 | 31 | 3 |
+| **app/employee/** | | | | |
+| Paystubs page | `paystubs/__tests__/PayStubs.test.tsx` | 19 | 19 | 0 |
+| Paystubs utils | `paystubs/__tests__/utils.test.ts` | 12 | 12 | 0 |
+
+**Total: 14 test files, 243 tests (227 passing + 16 skipped)**
+
+---
+
+### By Feature Area
+
+| Feature Area | Tests | Description |
+|------------|-------|-------------|
+| Payroll calculations | 24 | HOURLY/SALARY/BI_WEEKLY, tax calculations, benefits deductions |
+| Table components | 76 | Employee table, payroll records table — sorting, filtering, pagination |
+| Benefits management | 104 | Company benefits, optional benefits — CRUD, enrollment |
+| Paystubs | 31 | Data loading, expand/collapse, display |
+| Data layer | 45 | Supabase query functions — benefits, employees, paystubs, time entries |
+
+---
+
+### Legacy Content (Historical Reference)
+
+The following sections document the original test patterns. Current tests follow the same patterns but with expanded coverage.
 
 **12 tests** covering `calculatePayRollForEmployee` in full isolation. No Supabase, no network, no DB — pure function input/output.
 
@@ -479,5 +577,5 @@ The `stderr` line printed during the FAILED rollback test (`Error fetching activ
 | `npm run build` | Production build |
 | `npm run lint` | Run ESLint |
 | `npm test` | Run tests in watch mode |
-| `npm run test:run` | Run tests once and exit |
+| `npm run test -- --run` | Run tests once and exit |
 | `npm run gen:types` | Regenerate Supabase TypeScript types from the live schema |
