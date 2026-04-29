@@ -62,7 +62,9 @@ const makeEmployee = (overrides: Partial<Tables<'employees'>> = {}): Tables<'emp
     ...overrides,
 } as Tables<'employees'>);
 
-const makePayrollRecord = (overrides: Partial<any> = {}): any => ({
+type PayrollRecordWithEmployee = Tables<'payroll_records'> & { employees: Tables<'employees'> };
+
+const makePayrollRecord = (overrides: Partial<PayrollRecordWithEmployee> = {}): PayrollRecordWithEmployee => ({
     id: 'payroll-1',
     employee_id: 'emp-1',
     payroll_run_id: 'run-1',
@@ -258,9 +260,19 @@ describe('PayrollTable Component', () => {
             const nameButton = screen.getAllByText('Employee Name')[0];
             fireEvent.click(nameButton);
 
-            // After sorting, order should change
+            // Verify first row is sorted alphabetically (Alice should be first)
             await waitFor(() => {
-                expect(screen.getByText('Alice Brown')).toBeInTheDocument();
+                const rows = screen.getAllByRole('row');
+                expect(rows[1]).toHaveTextContent('Alice');
+            });
+
+            // Click again for descending
+            fireEvent.click(nameButton);
+
+            // Verify first row is sorted descending (Zara should be first)
+            await waitFor(() => {
+                const rows = screen.getAllByRole('row');
+                expect(rows[1]).toHaveTextContent('Zara');
             });
         });
 
@@ -281,9 +293,18 @@ describe('PayrollTable Component', () => {
             const grossButton = screen.getAllByText('Gross Pay')[0];
             fireEvent.click(grossButton);
 
+            // Verify first row sorted ascending ($2000 should be first, lowest)
             await waitFor(() => {
                 const rows = screen.getAllByRole('row');
-                expect(rows.length).toBeGreaterThan(1);
+                expect(rows[1]).toHaveTextContent('$2000');
+            });
+
+            // Click again for descending ($5000 should be first, highest)
+            fireEvent.click(grossButton);
+
+            await waitFor(() => {
+                const rows = screen.getAllByRole('row');
+                expect(rows[1]).toHaveTextContent('$5000');
             });
         });
 
@@ -304,8 +325,18 @@ describe('PayrollTable Component', () => {
             const netButton = screen.getAllByText('Net Pay')[0];
             fireEvent.click(netButton);
 
+            // Verify first row sorted ascending ($1500 should be first, lowest)
             await waitFor(() => {
-                expect(screen.getByText('$1500.00')).toBeInTheDocument();
+                const rows = screen.getAllByRole('row');
+                expect(rows[1]).toHaveTextContent('$1500');
+            });
+
+            // Click again for descending ($3000 should be first, highest)
+            fireEvent.click(netButton);
+
+            await waitFor(() => {
+                const rows = screen.getAllByRole('row');
+                expect(rows[1]).toHaveTextContent('$3000');
             });
         });
 
@@ -326,10 +357,18 @@ describe('PayrollTable Component', () => {
             const dateButton = screen.getAllByText('Created At')[0];
             fireEvent.click(dateButton);
 
-            // After sorting, dates should be in order
+            // Verify sorted ascending (oldest date first: 1/1/2026)
             await waitFor(() => {
                 const rows = screen.getAllByRole('row');
-                expect(rows.length).toBeGreaterThan(1);
+                expect(rows[1]).toHaveTextContent('1/1/2026');
+            });
+
+            // Click again for descending (newest date first: 1/30/2026)
+            fireEvent.click(dateButton);
+
+            await waitFor(() => {
+                const rows = screen.getAllByRole('row');
+                expect(rows[1]).toHaveTextContent('1/30/2026');
             });
         });
 

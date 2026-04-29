@@ -1,18 +1,34 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const mockClient = {
-    from: vi.fn(() => ({
-        insert: vi.fn().mockReturnValue({ data: null, error: null, select: vi.fn().mockReturnValue({ data: null, error: null, single: vi.fn().mockReturnValue({ data: null, error: null }) }) }),
-        select: vi.fn().mockReturnValue({ data: [], error: null, eq: vi.fn().mockReturnValue({ data: [], error: null, order: vi.fn().mockReturnValue({ data: [], error: null }), limit: vi.fn().mockReturnValue({ data: [], error: null }) }) }),
-    })),
-};
-
-vi.mock('@/utils/supabase/client', () => ({
-    createClient: vi.fn(() => mockClient),
+const { mockGetCurrentEmployee } = vi.hoisted(() => ({
+    mockGetCurrentEmployee: vi.fn(async () => ({ id: 'emp-1', first_name: 'John', last_name: 'Smith' })),
 }));
 
 vi.mock('@/lib/supabase/employee', () => ({
-    getCurrentEmployee: vi.fn(async () => ({ id: 'emp-1', first_name: 'John', last_name: 'Smith' })),
+    getCurrentEmployee: mockGetCurrentEmployee,
+}));
+
+const mockInsertResult: { data: unknown; error: Error | null } = { data: null, error: null };
+const mockSelectResult: { data: unknown[]; error: Error | null } = { data: [], error: null };
+
+vi.mock('@/utils/supabase/client', () => ({
+    createClient: vi.fn(() => ({
+        from: vi.fn(() => ({
+            insert: vi.fn(() => ({ 
+                select: vi.fn(() => ({ 
+                    single: vi.fn(() => mockInsertResult) 
+                })) 
+            })),
+            select: vi.fn(() => ({ 
+                eq: vi.fn(() => ({ 
+                    order: vi.fn(() => ({ 
+                        limit: vi.fn(() => mockSelectResult) 
+                    })),
+                    limit: vi.fn(() => mockSelectResult) 
+                })) 
+            })),
+        })),
+    })),
 }));
 
 const { mockCreateTimeEntry, mockGetRecentTimeEntries } = vi.hoisted(() => ({
@@ -67,11 +83,11 @@ describe('time-entries data layer', () => {
 
     describe('getRecentTimeEntries', () => {
         it('returns recent time entries', async () => {
-            const entries = [
+            const entries: Tables<'time_entries'>[] = [
                 makeTimeEntry({ id: 'entry-1', work_date: '2026-01-15' }),
                 makeTimeEntry({ id: 'entry-2', work_date: '2026-01-14' }),
             ];
-            mockGetRecentTimeEntries.mockResolvedValue(entries as any);
+            mockGetRecentTimeEntries.mockResolvedValue(entries);
 
             const result = await getRecentTimeEntries();
 
@@ -87,8 +103,8 @@ describe('time-entries data layer', () => {
         });
 
         it('limits to 5 entries', async () => {
-            const entries = Array.from({ length: 5 }, (_, i) => makeTimeEntry({ id: `entry-${i}`, work_date: `2026-01-${15 - i}` }));
-            mockGetRecentTimeEntries.mockResolvedValue(entries as any);
+            const entries: Tables<'time_entries'>[] = Array.from({ length: 5 }, (_, i) => makeTimeEntry({ id: `entry-${i}`, work_date: `2026-01-${15 - i}` }));
+            mockGetRecentTimeEntries.mockResolvedValue(entries);
 
             const result = await getRecentTimeEntries();
 
@@ -96,11 +112,11 @@ describe('time-entries data layer', () => {
         });
 
         it('returns entries sorted by work_date descending', async () => {
-            const entries = [
+            const entries: Tables<'time_entries'>[] = [
                 makeTimeEntry({ id: 'entry-1', work_date: '2026-01-15' }),
                 makeTimeEntry({ id: 'entry-2', work_date: '2026-01-14' }),
             ];
-            mockGetRecentTimeEntries.mockResolvedValue(entries as any);
+            mockGetRecentTimeEntries.mockResolvedValue(entries);
 
             const result = await getRecentTimeEntries();
 

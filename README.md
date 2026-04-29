@@ -436,10 +436,10 @@ The framework is **Vitest** with `jsdom` as the DOM environment and `@testing-li
 
 **Test Structure (Co-located):** Tests follow the co-location best practice — each component or page has its own `__tests__/` directory alongside it. This makes tests easier to find, maintain, and move with their associated code.
 
-```
-components/*/__tests__/    # Co-located with components
-app/*/*/__tests__/      # Co-located with pages
-lib/__tests__/          # Utilities & data layer (stay centralized)
+```text
+components/**/__tests__/   # Co-located with components
+app/**/__tests__/          # Co-located with pages
+lib/__tests__/             # Utilities & data layer (stay centralized)
 ```
 
 ---
@@ -448,17 +448,17 @@ lib/__tests__/          # Utilities & data layer (stay centralized)
 
 | Area | Test File | Tests | Passing | Skipped |
 |------|---------|-------|--------|---------|
-| **lib/** | | | | | |
+| **lib/** | | | | |
 | Payroll utils | `lib/__tests__/payroll.test.ts` | 18 | 18 | 0 |
 | Payroll actions | `lib/__tests__/payroll-actions.test.ts` | 6 | 6 | 0 |
 | Data: benefits | `lib/__tests__/supabase/benefits.test.ts` | 16 | 16 | 0 |
 | Data: employee | `lib/__tests__/supabase/employee.test.ts` | 13 | 13 | 0 |
 | Data: paystubs | `lib/__tests__/supabase/paystubs.test.ts` | 5 | 5 | 0 |
-| Data: time-entries | `lib/__tests__/supabase/time-entries.test.ts` | 11 | 11 | 0 |
-| **components/manager/** | | | | | |
+| Data: time-entries | `lib/__tests__/supabase/time-entries.test.ts` | 7 | 7 | 0 |
+| **components/manager/** | | | | |
 | Company Benefits | `company-benefits/__tests__/CompanyBenefits.test.tsx` | 40 | 38 | 2 |
 | Optional Benefits | `optional-benefits/__tests__/OptionalBenefits.test.tsx` | 46 | 38 | 8 |
-| **components/employee/** | | | | | |
+| **components/employee/** | | | | |
 | Optional Benefits Card | `optional-benefits-cards/__tests__/OptionalBenefitsCard.test.tsx` | 38 | 38 | 0 |
 | Summary Cards | `summary-cards/__tests__/SummaryCards.test.tsx` | 18 | 18 | 0 |
 | **app/manager/** | | | | |

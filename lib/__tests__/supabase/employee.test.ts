@@ -58,7 +58,7 @@ describe('employee data layer', () => {
 
     describe('addEmployee', () => {
         it('inserts new employee successfully', async () => {
-            mockAddEmployee.mockResolvedValue({ id: 'emp-1' } as any);
+            mockAddEmployee.mockResolvedValue({ id: 'emp-1' });
             
             const result = await addEmployee({
                 first_name: 'John',
@@ -94,8 +94,8 @@ describe('employee data layer', () => {
 
     describe('getEmployees', () => {
         it('returns all employees', async () => {
-            const employees = [makeEmployee(), makeEmployee({ id: 'emp-2', first_name: 'Jane' })];
-            mockGetEmployees.mockResolvedValue(employees as any);
+            const employees: Tables<'employees'>[] = [makeEmployee(), makeEmployee({ id: 'emp-2', first_name: 'Jane' })];
+            mockGetEmployees.mockResolvedValue(employees);
 
             const result = await getEmployees();
 
@@ -119,7 +119,7 @@ describe('employee data layer', () => {
 
     describe('updateEmployee', () => {
         it('updates employee successfully', async () => {
-            mockUpdateEmployee.mockResolvedValue({ id: 'emp-1', first_name: 'Updated' } as any);
+            mockUpdateEmployee.mockResolvedValue({ id: 'emp-1', first_name: 'Updated' });
 
             const result = await updateEmployee('emp-1', { first_name: 'Updated' });
 

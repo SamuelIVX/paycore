@@ -48,8 +48,8 @@ describe('paystubs data layer', () => {
 
     describe('getEmployeePaystubs', () => {
         it('returns paystubs for current employee', async () => {
-            const paystubs = [makePaystub(), makePaystub({ id: 'payroll-2', created_at: '2026-01-15T00:00:00Z' })];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            const paystubs: Tables<'payroll_records'>[] = [makePaystub(), makePaystub({ id: 'payroll-2', created_at: '2026-01-15T00:00:00Z' })];
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             const result = await getEmployeePaystubs();
 
@@ -65,11 +65,11 @@ describe('paystubs data layer', () => {
         });
 
         it('returns paystubs sorted by created_at descending', async () => {
-            const paystubs = [
+            const paystubs: Tables<'payroll_records'>[] = [
                 makePaystub({ id: 'payroll-1', created_at: '2026-01-30T00:00:00Z' }),
                 makePaystub({ id: 'payroll-2', created_at: '2026-01-15T00:00:00Z' }),
             ];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             const result = await getEmployeePaystubs();
 
@@ -84,7 +84,7 @@ describe('paystubs data layer', () => {
         });
 
         it('handles empty data gracefully', async () => {
-            mockGetEmployeePaystubs.mockResolvedValue([] as any);
+            mockGetEmployeePaystubs.mockResolvedValue([]);
 
             const result = await getEmployeePaystubs();
 

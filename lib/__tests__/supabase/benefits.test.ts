@@ -87,8 +87,8 @@ describe('benefits data layer', () => {
 
     describe('getCompanyBenefits', () => {
         it('returns company benefits', async () => {
-            const benefits = [makeBenefit({ type: 'COMPANY' }), makeBenefit({ id: 'benefit-2', type: 'COMPANY' })];
-            mockGetCompanyBenefits.mockResolvedValue(benefits as any);
+            const benefits: Tables<'benefits'>[] = [makeBenefit({ type: 'COMPANY' }), makeBenefit({ id: 'benefit-2', type: 'COMPANY' })];
+            mockGetCompanyBenefits.mockResolvedValue(benefits);
 
             const result = await getCompanyBenefits();
 
@@ -113,8 +113,8 @@ describe('benefits data layer', () => {
 
     describe('getOptionalBenefits', () => {
         it('returns optional benefits', async () => {
-            const benefits = [makeBenefit({ type: 'OPTIONAL', monthly_cost: 100 })];
-            mockGetOptionalBenefits.mockResolvedValue(benefits as any);
+            const benefits: Tables<'benefits'>[] = [makeBenefit({ type: 'OPTIONAL', monthly_cost: 100 })];
+            mockGetOptionalBenefits.mockResolvedValue(benefits);
 
             const result = await getOptionalBenefits();
 
@@ -139,7 +139,7 @@ describe('benefits data layer', () => {
 
     describe('upsertEmployeeBenefit', () => {
         it('upserts with ACTIVE status', async () => {
-            mockUpsertEmployeeBenefit.mockResolvedValue({ id: 'emp-benefit-1' } as any);
+            mockUpsertEmployeeBenefit.mockResolvedValue({ id: 'emp-benefit-1' });
 
             const result = await upsertEmployeeBenefit({ benefit_id: 'benefit-1', status: 'ACTIVE' });
 
@@ -147,7 +147,7 @@ describe('benefits data layer', () => {
         });
 
         it('upserts with NOT_ENROLLED status', async () => {
-            mockUpsertEmployeeBenefit.mockResolvedValue({ id: 'emp-benefit-1' } as any);
+            mockUpsertEmployeeBenefit.mockResolvedValue({ id: 'emp-benefit-1' });
 
             const result = await upsertEmployeeBenefit({ benefit_id: 'benefit-1', status: 'NOT_ENROLLED' });
 
@@ -177,7 +177,7 @@ describe('benefits data layer', () => {
 
     describe('updateBenefit', () => {
         it('updates benefit successfully', async () => {
-            mockUpdateBenefit.mockResolvedValue({ id: 'benefit-1', name: 'Updated' } as any);
+            mockUpdateBenefit.mockResolvedValue({ id: 'benefit-1', name: 'Updated' });
             const updates: BenefitUpdate = { name: 'Updated Health Insurance' };
 
             const result = await updateBenefit('benefit-1', updates);
@@ -194,8 +194,8 @@ describe('benefits data layer', () => {
 
     describe('getActiveOptionalEmployeeBenefits', () => {
         it('returns active optional benefits for employee', async () => {
-            const employeeBenefits = [{ id: 'emp-benefit-1', employee_id: 'emp-1', benefit_id: 'benefit-1', status: 'ACTIVE', benefit: makeBenefit({ type: 'OPTIONAL' }) }];
-            mockGetActiveOptionalEmployeeBenefits.mockResolvedValue(employeeBenefits as any);
+            const employeeBenefits: Tables<'employee_benefits'>[] = [{ id: 'emp-benefit-1', employee_id: 'emp-1', benefit_id: 'benefit-1', status: 'ACTIVE', benefit: makeBenefit({ type: 'OPTIONAL' }) }];
+            mockGetActiveOptionalEmployeeBenefits.mockResolvedValue(employeeBenefits);
 
             const result = await getActiveOptionalEmployeeBenefits('emp-1');
 

@@ -2,9 +2,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { processPaystubData } from '@/app/employee/paystubs/utils';
 import type { RawPaystubRow } from '@/app/employee/paystubs/types';
 
+const { mockFormatPayPeriod, mockFormatPaidOn } = vi.hoisted(() => ({
+    mockFormatPayPeriod: vi.fn((start: string | null, end: string | null) => {
+        if (start === null && end === null) return 'FALLBACK_PERIOD';
+        return 'Jan 15 - Jan 28, 2026';
+    }),
+    mockFormatPaidOn: vi.fn((date: string | null) => {
+        if (date === null) return 'FALLBACK_DATE';
+        return '01/30/2026';
+    }),
+}));
+
 vi.mock('@/lib/utils', () => ({
-    formatPayPeriod: (start: string | null, end: string | null) => 'Jan 15 - Jan 28, 2026',
-    formatPaidOn: (date: string | null) => '01/30/2026',
+    formatPayPeriod: mockFormatPayPeriod,
+    formatPaidOn: mockFormatPaidOn,
 }));
 
 const makeRawPaystubRow = (overrides: Partial<RawPaystubRow> = {}): RawPaystubRow => ({
@@ -64,15 +75,17 @@ describe('processPaystubData', () => {
     });
 
     it('handles missing payroll runs data', () => {
-        const row = makeRawPaystubRow({ payroll_runs: null as any });
+        const row = makeRawPaystubRow({ payroll_runs: null });
         const result = processPaystubData(row);
 
-        expect(result.period).toBe('Jan 15 - Jan 28, 2026');
+        expect(result.period).toBe('FALLBACK_PERIOD');
         expect(result.paidOn).toBe('01/30/2026');
+        expect(mockFormatPayPeriod).toHaveBeenCalledWith(null, null);
+        expect(mockFormatPaidOn).toHaveBeenCalledWith('2026-01-30T00:00:00Z');
     });
 
     it('handles missing employee data', () => {
-        const row = makeRawPaystubRow({ employees: null as any });
+        const row = makeRawPaystubRow({ employees: null });
         const result = processPaystubData(row);
 
         expect(result.employeeName).toBe('Unknown');
@@ -139,7 +152,13 @@ describe('processPaystubData', () => {
                 email: 'john@test.com',
                 hire_date: '2024-01-01',
                 pay_frequency: 'SALARY',
-            } as any,
+                pay_rate: null,
+                address_line: null,
+                city: null,
+                state: null,
+                zip_code: null,
+                phone: null,
+            },
         });
         const result = processPaystubData(row);
 

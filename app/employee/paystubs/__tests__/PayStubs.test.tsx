@@ -3,6 +3,18 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { processPaystubData, COMPANY_INFO } from '@/app/employee/paystubs/utils';
 import type { ProcessedPaystub, RawPaystubRow } from '@/app/employee/paystubs/types';
 
+const { mockGetEmployeePaystubs, mockFormatPayPeriod, mockFormatPaidOn } = vi.hoisted(() => ({
+    mockGetEmployeePaystubs: vi.fn(),
+    mockFormatPayPeriod: vi.fn((start: string | null, end: string | null) => {
+        if (start === null && end === null) return 'FALLBACK_PERIOD';
+        return 'Jan 15 - Jan 28, 2026';
+    }),
+    mockFormatPaidOn: vi.fn((date: string | null) => {
+        if (date === null) return 'FALLBACK_DATE';
+        return '01/30/2026';
+    }),
+}));
+
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         push: vi.fn(),
@@ -21,22 +33,18 @@ vi.mock('@/utils/supabase/server', () => ({
     }),
 }));
 
-const { mockGetEmployeePaystubs } = vi.hoisted(() => ({
-    mockGetEmployeePaystubs: vi.fn(),
-}));
-
 vi.mock('@/lib/supabase/paystubs', () => ({
     getEmployeePaystubs: mockGetEmployeePaystubs,
 }));
 
 vi.mock('@/lib/utils', () => ({
-    formatPayPeriod: (start: string | null, end: string | null) => 'Jan 15 - Jan 28, 2026',
-    formatPaidOn: (date: string | null) => '01/30/2026',
+    formatPayPeriod: mockFormatPayPeriod,
+    formatPaidOn: mockFormatPaidOn,
     cn: (...classes: (string | undefined | null | false)[]) => classes.filter(Boolean).join(' '),
 }));
 
 vi.mock('@react-pdf/renderer', () => ({
-    PDFDownloadLink: ({ children }: { children: any }) => children({ loading: false }),
+    PDFDownloadLink: ({ children }: { children: React.ReactNode }) => children({ loading: false }),
 }));
 
 vi.mock('@/components/employee/check-form/CheckPDF', () => ({
@@ -87,8 +95,10 @@ const makeRawPaystubRow = (overrides: Partial<RawPaystubRow> = {}): RawPaystubRo
 });
 
 const makeProcessedPaystub = (overrides: Partial<ProcessedPaystub> = {}): ProcessedPaystub => {
-    const row = makeRawPaystubRow();
-    return processPaystubData(row);
+    return {
+        ...processPaystubData(makeRawPaystubRow()),
+        ...overrides,
+    };
 };
 
 describe('PayStubsPage', () => {
@@ -98,7 +108,7 @@ describe('PayStubsPage', () => {
 
     describe('Data Loading', () => {
         it('shows loading state initially', async () => {
-            mockGetEmployeePaystubs.mockImplementation(() => new Promise(() => {}));
+            mockGetEmployeePaystubs.mockImplementation(() => new Promise(() => { }));
 
             render(<PayStubsPage />);
 
@@ -110,7 +120,7 @@ describe('PayStubsPage', () => {
                 makeProcessedPaystub({ id: 'payroll-1' }),
                 makeProcessedPaystub({ id: 'payroll-2' }),
             ];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs.map(r => r as any));
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -165,7 +175,7 @@ describe('PayStubsPage', () => {
     describe('PayStubCard Display', () => {
         it('displays company name in card header', async () => {
             const paystubs = [makeProcessedPaystub()];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -176,7 +186,7 @@ describe('PayStubsPage', () => {
 
         it('displays net pay amount', async () => {
             const paystubs = [makeRawPaystubRow({ net_pay: 1781.50 })];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -187,7 +197,7 @@ describe('PayStubsPage', () => {
 
         it('displays pay period', async () => {
             const paystubs = [makeRawPaystubRow()];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -201,7 +211,7 @@ describe('PayStubsPage', () => {
                 makeRawPaystubRow({ id: 'payroll-1', net_pay: 1000 }),
                 makeRawPaystubRow({ id: 'payroll-2', net_pay: 2000 }),
             ];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -218,7 +228,7 @@ describe('PayStubsPage', () => {
                 makeRawPaystubRow({ id: 'payroll-1' }),
                 makeRawPaystubRow({ id: 'payroll-2' }),
             ];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -232,7 +242,7 @@ describe('PayStubsPage', () => {
                 makeRawPaystubRow({ id: 'payroll-1' }),
                 makeRawPaystubRow({ id: 'payroll-2' }),
             ];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -255,7 +265,7 @@ describe('PayStubsPage', () => {
             const paystubs = [
                 makeRawPaystubRow({ id: 'payroll-1' }),
             ];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -290,7 +300,7 @@ describe('PayStubsPage', () => {
                     pay_rate: 30,
                 },
             })];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -305,7 +315,7 @@ describe('PayStubsPage', () => {
                 id: 'payroll-1',
                 payType: 'HOURLY',
             })];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -320,7 +330,7 @@ describe('PayStubsPage', () => {
                 id: 'payroll-1',
                 grossPay: 3000,
             })];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -334,7 +344,7 @@ describe('PayStubsPage', () => {
             const paystubs = [makeProcessedPaystub({
                 id: 'payroll-1',
             })];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -349,7 +359,7 @@ describe('PayStubsPage', () => {
                 id: 'payroll-1',
                 netPay: 1781.50,
             })];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 
@@ -363,7 +373,7 @@ describe('PayStubsPage', () => {
                 id: 'payroll-1',
                 ytdGross: 12000,
             })];
-            mockGetEmployeePaystubs.mockResolvedValue(paystubs as any);
+            mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
             render(<PayStubsPage />);
 

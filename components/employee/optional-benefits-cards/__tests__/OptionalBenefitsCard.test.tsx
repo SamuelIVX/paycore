@@ -58,6 +58,10 @@ describe('OptionalBenefitsCard Component', () => {
         vi.clearAllMocks();
     });
 
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
     describe('Rendering', () => {
         it('renders optional benefits card with title and description', async () => {
             mockGetOptionalBenefits.mockResolvedValue([]);
@@ -245,10 +249,8 @@ describe('OptionalBenefitsCard Component', () => {
                 />
             );
 
-            await waitFor(() => {
-                const switchEl = screen.getByRole('switch');
-                fireEvent.click(switchEl);
-            });
+            const switchEl = await screen.findByRole('switch');
+            fireEvent.click(switchEl);
 
             await waitFor(() => {
                 expect(mockUpsertEmployeeBenefit).toHaveBeenCalledWith({
@@ -314,10 +316,8 @@ describe('OptionalBenefitsCard Component', () => {
                 />
             );
 
-            await waitFor(() => {
-                const switchEl = screen.getByRole('switch');
-                fireEvent.click(switchEl);
-            });
+            const switchEl = await screen.findByRole('switch');
+            fireEvent.click(switchEl);
 
             await waitFor(() => {
                 expect(mockUpsertEmployeeBenefit).toHaveBeenCalledWith({
@@ -339,10 +339,8 @@ describe('OptionalBenefitsCard Component', () => {
                 />
             );
 
-            await waitFor(() => {
-                const switchEl = screen.getByRole('switch');
-                fireEvent.click(switchEl);
-            });
+            const switchEl = await screen.findByRole('switch');
+            fireEvent.click(switchEl);
 
             await waitFor(() => {
                 const switchEl = screen.getByRole('switch');
@@ -412,11 +410,10 @@ describe('OptionalBenefitsCard Component', () => {
                 />
             );
 
-            await waitFor(() => {
-                const switchEl = screen.getByRole('switch');
-                fireEvent.click(switchEl);
-                fireEvent.click(switchEl);
-            });
+            const switchEl = await screen.findByRole('switch');
+            // Attempt multiple clicks rapidly - only one should trigger
+            fireEvent.click(switchEl);
+            fireEvent.click(switchEl);
 
             expect(mockUpsertEmployeeBenefit).toHaveBeenCalledTimes(1);
         });

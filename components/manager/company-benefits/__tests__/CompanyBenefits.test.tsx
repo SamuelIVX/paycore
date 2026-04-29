@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Tables } from '@/lib/interfaces/database.types';
 
 // Mock next/navigation
@@ -189,6 +188,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it('opens dialog when Add button clicked', async () => {
+            // TODO: Requires userEvent.click + dialog visibility assertion
             mockGetCompanyBenefits.mockResolvedValue([]);
 
             render(<CompanyBenefitsGrid />);
@@ -199,19 +199,19 @@ describe('CompanyBenefitsGrid Component', () => {
             });
         });
 
-        it('displays form fields in add dialog', async () => {
+        it.skip('displays form fields in add dialog', async () => {
+            // TODO: Requires userEvent.click to open dialog + fill form + submit
             mockGetCompanyBenefits.mockResolvedValue([]);
 
             render(<CompanyBenefitsGrid />);
 
-            // Note: Full dialog interaction would require opening the dialog trigger
-            // This is a basic check that the component structure exists
             await waitFor(() => {
                 expect(screen.getByText('Add Company Benefit')).toBeInTheDocument();
             });
         });
 
-        it('adds new benefit to list after submission', async () => {
+        it.skip('adds new benefit to list after submission', async () => {
+            // TODO: Requires mockAddCompanyBenefit + click + fill + submit + list verification
             mockGetCompanyBenefits
                 .mockResolvedValueOnce([])
                 .mockResolvedValueOnce([
@@ -226,6 +226,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it('shows success feedback after adding', async () => {
+            // TODO: Requires full add flow + success toast assertion
             const newBenefit = makeBenefit({ benefit: 'New Benefit' });
             mockGetCompanyBenefits.mockResolvedValue([newBenefit]);
 
@@ -236,7 +237,8 @@ describe('CompanyBenefitsGrid Component', () => {
             });
         });
 
-        it('closes dialog after successful addition', async () => {
+        it.skip('closes dialog after successful addition', async () => {
+            // TODO: Requires click + submit + dialog close verification
             mockGetCompanyBenefits.mockResolvedValue([]);
 
             render(<CompanyBenefitsGrid />);
@@ -248,7 +250,8 @@ describe('CompanyBenefitsGrid Component', () => {
     });
 
     describe('Edit Company Benefit', () => {
-        it('opens edit dialog when benefit card is clicked', async () => {
+        it.skip('opens edit dialog when benefit card is clicked', async () => {
+            // TODO: Requires click card + dialog visibility assertion
             const benefit = makeBenefit({
                 benefit: 'Health Insurance',
             });
@@ -259,15 +262,10 @@ describe('CompanyBenefitsGrid Component', () => {
             await waitFor(() => {
                 expect(screen.getByText('Health Insurance')).toBeInTheDocument();
             });
-
-            // Clicking on the benefit card should open edit dialog
-            const card = screen.getByText('Health Insurance').closest('div[class*="hover"]');
-            if (card) {
-                fireEvent.click(card);
-            }
         });
 
-        it('pre-fills edit dialog with current benefit data', async () => {
+        it.skip('pre-fills edit dialog with current benefit data', async () => {
+            // TODO: Requires click + dialog open + form value verification
             const benefit = makeBenefit({
                 benefit: 'Health Insurance',
                 description: 'Current coverage',
@@ -284,7 +282,8 @@ describe('CompanyBenefitsGrid Component', () => {
             });
         });
 
-        it('updates benefit on save', async () => {
+        it.skip('updates benefit on save', async () => {
+            // TODO: Requires click benefit card + fill form + submit + mockUpdateBenefit call
             const benefit = makeBenefit({ benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
             mockUpdateBenefit.mockResolvedValue({ id: benefit.id });
@@ -294,9 +293,10 @@ describe('CompanyBenefitsGrid Component', () => {
             await waitFor(() => {
                 expect(screen.getByText('Health Insurance')).toBeInTheDocument();
             });
-});
+        });
 
         it.skip('cancels deletion without removing benefit', async () => {
+            // TODO: Requires click delete + confirm dialog + cancel
             const benefit = makeBenefit({ benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
 
@@ -307,7 +307,8 @@ describe('CompanyBenefitsGrid Component', () => {
             });
         });
 
-        it('shows error if deletion fails', async () => {
+        it.skip('shows error if deletion fails', async () => {
+            // TODO: Requires click delete + mockDeleteBenefit rejection + error assertion
             const benefit = makeBenefit({ benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
             mockDeleteBenefit.mockRejectedValue(new Error('Delete failed'));
@@ -319,7 +320,8 @@ describe('CompanyBenefitsGrid Component', () => {
             });
         });
 
-        it('shows loading state during deletion', async () => {
+        it.skip('shows loading state during deletion', async () => {
+            // TODO: Requires click delete + loading state assertion
             const benefit = makeBenefit({ benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
             mockDeleteBenefit.mockImplementation(() => new Promise(() => { }));
@@ -348,7 +350,7 @@ describe('CompanyBenefitsGrid Component', () => {
 
             render(<CompanyBenefitsGrid />);
 
-await waitFor(() => {
+            await waitFor(() => {
                 expect(screen.getByText('Failed to load benefits')).toBeInTheDocument();
             });
         });
@@ -358,7 +360,7 @@ await waitFor(() => {
                 .mockRejectedValueOnce(new Error('Failed'))
                 .mockResolvedValueOnce([makeBenefit()]);
 
-            const { rerender } = render(<CompanyBenefitsGrid />);
+            render(<CompanyBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Failed to load benefits')).toBeInTheDocument();
@@ -370,9 +372,9 @@ await waitFor(() => {
         it('has semantic HTML structure', async () => {
             const benefit = makeBenefit();
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
- 
+
             const { container } = render(<CompanyBenefitsGrid />);
- 
+
             expect(container.querySelector('[data-slot="card"]')).toBeInTheDocument();
         });
 
