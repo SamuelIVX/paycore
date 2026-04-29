@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Tables } from '@/lib/interfaces/database.types';
 
@@ -199,12 +199,16 @@ describe('PayrollTable Component', () => {
             render(<PayrollTable />);
 
             await waitFor(() => {
-                // HOURLY row should show numeric hours
-                const hours160 = screen.getAllByText('160');
-                expect(hours160.length).toBeGreaterThan(0);
-                // SALARY row should show placeholder for hours
-                const noHours = screen.getAllByText('—');
-                expect(noHours.length).toBeGreaterThan(0);
+                // Verify both employee names are displayed
+                expect(screen.getByText('Hourly Worker')).toBeInTheDocument();
+                expect(screen.getByText('Salary Worker')).toBeInTheDocument();
+
+                // Verify numeric hours in HOURLY row
+                expect(screen.getByText('160')).toBeInTheDocument();
+
+                // Verify placeholder for SALARY row hours (should show "—")
+                const dashElements = screen.getAllByText('—');
+                expect(dashElements.length).toBeGreaterThanOrEqual(2);
             });
         });
 
@@ -560,6 +564,10 @@ describe('PayrollTable Component', () => {
             await waitFor(() => {
                 const taxCells = screen.getAllByText(/-\$\d+\.\d+/);
                 expect(taxCells.length).toBeGreaterThan(0);
+                // Verify red styling is applied
+                taxCells.forEach(cell => {
+                    expect(cell).toHaveClass('text-red-600');
+                });
             });
         });
 
@@ -570,7 +578,10 @@ describe('PayrollTable Component', () => {
             render(<PayrollTable />);
 
             await waitFor(() => {
-                expect(screen.getByText('$1825.00')).toBeInTheDocument();
+                const netPayCell = screen.getByText('$1825.00');
+                expect(netPayCell).toBeInTheDocument();
+                // Verify green styling is applied for positive net pay
+                expect(netPayCell).toHaveClass('text-green-600');
             });
         });
     });

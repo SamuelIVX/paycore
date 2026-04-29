@@ -117,8 +117,8 @@ describe('PayStubsPage', () => {
 
         it('displays all paystubs after loading', async () => {
             const paystubs = [
-                makeProcessedPaystub({ id: 'payroll-1' }),
-                makeProcessedPaystub({ id: 'payroll-2' }),
+                makeRawPaystubRow({ id: 'payroll-1' }),
+                makeRawPaystubRow({ id: 'payroll-2' }),
             ];
             mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
