@@ -94,13 +94,6 @@ const makeRawPaystubRow = (overrides: Partial<RawPaystubRow> = {}): RawPaystubRo
     ...overrides,
 });
 
-const makeProcessedPaystub = (overrides: Partial<ProcessedPaystub> = {}): ProcessedPaystub => {
-    return {
-        ...processPaystubData(makeRawPaystubRow()),
-        ...overrides,
-    };
-};
-
 describe('PayStubsPage', () => {
     beforeEach(() => {
         vi.clearAllMocks();
