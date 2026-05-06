@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import { TablesInsert } from "../interfaces/database.types";
+import { DirectoryEntry } from "@/lib/supabase/types";
 
 const supabase = createClient();
 type EmployeeInsert = TablesInsert<"employees">;
@@ -134,6 +135,44 @@ export async function getCurrentEmployee() {
         profile,
         employee,
     }
+}
+
+export const getEmployeeDirectory = async (): Promise<DirectoryEntry[]> => {
+    const { data: employees, error: employeesError } = await supabase
+        .from("employees")
+        .select("*");
+
+    if (employeesError) {
+        console.error("Error fetching employee directory:", employeesError);
+        throw employeesError;
+    }
+
+    const { data: departments, error: departmentsError } = await supabase
+        .from("departments")
+        .select("id, name");
+
+    if (departmentsError) {
+        console.error("Error fetching departments:", departmentsError);
+        throw departmentsError;
+    }
+
+    const nameByDepartmentId = new Map(
+        (departments ?? []).map((d) => [d.id, d.name] as const),
+    );
+
+    return (employees ?? []).map((emp) => {
+        const empWithEmail = emp as typeof emp & { email: string | null };
+
+        return {
+            id: emp.id,
+            first_name: emp.first_name,
+            last_name: emp.last_name,
+            phone: emp.phone,
+            position: emp.position,
+            department: emp.department_id ? nameByDepartmentId.get(emp.department_id) ?? null : null,
+            email: empWithEmail.email ?? null,
+        };
+    });
 }
 
 export const getEmployeeByDepartment = async () => {

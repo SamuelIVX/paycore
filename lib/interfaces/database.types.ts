@@ -121,6 +121,7 @@ export type Database = {
           department_id: string | null
           employee_number: string
           employment_status: string | null
+          employment_type: string | null
           federal_tax_rate: number | null
           first_name: string | null
           hire_date: string
@@ -145,6 +146,7 @@ export type Database = {
           department_id?: string | null
           employee_number: string
           employment_status?: string | null
+          employment_type?: string | null
           federal_tax_rate?: number | null
           first_name?: string | null
           hire_date: string
@@ -169,6 +171,7 @@ export type Database = {
           department_id?: string | null
           employee_number?: string
           employment_status?: string | null
+          employment_type?: string | null
           federal_tax_rate?: number | null
           first_name?: string | null
           hire_date?: string
