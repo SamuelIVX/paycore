@@ -38,6 +38,7 @@ interface DataTableProps<T> {
   isLoading?: boolean;
   error?: string | null;
   pageSize?: number;
+  onRowClick?: (row: T) => void;
 }
 
 export function DataTable<T>({
@@ -48,6 +49,7 @@ export function DataTable<T>({
   isLoading = false,
   error = null,
   pageSize = 10,
+  onRowClick,
 }: DataTableProps<T>) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -105,7 +107,11 @@ export function DataTable<T>({
         <TableBody>
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow
+                key={row.id}
+                onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                className={onRowClick ? "cursor-pointer hover:bg-accent" : undefined}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
