@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
-import { TablesInsert } from "../interfaces/database.types";
+import { Tables, TablesInsert } from "../interfaces/database.types";
 
 const supabase = createClient();
 type EmployeeInsert = TablesInsert<"employees">;
@@ -26,6 +26,31 @@ export const getEmployees = async () => {
     }
 
     return employees;
+}
+
+export type EmployeeWithProfile = Tables<"employees">["Row"] & {
+    profiles: { email: string } | null
+};
+
+export const searchEmployeesByName = async (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+        return [] as EmployeeWithProfile[];
+    }
+
+    const pattern = `%${trimmed}%`;
+    const { data: employees, error } = await supabase
+        .from("employees")
+        .select("*, profiles(email)")
+        .or(`first_name.ilike.${pattern},last_name.ilike.${pattern}`)
+        .limit(50);
+
+    if (error) {
+        console.error("Error searching employees:", error);
+        throw error;
+    }
+
+    return (employees ?? []) as EmployeeWithProfile[];
 }
 
 export const getActiveEmployeesCount = async () => {
