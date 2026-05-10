@@ -28,43 +28,36 @@ function hasAddressInfo(employee: EmployeeWithProfile): employee is EmployeeWith
   return 'address_line' in employee;
 }
 
+function hasPayFrequency(employee: EmployeeWithProfile): employee is EmployeeWithProfile & { pay_frequency: string | null } {
+  return 'pay_frequency' in employee;
+}
+
 export default function ExternalEmployeeSearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<EmployeeWithProfile[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [isLoadingRole, setIsLoadingRole] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>('visitor');
 
-  // Fetch user role on mount and listen for auth changes
   useEffect(() => {
     const supabase = createClient();
     let mounted = true;
 
-    const loadUserRole = async () => {
-      try {
-        // Check if user is authenticated
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        console.log("Auth check - has user:", !!user, "error:", authError?.message);
-        
-        if (authError || !user) {
-          console.log("No authenticated user, setting to visitor");
-          if (mounted) {
-            setUserRole('visitor');
-            setResults([]);
-            setHasSearched(false);
-            setIsLoadingRole(false);
-          }
-          return;
+    const loadUserRole = async (userId?: string) => {
+      if (!userId) {
+        if (mounted) {
+          setUserRole('visitor');
+          setResults([]);
+          setHasSearched(false);
         }
+        return;
+      }
 
-        // User is authenticated, get their role
-        const role = await getCurrentUserRole();
-        console.log("User role loaded:", role);
+      try {
+        const role = await getCurrentUserRole(userId);
         if (mounted) {
           setUserRole(role ?? 'visitor');
-          setIsLoadingRole(false);
         }
       } catch (err) {
         console.error("Error loading user role:", err);
@@ -72,18 +65,17 @@ export default function ExternalEmployeeSearchPage() {
           setUserRole('visitor');
           setResults([]);
           setHasSearched(false);
-          setIsLoadingRole(false);
         }
       }
     };
 
-    loadUserRole();
+    supabase.auth.getSession().then(({ data }) => {
+      loadUserRole(data.session?.user.id);
+    });
 
-    // Listen for auth state changes (login/logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, _session) => {
-        console.log("Auth state changed:", _event);
-        await loadUserRole();
+      async (_event, session) => {
+        await loadUserRole(session?.user.id);
       }
     );
 
@@ -108,14 +100,6 @@ export default function ExternalEmployeeSearchPage() {
 
     try {
       const employees = await searchEmployeesByName(trimmed, userRole);
-      console.log("Search returned results with role:", userRole);
-      console.log("Results count:", employees?.length);
-      if (employees && employees.length > 0) {
-        console.log("First result keys:", Object.keys(employees[0]));
-        console.log("First result:", employees[0]);
-        console.log("Has address info:", hasAddressInfo(employees[0]));
-        console.log("Has pay info:", hasPayInfo(employees[0]));
-      }
       setResults(employees || []);
     } catch (searchError) {
       console.error(searchError);
@@ -144,22 +128,11 @@ export default function ExternalEmployeeSearchPage() {
               Enter a name to look up a person in our company directory.
             </p>
             <p className="mt-3 text-xs text-muted-foreground">
-              {isLoadingRole ? (
-                "Loading access level..."
-              ) : (
-                <>
-                  Your access level: <span className="font-semibold capitalize">{displayRole()}</span>
-                </>
-              )}
+              Your access level: <span className="font-semibold capitalize">{displayRole()}</span>
             </p>
           </div>
 
-          {isLoadingRole ? (
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-              <p className="text-sm text-muted-foreground">Loading...</p>
-            </div>
-          ) : (
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
               <form onSubmit={handleSearch} className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="external-search">Enter a name</Label>
@@ -231,10 +204,10 @@ export default function ExternalEmployeeSearchPage() {
                           </div>
                         )}
 
-                        {('pay_frequency' in employee) && (
+                        {hasPayFrequency(employee) && (
                           <div>
                             <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Pay Frequency</p>
-                            <p className="mt-1 text-sm text-foreground">{(employee as any).pay_frequency || "N/A"}</p>
+                            <p className="mt-1 text-sm text-foreground">{employee.pay_frequency || "N/A"}</p>
                           </div>
                         )}
                       </div>
@@ -242,8 +215,7 @@ export default function ExternalEmployeeSearchPage() {
                   ))}
                 </div>
               )}
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </>

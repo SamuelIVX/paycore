@@ -22,45 +22,30 @@ export type EmployeeWithProfile = ManagerEmployee | EmployeeSearch | VisitorSear
 /**
  * Get the current user's role for access control
  */
-export const getCurrentUserRole = async (): Promise<string | null> => {
+export const getCurrentUserRole = async (userId?: string): Promise<string | null> => {
     try {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        
-        if (error || !user) {
-            console.warn("No authenticated user found", error);
-            return null;
-        }
+        let currentUserId = userId;
 
-        console.log("Current user ID:", user.id);
+        if (!currentUserId) {
+            const { data: { user }, error } = await supabase.auth.getUser();
 
-        // Get user's employee record to determine role
-        // Using the quoted column name format for "profile.id"
-        const { data: employee, error: empError } = await supabase
-            .from("employees")
-            .select("role, id, first_name, last_name")
-            .eq("\"profile.id\"", user.id)
-            .single();
-
-        if (empError) {
-            console.warn("Error fetching employee role (attempt 1):", empError);
-            
-            // Fallback: Try alternative query without quotes
-            const { data: empFallback, error: fallbackError } = await supabase
-                .from("employees")
-                .select("role, id, first_name, last_name")
-                .eq("profile_id", user.id)
-                .single();
-
-            if (fallbackError) {
-                console.warn("Error fetching employee role (attempt 2):", fallbackError);
+            if (error || !user) {
                 return null;
             }
 
-            console.log("Found employee (fallback):", empFallback?.first_name, "with role:", empFallback?.role);
-            return empFallback?.role ?? null;
+            currentUserId = user.id;
         }
 
-        console.log("Found employee with role:", employee?.role);
+        const { data: employee, error: empError } = await supabase
+            .from("employees")
+            .select("role")
+            .eq("\"profile.id\"", currentUserId)
+            .single();
+
+        if (empError) {
+            return null;
+        }
+
         return employee?.role ?? null;
     } catch (err) {
         console.error("Unexpected error getting user role:", err);
@@ -80,7 +65,7 @@ function getColumnsForRole(role: string | null): string {
         case 'manager':
             return "*, profiles(email)";
         case 'employee':
-            return "id, first_name, last_name, position, phone, phone, hire_date, employment_status, department_id, profiles(email)";
+            return "id, first_name, last_name, position, phone, hire_date, employment_status, department_id, profiles(email)";
         case 'visitor':
         default:
             return "id, first_name, last_name, position, phone, profiles(email)";
@@ -126,9 +111,6 @@ export const searchEmployeesByName = async (name: string, userRole: string | nul
     const escapedPattern = `%${trimmed.replace(/"/g, '\\"')}%`;
     const columns = getColumnsForRole(userRole);
     
-    console.log("Searching with role:", userRole);
-    console.log("Selecting columns:", columns);
-
     const { data: employees, error } = await supabase
         .from("employees")
         .select(columns)
@@ -140,12 +122,7 @@ export const searchEmployeesByName = async (name: string, userRole: string | nul
         throw error;
     }
 
-    console.log("Search results:", employees);
-    if (employees && employees.length > 0) {
-        console.log("First result fields:", Object.keys(employees[0]));
-    }
-
-    return (employees ?? []) as EmployeeWithProfile[];
+    return (employees ?? []) as unknown as EmployeeWithProfile[];
 }
 
 export const getActiveEmployeesCount = async () => {
