@@ -1,77 +1,18 @@
 import { createClient } from "@/utils/supabase/client";
-import { TablesInsert } from "../interfaces/database.types";
+import { Tables, TablesInsert } from "../interfaces/database.types";
 import { DirectoryEntry } from "@/lib/supabase/types";
 
 const supabase = createClient();
 type EmployeeInsert = TablesInsert<"employees">;
 
 // Role-based employee types for different access levels
-export type ManagerEmployee = Tables<"employees"> & {
-    profiles: { email: string } | null
-};
+export type ManagerEmployee = Tables<"employees">;
 
-export type EmployeeSearch = Omit<Tables<"employees">, 'address_line' | 'zip_code' | 'city' | 'state' | 'pay_rate' | 'pay_frequency'> & {
-    profiles: { email: string } | null
-};
+export type EmployeeSearch = Omit<Tables<"employees">, 'address_line' | 'zip_code' | 'city' | 'state' | 'pay_rate' | 'pay_frequency'>;
 
-export type VisitorSearch = Pick<Tables<"employees">, 'id' | 'first_name' | 'last_name' | 'position' | 'phone'> & {
-    profiles: { email: string } | null
-};
+export type VisitorSearch = Pick<Tables<"employees">, 'id' | 'first_name' | 'last_name' | 'position' | 'phone' | 'email'>;
 
 export type EmployeeWithProfile = ManagerEmployee | EmployeeSearch | VisitorSearch;
-
-/**
- * Get the current user's role for access control
- */
-export const getCurrentUserRole = async (userId?: string): Promise<string | null> => {
-    try {
-        let currentUserId = userId;
-
-        if (!currentUserId) {
-            const { data: { user }, error } = await supabase.auth.getUser();
-
-            if (error || !user) {
-                return null;
-            }
-
-            currentUserId = user.id;
-        }
-
-        const { data: employee, error: empError } = await supabase
-            .from("employees")
-            .select("role")
-            .eq("\"profile.id\"", currentUserId)
-            .single();
-
-        if (empError) {
-            return null;
-        }
-
-        return employee?.role ?? null;
-    } catch (err) {
-        console.error("Unexpected error getting user role:", err);
-        return null;
-    }
-};
-
-/**
- * Get column selection string based on user role
- * - manager: full access to all fields
- * - employee: limited access (no address, pay info)
- * - visitor: public contact info only
- */
-function getColumnsForRole(role: string | null): string {
-    const normalizedRole = role?.toLowerCase();
-    switch (normalizedRole) {
-        case 'manager':
-            return "*, profiles(email)";
-        case 'employee':
-            return "id, first_name, last_name, position, phone, hire_date, employment_status, department_id, profiles(email)";
-        case 'visitor':
-        default:
-            return "id, first_name, last_name, position, phone, profiles(email)";
-    }
-}
 
 export const addEmployee = async (employee: EmployeeInsert) => {
     const { error } = await supabase
@@ -95,35 +36,6 @@ export const getEmployees = async () => {
     }
 
     return employees;
-}
-
-/**
- * Search for employees by name with role-based column filtering
- * @param name - The name to search for
- * @param userRole - The role of the user performing the search (manager/employee/visitor)
- */
-export const searchEmployeesByName = async (name: string, userRole: string | null) => {
-    const trimmed = name.trim();
-    if (!trimmed) {
-        return [] as EmployeeWithProfile[];
-    }
-
-    // Use PostgREST pattern with proper escaping to prevent injection
-    const escapedPattern = `%${trimmed.replace(/"/g, '\\"')}%`;
-    const columns = getColumnsForRole(userRole);
-    
-    const { data: employees, error } = await supabase
-        .from("employees")
-        .select(columns)
-        .or(`first_name.ilike."${escapedPattern}",last_name.ilike."${escapedPattern}"`)
-        .limit(50);
-
-    if (error) {
-        console.error("Error searching employees:", error);
-        throw error;
-    }
-
-    return (employees ?? []) as unknown as EmployeeWithProfile[];
 }
 
 export const getActiveEmployeesCount = async () => {

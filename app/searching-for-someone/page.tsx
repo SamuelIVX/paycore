@@ -1,36 +1,19 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Search } from "lucide-react";
-import { searchEmployeesByName, getCurrentUserRole, type EmployeeWithProfile } from "@/lib/supabase/employee";
-import { createClient } from "@/utils/supabase/client";
+import { type EmployeeWithProfile } from "@/lib/supabase/employee";
+import { searchEmployeesByNameAction } from "./actions";
 import { ExternalSearchNavbar } from "@/components/ui/navbars/external-search-navbar";
 import { Button } from "@/components/animate-ui/components/buttons/button";
-
-function formatLocation(employee: EmployeeWithProfile) {
-  const pieces = [
-    ('address_line' in employee ? employee.address_line : null),
-    ('city' in employee ? employee.city : null),
-    ('state' in employee ? employee.state : null),
-    ('zip_code' in employee ? employee.zip_code : null),
-  ].filter(Boolean);
-
-  return pieces.length > 0 ? pieces.join(", ") : "Location not available";
-}
-
-function hasPayInfo(employee: EmployeeWithProfile): employee is EmployeeWithProfile & { pay_rate: number } {
-  return 'pay_rate' in employee;
-}
-
-function hasAddressInfo(employee: EmployeeWithProfile): employee is EmployeeWithProfile & { address_line: string } {
-  return 'address_line' in employee;
-}
-
-function hasPayFrequency(employee: EmployeeWithProfile): employee is EmployeeWithProfile & { pay_frequency: string | null } {
-  return 'pay_frequency' in employee;
-}
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { useAuthenticatedRole } from "./use-authenticated-role";
+import { EmployeeResultCard } from "./employee-result-card";
+import { capitalizeRole } from "./utils";
 
 export default function ExternalEmployeeSearchPage() {
   const [query, setQuery] = useState("");
@@ -38,55 +21,19 @@ export default function ExternalEmployeeSearchPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [userRole, setUserRole] = useState<string | null>('visitor');
+  const role = useAuthenticatedRole();
 
+  // Clear results when the user logs out so privileged data isn't left on screen.
   useEffect(() => {
-    const supabase = createClient();
-    let mounted = true;
-
-    const loadUserRole = async (userId?: string) => {
-      if (!userId) {
-        if (mounted) {
-          setUserRole('visitor');
-          setResults([]);
-          setHasSearched(false);
-        }
-        return;
-      }
-
-      try {
-        const role = await getCurrentUserRole(userId);
-        if (mounted) {
-          setUserRole(role ?? 'visitor');
-        }
-      } catch (err) {
-        console.error("Error loading user role:", err);
-        if (mounted) {
-          setUserRole('visitor');
-          setResults([]);
-          setHasSearched(false);
-        }
-      }
-    };
-
-    supabase.auth.getSession().then(({ data }) => {
-      loadUserRole(data.session?.user.id);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        await loadUserRole(session?.user.id);
-      }
-    );
-
-    return () => {
-      mounted = false;
-      subscription?.unsubscribe();
-    };
-  }, []);
+    if (role === 'visitor') {
+      setResults([]);
+      setHasSearched(false);
+    }
+  }, [role]);
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isSearching) return;
     const trimmed = query.trim();
     if (!trimmed) {
       setError("Enter a name to search.");
@@ -99,8 +46,8 @@ export default function ExternalEmployeeSearchPage() {
     setHasSearched(true);
 
     try {
-      const employees = await searchEmployeesByName(trimmed, userRole);
-      setResults(employees || []);
+      const { results: employees } = await searchEmployeesByNameAction(trimmed);
+      setResults(employees);
     } catch (searchError) {
       console.error(searchError);
       setError("Search failed. Please try again.");
@@ -110,112 +57,93 @@ export default function ExternalEmployeeSearchPage() {
     }
   };
 
-  // Helper function to display role with proper capitalization
-  const displayRole = () => {
-    if (!userRole) return 'visitor';
-    const normalized = userRole.toLowerCase();
-    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-  };
+  const showEmptyState = hasSearched && !error && !isSearching && results.length === 0;
+  const showResults = results.length > 0;
 
   return (
     <>
       <ExternalSearchNavbar />
-      <div className="flex min-h-[calc(100vh-73px)] flex-col items-center justify-center px-4 py-10 bg-background text-foreground">
-        <div className="w-full max-w-2xl space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold">Search for Someone</h1>
-            <p className="mt-2 text-muted-foreground">
-              Enter a name to look up a person in our company directory.
+      <div className="min-h-[calc(100vh-73px)] bg-background px-4 pb-16 pt-12 text-foreground">
+        <div className="mx-auto w-full max-w-2xl space-y-6">
+          <header className="space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="text-3xl font-bold tracking-tight">Search for someone</h1>
+              <Badge variant="secondary" className="shrink-0">
+                {capitalizeRole(role)}
+              </Badge>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Find a teammate by their first or last name in the company directory.
             </p>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Your access level: <span className="font-semibold capitalize">{displayRole()}</span>
-            </p>
-          </div>
+          </header>
 
-          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <Card>
+            <CardContent className="p-5">
               <form onSubmit={handleSearch} className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="external-search">Enter a name</Label>
+                  <Label htmlFor="external-search">Name</Label>
                   <div className="relative">
-                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      <Search className="h-4 w-4" />
-                    </span>
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="external-search"
                       placeholder="Type a first or last name"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       className="pl-10"
+                      aria-invalid={Boolean(error)}
+                      aria-describedby={error ? "external-search-error" : undefined}
                     />
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <Button type="submit" variant="default" className="w-full sm:w-auto" disabled={isSearching}>
-                    {isSearching ? "Searching..." : "Search"}
-                  </Button>
-                  <p className="text-sm text-muted-foreground">
-                    Results will only appear after a name is entered.
-                  </p>
-                </div>
+                <Button
+                  type="submit"
+                  variant="default"
+                  className="w-full sm:w-auto sm:justify-self-end"
+                  disabled={isSearching}
+                >
+                  {isSearching ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Spinner className="h-4 w-4" />
+                      Searching…
+                    </span>
+                  ) : (
+                    "Search"
+                  )}
+                </Button>
               </form>
 
-              {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
-
-              {hasSearched && !error && !isSearching && results.length === 0 && (
-                <p className="mt-6 text-sm text-muted-foreground">No matching employee found.</p>
+              {error && (
+                <p id="external-search-error" className="mt-3 text-sm text-destructive">
+                  {error}
+                </p>
               )}
+            </CardContent>
+          </Card>
 
-              {results.length > 0 && (
-                <div className="mt-6 space-y-4">
-                  {results.map((employee) => (
-                    <div key={employee.id} className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-                      <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="text-lg font-semibold text-foreground">
-                            {employee.first_name ?? ""} {employee.last_name ?? ""}
-                          </p>
-                          <p className="text-sm text-muted-foreground">{employee.position || "Title not available"}</p>
-                        </div>
-                      </div>
+          {showEmptyState && (
+            <Card className="border-dashed">
+              <CardContent className="p-8 text-center">
+                <p className="text-sm font-medium text-foreground">No matching employee found</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Try a different name or check your spelling.
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <div>
-                          <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Phone(s)</p>
-                          <p className="mt-1 text-sm text-foreground">{employee.phone || "Not available"}</p>
-                        </div>
-
-                        <div>
-                          <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Email</p>
-                          <p className="mt-1 text-sm text-foreground">{employee.profiles?.email || "Not available"}</p>
-                        </div>
-
-                        {hasAddressInfo(employee) && (
-                          <div className="sm:col-span-2">
-                            <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Location</p>
-                            <p className="mt-1 text-sm text-foreground">{formatLocation(employee)}</p>
-                          </div>
-                        )}
-
-                        {hasPayInfo(employee) && (
-                          <div>
-                            <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Pay Rate</p>
-                            <p className="mt-1 text-sm text-foreground">${employee.pay_rate?.toLocaleString() || "N/A"}</p>
-                          </div>
-                        )}
-
-                        {hasPayFrequency(employee) && (
-                          <div>
-                            <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Pay Frequency</p>
-                            <p className="mt-1 text-sm text-foreground">{employee.pay_frequency || "N/A"}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-          </div>
+          {showResults && (
+            <section className="space-y-3" aria-label="Search results">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {results.length} {results.length === 1 ? "result" : "results"}
+              </p>
+              <div className="space-y-3">
+                {results.map((employee) => (
+                  <EmployeeResultCard key={employee.id} employee={employee} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </>

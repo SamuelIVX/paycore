@@ -92,7 +92,7 @@ export interface EmployeeNavbarProps extends React.HTMLAttributes<HTMLElement> {
 
 const defaultNavigationLinks: EmployeeNavbarNavLink[] = [
   { href: "/employee/dashboard", icon: <House />, label: "Home" },
-  { href: "/searching-for-someone", icon: <Search />, label: "Search" },
+  { href: "/searching-for-someone", icon: <Search />, label: "Internal Search" },
   { href: "/employee/benefits", icon: <FileText />, label: "Benefits" },
   { href: "/employee/paystubs", icon: <HandCoins />, label: "Pay Stubs" },
 ]

@@ -95,7 +95,7 @@ export interface ManagerNavbarProps extends React.HTMLAttributes<HTMLElement> {
 // Default navigation links
 const defaultNavigationLinks: ManagerNavbarNavLink[] = [
   { href: "/manager/dashboard", icon: <House />, label: "Home" },
-  { href: "/searching-for-someone", icon: <Search />, label: "Search" },
+  { href: "/searching-for-someone", icon: <Search />, label: "Internal Search" },
   { href: "/manager/employee-table", icon: <Users />, label: "Employees" },
   { href: "/manager/payroll-records-table", icon: <CreditCard />, label: "Payroll" },
   { href: "/manager/benefits", icon: <FileText />, label: "Benefits" },
