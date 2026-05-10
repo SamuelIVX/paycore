@@ -4,6 +4,89 @@ import { Tables, TablesInsert } from "../interfaces/database.types";
 const supabase = createClient();
 type EmployeeInsert = TablesInsert<"employees">;
 
+// Role-based employee types for different access levels
+export type ManagerEmployee = Tables<"employees"> & {
+    profiles: { email: string } | null
+};
+
+export type EmployeeSearch = Omit<Tables<"employees">, 'address_line' | 'zip_code' | 'city' | 'state' | 'pay_rate' | 'pay_frequency'> & {
+    profiles: { email: string } | null
+};
+
+export type VisitorSearch = Pick<Tables<"employees">, 'id' | 'first_name' | 'last_name' | 'position' | 'phone'> & {
+    profiles: { email: string } | null
+};
+
+export type EmployeeWithProfile = ManagerEmployee | EmployeeSearch | VisitorSearch;
+
+/**
+ * Get the current user's role for access control
+ */
+export const getCurrentUserRole = async (): Promise<string | null> => {
+    try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error || !user) {
+            console.warn("No authenticated user found", error);
+            return null;
+        }
+
+        console.log("Current user ID:", user.id);
+
+        // Get user's employee record to determine role
+        // Using the quoted column name format for "profile.id"
+        const { data: employee, error: empError } = await supabase
+            .from("employees")
+            .select("role, id, first_name, last_name")
+            .eq("\"profile.id\"", user.id)
+            .single();
+
+        if (empError) {
+            console.warn("Error fetching employee role (attempt 1):", empError);
+            
+            // Fallback: Try alternative query without quotes
+            const { data: empFallback, error: fallbackError } = await supabase
+                .from("employees")
+                .select("role, id, first_name, last_name")
+                .eq("profile_id", user.id)
+                .single();
+
+            if (fallbackError) {
+                console.warn("Error fetching employee role (attempt 2):", fallbackError);
+                return null;
+            }
+
+            console.log("Found employee (fallback):", empFallback?.first_name, "with role:", empFallback?.role);
+            return empFallback?.role ?? null;
+        }
+
+        console.log("Found employee with role:", employee?.role);
+        return employee?.role ?? null;
+    } catch (err) {
+        console.error("Unexpected error getting user role:", err);
+        return null;
+    }
+};
+
+/**
+ * Get column selection string based on user role
+ * - manager: full access to all fields
+ * - employee: limited access (no address, pay info)
+ * - visitor: public contact info only
+ */
+function getColumnsForRole(role: string | null): string {
+    const normalizedRole = role?.toLowerCase();
+    switch (normalizedRole) {
+        case 'manager':
+            return "*, profiles(email)";
+        case 'employee':
+            return "id, first_name, last_name, position, phone, phone, hire_date, employment_status, department_id, profiles(email)";
+        case 'visitor':
+        default:
+            return "id, first_name, last_name, position, phone, profiles(email)";
+    }
+}
+
 export const addEmployee = async (employee: EmployeeInsert) => {
     const { error } = await supabase
         .from("employees")
@@ -28,26 +111,38 @@ export const getEmployees = async () => {
     return employees;
 }
 
-export type EmployeeWithProfile = Tables<"employees">["Row"] & {
-    profiles: { email: string } | null
-};
-
-export const searchEmployeesByName = async (name: string) => {
+/**
+ * Search for employees by name with role-based column filtering
+ * @param name - The name to search for
+ * @param userRole - The role of the user performing the search (manager/employee/visitor)
+ */
+export const searchEmployeesByName = async (name: string, userRole: string | null) => {
     const trimmed = name.trim();
     if (!trimmed) {
         return [] as EmployeeWithProfile[];
     }
 
-    const pattern = `%${trimmed}%`;
+    // Use PostgREST pattern with proper escaping to prevent injection
+    const escapedPattern = `%${trimmed.replace(/"/g, '\\"')}%`;
+    const columns = getColumnsForRole(userRole);
+    
+    console.log("Searching with role:", userRole);
+    console.log("Selecting columns:", columns);
+
     const { data: employees, error } = await supabase
         .from("employees")
-        .select("*, profiles(email)")
-        .or(`first_name.ilike.${pattern},last_name.ilike.${pattern}`)
+        .select(columns)
+        .or(`first_name.ilike."${escapedPattern}",last_name.ilike."${escapedPattern}"`)
         .limit(50);
 
     if (error) {
         console.error("Error searching employees:", error);
         throw error;
+    }
+
+    console.log("Search results:", employees);
+    if (employees && employees.length > 0) {
+        console.log("First result fields:", Object.keys(employees[0]));
     }
 
     return (employees ?? []) as EmployeeWithProfile[];

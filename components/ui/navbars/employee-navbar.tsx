@@ -18,6 +18,7 @@ import {
   FileText,
   Moon,
   Sun,
+  Search,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -91,6 +92,7 @@ export interface EmployeeNavbarProps extends React.HTMLAttributes<HTMLElement> {
 
 const defaultNavigationLinks: EmployeeNavbarNavLink[] = [
   { href: "/employee/dashboard", icon: <House />, label: "Home" },
+  { href: "/searching-for-someone", icon: <Search />, label: "Search" },
   { href: "/employee/benefits", icon: <FileText />, label: "Benefits" },
   { href: "/employee/paystubs", icon: <HandCoins />, label: "Pay Stubs" },
 ]
