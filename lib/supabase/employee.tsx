@@ -1,9 +1,18 @@
 import { createClient } from "@/utils/supabase/client";
-import { TablesInsert } from "../interfaces/database.types";
+import { Tables, TablesInsert } from "../interfaces/database.types";
 import { DirectoryEntry } from "@/lib/supabase/types";
 
 const supabase = createClient();
 type EmployeeInsert = TablesInsert<"employees">;
+
+// Role-based employee types for different access levels
+export type ManagerEmployee = Tables<"employees">;
+
+export type EmployeeSearch = Omit<Tables<"employees">, 'address_line' | 'zip_code' | 'city' | 'state' | 'pay_rate' | 'pay_frequency'>;
+
+export type VisitorSearch = Pick<Tables<"employees">, 'id' | 'first_name' | 'last_name' | 'position' | 'phone' | 'email'>;
+
+export type EmployeeWithProfile = ManagerEmployee | EmployeeSearch | VisitorSearch;
 
 export const addEmployee = async (employee: EmployeeInsert) => {
     const { error } = await supabase

@@ -1,5 +1,6 @@
 'use client'
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import {
@@ -157,6 +158,15 @@ export default function LoginPage() {
               >
                 Login
               </Button>
+
+              <div className="mt-4 text-center">
+                <Link
+                  href="/searching-for-someone"
+                  className="text-sm font-medium text-slate-600 underline hover:text-slate-900"
+                >
+                  Searching for someone?
+                </Link>
+              </div>
 
             </div>
 
