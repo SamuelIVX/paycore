@@ -27,7 +27,7 @@ async function resolveAuthenticatedRole(
     const { data: employee } = await supabase
         .from("employees")
         .select("role")
-        .eq('"profile.id"', user.id)
+        .eq('profile_id', user.id)
         .single();
 
     return employee?.role ?? 'visitor';
