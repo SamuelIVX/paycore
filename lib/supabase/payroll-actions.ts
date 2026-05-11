@@ -11,6 +11,25 @@ type EmployeeBenefitRow = Tables<"employee_benefits"> & {
     benefit?: Pick<Tables<"benefits">, "id" | "type" | "monthly_cost"> | null;
 };
 
+// Max approved hours in any single Mon→Sun UTC week within the supplied entries.
+// Matches the per-week semantics of the optional-benefits eligibility gate.
+const maxWeeklyApprovedHours = (entries: Tables<"time_entries">[]): number => {
+    const weekTotals = new Map<string, number>();
+    for (const entry of entries) {
+        if (!entry.work_date) continue;
+        const d = new Date(entry.work_date);
+        d.setUTCHours(0, 0, 0, 0);
+        d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+        const key = d.toISOString().slice(0, 10);
+        weekTotals.set(key, (weekTotals.get(key) ?? 0) + (entry.hours_worked ?? 0));
+    }
+    let max = 0;
+    for (const total of weekTotals.values()) {
+        if (total > max) max = total;
+    }
+    return max;
+};
+
 export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string, user: string) => {
     const { data: run, error: runError } = await supabase
         .from("payroll_runs")
@@ -151,9 +170,10 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
             employees.map(async (employee) => {
                 const benefits = await getActiveOptionalEmployeeBenefits(employee.id, supabase);
                 const rawDeduction = benefits.reduce((sum: number, row: EmployeeBenefitRow) => sum + (row.benefit?.monthly_cost || 0), 0);
+                const employeeEntries = time_entries.filter((entry) => entry.employee_id === employee.id);
                 const eligible = shouldApplyOptionalDeductions({
                     employmentStatus: employee.employment_status,
-                    hoursPerWeek: (employee as Record<string, unknown>).hours_per_week as number | null ?? null,
+                    hoursPerWeek: maxWeeklyApprovedHours(employeeEntries),
                     state: employee.state,
                 });
                 const benefitDeduction = eligible ? rawDeduction : 0;

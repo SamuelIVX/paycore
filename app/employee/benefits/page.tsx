@@ -23,6 +23,7 @@ export default function BenefitsPage() {
   const [employmentStatus, setEmploymentStatus] = useState<string | null>(null);
   const [hoursPerWeek, setHoursPerWeek] = useState<number | null>(null);
   const [employeeState, setEmployeeState] = useState<string | null>(null);
+  const [hoursLoading, setHoursLoading] = useState<boolean>(true);
 
   useEffect(() => {
     getCurrentEmployee().then((emp) => {
@@ -34,14 +35,22 @@ export default function BenefitsPage() {
       console.error("Failed to get current employee:", err);
     });
 
-    getApprovedHoursWorked().then(setHoursPerWeek).catch((err) => {
-      console.error("Failed to get approved hours worked:", err);
-    });
+    getApprovedHoursWorked()
+      .then((hours) => setHoursPerWeek(hours))
+      .catch((err) => {
+        console.error("Failed to get approved hours worked:", err);
+      })
+      .finally(() => setHoursLoading(false));
   }, []);
 
   const eligibility = useMemo(
-    () => checkOptionalBenefitsEligibility({ employmentStatus, hoursPerWeek, state: employeeState }),
-    [employmentStatus, hoursPerWeek, employeeState]
+    () => checkOptionalBenefitsEligibility({
+      employmentStatus,
+      hoursPerWeek,
+      state: employeeState,
+      loading: hoursLoading,
+    }),
+    [employmentStatus, hoursPerWeek, employeeState, hoursLoading]
   );
 
   const [selectedOptional, setSelectedOptional] = useState<Record<string, boolean>>({})
@@ -104,7 +113,7 @@ export default function BenefitsPage() {
         <CompanyBenefitCards />
 
         <div className="flex flex-col gap-4">
-          {!eligibility.eligible && (
+          {!eligibility.eligible && !eligibility.loading && (
             <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4">
               <div className="flex items-start gap-3">
                 <Info className="mt-0.5 h-5 w-5 shrink-0 text-amber-500 dark:text-amber-400" />

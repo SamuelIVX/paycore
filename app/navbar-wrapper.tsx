@@ -8,7 +8,7 @@ export function NavbarWrapper() {
 
     // Hide the navbar on the login page ("/") and external search page.
     // The external search page has its own navbar.
-    if (pathname === "/" || pathname === "/searching-for-someone") return null;
+    if (pathname === "/" || pathname === "/internal-search") return null;
 
     // TODO (backend team): This is a temporary solution. We should ideally determine the user's role and render the appropriate navbar based on that,
     // rather than relying on the URL path. 

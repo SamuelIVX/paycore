@@ -11,7 +11,7 @@ import type { OptionalBenefitsCardProps } from "../types"
 import { getOptionalBenefits, upsertEmployeeBenefit } from "@/lib/supabase/benefits"
 
 export default function OptionalBenefitsCard({ selected_benefits, set_selected_benefits, eligibility }: OptionalBenefitsCardProps) {
-    const ineligible = eligibility !== undefined && !eligibility.eligible
+    const ineligible = eligibility !== undefined && !eligibility.eligible && !eligibility.loading
     const [optional_benefits, setOptionalBenefits] = useState<Awaited<ReturnType<typeof getOptionalBenefits>>>([]);
     const [pendingBenefits, setPendingBenefits] = useState<Record<string, boolean>>({});
     const [isLoading, setIsLoading] = useState(true);

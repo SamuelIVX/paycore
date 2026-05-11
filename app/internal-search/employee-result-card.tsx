@@ -36,8 +36,17 @@ export function EmployeeResultCard({ employee }: Props) {
         ? `$${employee.pay_rate.toLocaleString()}`
         : null;
 
-    return (
-        <Card className="transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5">
+    const mailtoHref = employee.email
+        ? `mailto:${employee.email}?subject=${encodeURIComponent(`Hello ${fullName}`)}`
+        : null;
+
+    const card = (
+        <Card
+            className={[
+                "transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5",
+                mailtoHref ? "cursor-pointer" : "",
+            ].filter(Boolean).join(" ")}
+        >
             <CardContent className="p-5">
                 <div className="flex items-start gap-4">
                     <Avatar className="h-12 w-12 shrink-0">
@@ -73,5 +82,19 @@ export function EmployeeResultCard({ employee }: Props) {
                 </div>
             </CardContent>
         </Card>
+    );
+
+    if (!mailtoHref) {
+        return card;
+    }
+
+    return (
+        <a
+            href={mailtoHref}
+            className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            aria-label={`Email ${fullName}`}
+        >
+            {card}
+        </a>
     );
 }

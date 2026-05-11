@@ -37,6 +37,7 @@ const mockEmployee = {
     state_tax_rate: 0.093,
     social_security_tax_rate: 0.062,
     employment_status: 'ACTIVE',
+    state: 'NY',
     created_at: null,
 };
 
@@ -52,18 +53,14 @@ const mockPayrollRun = {
     total_taxes: null,
 };
 
-const mockTimeEntry = {
-    id: 'entry-1',
-    employee_id: 'emp-1',
-    hours_worked: 8,
-    work_date: '2026-01-15',
-    status: 'APPROVED',
-    clock_in: null,
-    clock_out: null,
-    approved_at: null,
-    approved_by: null,
-    created_at: null,
-};
+// Four 8-hour days in the Mon 2026-01-12 → Sun 2026-01-18 week — 32 hrs ≥ 30
+// satisfies the optional-benefits eligibility gate.
+const mockTimeEntries = [
+    { id: 'entry-1', employee_id: 'emp-1', hours_worked: 8, work_date: '2026-01-15', status: 'APPROVED', clock_in: null, clock_out: null, approved_at: null, approved_by: null, created_at: null },
+    { id: 'entry-2', employee_id: 'emp-1', hours_worked: 8, work_date: '2026-01-16', status: 'APPROVED', clock_in: null, clock_out: null, approved_at: null, approved_by: null, created_at: null },
+    { id: 'entry-3', employee_id: 'emp-1', hours_worked: 8, work_date: '2026-01-17', status: 'APPROVED', clock_in: null, clock_out: null, approved_at: null, approved_by: null, created_at: null },
+    { id: 'entry-4', employee_id: 'emp-1', hours_worked: 8, work_date: '2026-01-18', status: 'APPROVED', clock_in: null, clock_out: null, approved_at: null, approved_by: null, created_at: null },
+];
 
 // ---- tests ----
 
@@ -141,7 +138,7 @@ describe('runPayroll', () => {
                 select: vi.fn().mockReturnThis(),
                 gte: vi.fn().mockReturnThis(),
                 lte: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockResolvedValue({ data: [mockTimeEntry], error: null }),
+                eq: vi.fn().mockResolvedValue({ data: mockTimeEntries, error: null }),
             };
             // 5th call: getActiveOptionalEmployeeBenefits (per employee in Promise.all)
             if (callCount === 5) {
@@ -175,8 +172,8 @@ describe('runPayroll', () => {
         expect(result.total_gross).toBeDefined();
         expect(result.total_net).toBeDefined();
         expect(result.total_taxes).toBeDefined();
-        // 8 hours * $30/hr = $240 gross
-        expect(Number(result.total_gross)).toBeCloseTo(240);
+        // 32 hours * $30/hr = $960 gross (4 days × 8 hrs in one workweek, all regular)
+        expect(Number(result.total_gross)).toBeCloseTo(960);
         expect(mockInsertPayrollRecords).toHaveBeenCalledWith(
             expect.arrayContaining([
                 expect.objectContaining({ benefit_deductions: 11.54 }),

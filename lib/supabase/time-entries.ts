@@ -53,15 +53,30 @@ export const getRecentTimeEntries = async () => {
   return data ?? []
 }
 
-export const getApprovedHoursWorked = async (): Promise<number> => {
+export const getApprovedHoursWorked = async (referenceDate: Date = new Date()): Promise<number> => {
   const supabase = createClient()
   const { employee } = await getCurrentEmployee()
+
+  // Monday → Sunday UTC week boundaries (matches payroll's weekly overtime grouping)
+  const start = new Date(Date.UTC(
+    referenceDate.getUTCFullYear(),
+    referenceDate.getUTCMonth(),
+    referenceDate.getUTCDate(),
+  ))
+  start.setUTCDate(start.getUTCDate() - ((start.getUTCDay() + 6) % 7))
+  const end = new Date(start)
+  end.setUTCDate(end.getUTCDate() + 6)
+
+  const startISO = start.toISOString().slice(0, 10)
+  const endISO = end.toISOString().slice(0, 10)
 
   const { data, error } = await supabase
     .from("time_entries")
     .select("hours_worked")
     .eq("employee_id", employee.id)
     .eq("status", "APPROVED")
+    .gte("work_date", startISO)
+    .lte("work_date", endISO)
 
   if (error) {
     throw error
