@@ -68,9 +68,6 @@ export default function ExternalEmployeeSearchPage() {
           <header className="space-y-3">
             <div className="flex items-start justify-between gap-3">
               <h1 className="text-3xl font-bold tracking-tight">Search for someone</h1>
-              <Badge variant="secondary" className="shrink-0">
-                {capitalizeRole(role)}
-              </Badge>
             </div>
             <p className="text-sm text-muted-foreground">
               Find a teammate by their first or last name in the company directory.
