@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client"
 import { getCurrentEmployee } from "./employee"
+import { getWeekStartUTC } from "@/lib/utils/date-helpers"
 
 
 export const createTimeEntry = async (workDate: string, hoursWorked: number) => {
@@ -53,17 +54,13 @@ export const getRecentTimeEntries = async () => {
   return data ?? []
 }
 
-export const getApprovedHoursWorked = async (referenceDate: Date = new Date()): Promise<number> => {
+export const getApprovedHoursWorked = async (referenceDate?: Date): Promise<number> => {
   const supabase = createClient()
   const { employee } = await getCurrentEmployee()
 
-  // Monday → Sunday UTC week boundaries (matches payroll's weekly overtime grouping)
-  const start = new Date(Date.UTC(
-    referenceDate.getUTCFullYear(),
-    referenceDate.getUTCMonth(),
-    referenceDate.getUTCDate(),
-  ))
-  start.setUTCDate(start.getUTCDate() - ((start.getUTCDay() + 6) % 7))
+  // Monday → Sunday UTC week, derived from the reference date's UTC components
+  // so local timezone offsets don't shift the boundary.
+  const start = getWeekStartUTC(referenceDate ?? new Date())
   const end = new Date(start)
   end.setUTCDate(end.getUTCDate() + 6)
 

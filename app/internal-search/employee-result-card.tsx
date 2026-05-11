@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { EmployeeWithProfile } from "@/lib/supabase/employee";
+import { cn } from "@/lib/utils";
 import {
     formatLocation,
     getInitials,
@@ -42,10 +43,10 @@ export function EmployeeResultCard({ employee }: Props) {
 
     const card = (
         <Card
-            className={[
-                "transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5",
-                mailtoHref ? "cursor-pointer" : "",
-            ].filter(Boolean).join(" ")}
+            className={cn(
+                "transition-all duration-200",
+                mailtoHref && "cursor-pointer hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5",
+            )}
         >
             <CardContent className="p-5">
                 <div className="flex items-start gap-4">

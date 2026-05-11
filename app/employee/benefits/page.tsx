@@ -24,6 +24,7 @@ export default function BenefitsPage() {
   const [hoursPerWeek, setHoursPerWeek] = useState<number | null>(null);
   const [employeeState, setEmployeeState] = useState<string | null>(null);
   const [hoursLoading, setHoursLoading] = useState<boolean>(true);
+  const [hoursLoadError, setHoursLoadError] = useState<boolean>(false);
 
   useEffect(() => {
     getCurrentEmployee().then((emp) => {
@@ -39,6 +40,7 @@ export default function BenefitsPage() {
       .then((hours) => setHoursPerWeek(hours))
       .catch((err) => {
         console.error("Failed to get approved hours worked:", err);
+        setHoursLoadError(true);
       })
       .finally(() => setHoursLoading(false));
   }, []);
@@ -49,8 +51,9 @@ export default function BenefitsPage() {
       hoursPerWeek,
       state: employeeState,
       loading: hoursLoading,
+      error: hoursLoadError,
     }),
-    [employmentStatus, hoursPerWeek, employeeState, hoursLoading]
+    [employmentStatus, hoursPerWeek, employeeState, hoursLoading, hoursLoadError]
   );
 
   const [selectedOptional, setSelectedOptional] = useState<Record<string, boolean>>({})

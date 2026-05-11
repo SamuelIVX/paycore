@@ -3,11 +3,13 @@ export interface EligibilityInput {
   hoursPerWeek: number | null;
   state: string | null;
   loading?: boolean;
+  error?: boolean;
 }
 
 export interface EligibilityResult {
   eligible: boolean;
   loading?: boolean;
+  error?: boolean;
   thresholdHours: number;
   reason?: string;
   shortMessage?: string;
@@ -44,6 +46,18 @@ const EXEMPT_EMPLOYMENT_STATUSES = new Set(["CONTRACTOR", "SEASONAL", "INTERN", 
 export function checkOptionalBenefitsEligibility(employee: EligibilityInput): EligibilityResult {
   const rule = (employee.state && STATE_RULES[employee.state.toUpperCase()]) || DEFAULT_STATE_RULE;
   const { thresholdHours, marketplaceMessage } = rule;
+
+  // Fetch failure: lock down enrollment with an explicit error banner — distinct
+  // from `loading`, which intentionally leaves enrollment open while we wait.
+  if (employee.error) {
+    return {
+      eligible: false,
+      error: true,
+      thresholdHours,
+      reason: "We couldn't verify your benefits eligibility right now. Please refresh the page or contact HR if the issue persists.",
+      shortMessage: "Eligibility unavailable",
+    };
+  }
 
   if (employee.loading || employee.hoursPerWeek === null) {
     return { eligible: false, loading: true, thresholdHours };
