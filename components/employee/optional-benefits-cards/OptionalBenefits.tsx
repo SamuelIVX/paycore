@@ -6,10 +6,12 @@ import { BENEFIT_ICONS } from "../constants"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
+import { Lock } from "lucide-react"
 import type { OptionalBenefitsCardProps } from "../types"
 import { getOptionalBenefits, upsertEmployeeBenefit } from "@/lib/supabase/benefits"
 
-export default function OptionalBenefitsCard({ selected_benefits, set_selected_benefits }: OptionalBenefitsCardProps) {
+export default function OptionalBenefitsCard({ selected_benefits, set_selected_benefits, eligibility }: OptionalBenefitsCardProps) {
+    const ineligible = eligibility !== undefined && !eligibility.eligible && !eligibility.loading
     const [optional_benefits, setOptionalBenefits] = useState<Awaited<ReturnType<typeof getOptionalBenefits>>>([]);
     const [pendingBenefits, setPendingBenefits] = useState<Record<string, boolean>>({});
     const [isLoading, setIsLoading] = useState(true);
@@ -52,63 +54,76 @@ export default function OptionalBenefitsCard({ selected_benefits, set_selected_b
                         <div
                             key={b.id}
                             className={[
-                                "rounded-lg border p-4 transition-colors",
-                                enabled ? "border-green-400 bg-green-50 dark:border-green-700 dark:bg-green-950/40" : "border-purple-300 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/40",
-                            ].join(" ")}
+                                ineligible ? "opacity-50 pointer-events-none" : "",
+                            ].filter(Boolean).join(" ")}
                         >
+                            <div
+                                className={[
+                                    "rounded-lg border p-4 transition-colors",
+                                    enabled ? "border-green-400 bg-green-50 dark:border-green-700 dark:bg-green-950/40" : "border-purple-300 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/40",
+                                ].join(" ")}
+                            >
 
-                            <div className="flex items-start gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-purple-200 dark:bg-purple-800">
-                                    {BENEFIT_ICONS[b.tag] && createElement(BENEFIT_ICONS[b.tag], { className: "h-4 w-4 text-purple-600 dark:text-purple-300" })}
-                                </div>
-
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between gap-3">
-                                        <Label htmlFor={switchId} className="font-semibold cursor-pointer">
-                                            {b.benefit}
-                                        </Label>
-                                        <Switch
-                                            id={switchId}
-                                            checked={enabled}
-                                            disabled={isPending}
-                                            onCheckedChange={async (v: boolean) => {
-                                                const previous = enabled
-                                                setPendingBenefits((prev) => ({ ...prev, [b.id]: true }))
-                                                set_selected_benefits((prev) => ({ ...prev, [b.id]: v }))
-                                                try {
-                                                    await upsertEmployeeBenefit({
-                                                        benefit_id: b.id,
-                                                        status: v ? 'ACTIVE' : 'NOT_ENROLLED',
-                                                    })
-                                                } catch (error) {
-                                                    console.error('Error updating employee benefit:', error)
-                                                    set_selected_benefits((prev) => ({ ...prev, [b.id]: previous }))
-                                                } finally {
-                                                    setPendingBenefits((prev) => ({ ...prev, [b.id]: false }))
-                                                }
-                                            }}
-                                        />
+                                <div className="flex items-start gap-3">
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-md bg-purple-200 dark:bg-purple-800">
+                                        {BENEFIT_ICONS[b.tag] && createElement(BENEFIT_ICONS[b.tag], { className: "h-4 w-4 text-purple-600 dark:text-purple-300" })}
                                     </div>
 
-                                    <div className="mt-1 text-sm text-muted-foreground">{b.description}</div>
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify-between gap-3">
+                                            <Label htmlFor={switchId} className="font-semibold cursor-pointer">
+                                                {b.benefit}
+                                            </Label>
+                                            <Switch
+                                                id={switchId}
+                                                checked={enabled}
+                                                disabled={isPending || ineligible}
+                                                onCheckedChange={async (v: boolean) => {
+                                                    const previous = enabled
+                                                    setPendingBenefits((prev) => ({ ...prev, [b.id]: true }))
+                                                    set_selected_benefits((prev) => ({ ...prev, [b.id]: v }))
+                                                    try {
+                                                        await upsertEmployeeBenefit({
+                                                            benefit_id: b.id,
+                                                            status: v ? 'ACTIVE' : 'NOT_ENROLLED',
+                                                        })
+                                                    } catch (error) {
+                                                        console.error('Error updating employee benefit:', error)
+                                                        set_selected_benefits((prev) => ({ ...prev, [b.id]: previous }))
+                                                    } finally {
+                                                        setPendingBenefits((prev) => ({ ...prev, [b.id]: false }))
+                                                    }
+                                                }}
+                                            />
+                                        </div>
 
-                                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                                        <span>
-                                            Provider: <span className="text-foreground">{b.provider}</span>
-                                        </span>
-                                        <span>
-                                            Coverage: <span className="text-foreground">{b.coverage}</span>
-                                        </span>
-                                    </div>
+                                        <div className="mt-1 text-sm text-muted-foreground">{b.description}</div>
 
-                                    <Separator className="my-3" />
+                                        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                            <span>
+                                                Provider: <span className="text-foreground">{b.provider}</span>
+                                            </span>
+                                            <span>
+                                                Coverage: <span className="text-foreground">{b.coverage}</span>
+                                            </span>
+                                        </div>
 
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-muted-foreground">Monthly Cost</span>
-                                        <span className="font-semibold">${(b.monthly_cost ?? 0).toFixed(2)}/mo</span>
+                                        <Separator className="my-3" />
+
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-muted-foreground">Monthly Cost</span>
+                                            <span className="font-semibold">${(b.monthly_cost ?? 0).toFixed(2)}/mo</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            {ineligible && eligibility?.shortMessage && (
+                                <div className="mt-1 flex items-center gap-1.5 px-1 text-xs text-amber-500 dark:text-amber-400">
+                                    <Lock className="h-3 w-3 shrink-0" />
+                                    <span>{eligibility.shortMessage}</span>
+                                </div>
+                            )}
                         </div>
                     )
                 })}

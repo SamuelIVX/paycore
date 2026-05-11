@@ -5,9 +5,24 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { TablesInsert, Tables } from "@/lib/interfaces/database.types";
 import { calculatePayRollForEmployee } from "@/lib/supabase/payroll";
 import { getActiveOptionalEmployeeBenefits } from "@/lib/supabase/benefits";
+import { shouldApplyOptionalDeductions } from "@/lib/benefits/eligibility";
+import { getWeekStartKey } from "@/lib/utils/date-helpers";
 
 type EmployeeBenefitRow = Tables<"employee_benefits"> & {
     benefit?: Pick<Tables<"benefits">, "id" | "type" | "monthly_cost"> | null;
+};
+
+// Buckets entries into Mon→Sun UTC weeks, returning a Map of week-start ISO
+// date → total approved hours that week. Shared by the per-week eligibility
+// calculation in runPayroll so payroll matches the UI's per-week gate.
+const weeklyApprovedHours = (entries: Tables<"time_entries">[]): Map<string, number> => {
+    const weekTotals = new Map<string, number>();
+    for (const entry of entries) {
+        if (!entry.work_date) continue;
+        const key = getWeekStartKey(entry.work_date);
+        weekTotals.set(key, (weekTotals.get(key) ?? 0) + (entry.hours_worked ?? 0));
+    }
+    return weekTotals;
 };
 
 export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string, user: string) => {
@@ -149,7 +164,29 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
         const employeeRecords = await Promise.all(
             employees.map(async (employee) => {
                 const benefits = await getActiveOptionalEmployeeBenefits(employee.id, supabase);
-                const benefitDeduction = benefits.reduce((sum: number, row: EmployeeBenefitRow) => sum + (row.benefit?.monthly_cost || 0), 0);
+                const rawDeduction = benefits.reduce((sum: number, row: EmployeeBenefitRow) => sum + (row.benefit?.monthly_cost || 0), 0);
+                const employeeEntries = time_entries.filter((entry) => entry.employee_id === employee.id);
+
+                // Per-week eligibility: for each Mon→Sun week the employee has
+                // entries in, check the 30hr/state gate independently and prorate
+                // the monthly deduction by the fraction of eligible weeks. Matches
+                // the per-week semantics shown to the employee in the UI.
+                const weekTotals = weeklyApprovedHours(employeeEntries);
+                let eligibleWeeks = 0;
+                for (const hours of weekTotals.values()) {
+                    if (shouldApplyOptionalDeductions({
+                        employmentStatus: employee.employment_status,
+                        hoursPerWeek: hours,
+                        state: employee.state,
+                    })) {
+                        eligibleWeeks++;
+                    }
+                }
+                const totalEntryWeeks = weekTotals.size;
+                const benefitDeduction = totalEntryWeeks > 0
+                    ? rawDeduction * (eligibleWeeks / totalEntryWeeks)
+                    : 0;
+
                 return calculatePayRollForEmployee(employee, time_entries, payroll_run, benefitDeduction);
             })
         );

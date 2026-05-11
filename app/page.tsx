@@ -161,7 +161,7 @@ export default function LoginPage() {
 
               <div className="mt-4 text-center">
                 <Link
-                  href="/searching-for-someone"
+                  href="/internal-search"
                   className="text-sm font-medium text-slate-600 underline hover:text-slate-900"
                 >
                   Searching for someone?
