@@ -1,4 +1,5 @@
 import React from "react"
+import type { EligibilityResult } from "@/lib/benefits/eligibility"
 
 export interface SummaryCardProps {
     title: string;
@@ -16,4 +17,5 @@ export interface SummaryCardsProps {
 export interface OptionalBenefitsCardProps {
     selected_benefits: Record<string, boolean>;
     set_selected_benefits: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    eligibility?: EligibilityResult;
 }

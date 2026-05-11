@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
+import { Info } from "lucide-react"
 import SummaryCards from "@/components/employee/summary-cards/SummaryCards"
 import CompanyBenefitCards from "@/components/employee/company-benefits-cards/CompanyBenefits"
 import OptionalBenefitsCard from "@/components/employee/optional-benefits-cards/OptionalBenefits"
@@ -13,18 +14,35 @@ import {
   getOptionalBenefits,
 } from "@/lib/supabase/benefits"
 import { getCurrentEmployee } from "@/lib/supabase/employee"
+import { getApprovedHoursWorked } from "@/lib/supabase/time-entries"
+import { checkOptionalBenefitsEligibility } from "@/lib/benefits/eligibility"
 import type { EmployeeBenefit, BenefitOption } from "@/app/employee/benefits/types"
 
 export default function BenefitsPage() {
   const [employeeId, setEmployeeId] = useState<string>("");
+  const [employmentStatus, setEmploymentStatus] = useState<string | null>(null);
+  const [hoursPerWeek, setHoursPerWeek] = useState<number | null>(null);
+  const [employeeState, setEmployeeState] = useState<string | null>(null);
 
   useEffect(() => {
     getCurrentEmployee().then((emp) => {
-      setEmployeeId(emp?.employee.id || "");
+      const employee = emp?.employee;
+      setEmployeeId(employee?.id || "");
+      setEmploymentStatus(employee?.employment_status ?? null);
+      setEmployeeState(employee?.state ?? null);
     }).catch((err) => {
       console.error("Failed to get current employee:", err);
     });
+
+    getApprovedHoursWorked().then(setHoursPerWeek).catch((err) => {
+      console.error("Failed to get approved hours worked:", err);
+    });
   }, []);
+
+  const eligibility = useMemo(
+    () => checkOptionalBenefitsEligibility({ employmentStatus, hoursPerWeek, state: employeeState }),
+    [employmentStatus, hoursPerWeek, employeeState]
+  );
 
   const [selectedOptional, setSelectedOptional] = useState<Record<string, boolean>>({})
   const [optionalBenefits, setOptionalBenefits] = useState<BenefitOption[]>([])
@@ -34,7 +52,6 @@ export default function BenefitsPage() {
   useEffect(() => {
     if (!employeeId) return;
 
-    // Fetch counts and active optionals
     getCompanyBenefitsCount().then(setCompanyCount);
     getOptionalBenefitsCount().then(setOptionalCount);
 
@@ -43,15 +60,12 @@ export default function BenefitsPage() {
     })
 
     getActiveOptionalEmployeeBenefits(employeeId).then((rows) => {
-      // Set selectedOptional keyed by benefit_id
       const selected: Record<string, boolean> = {};
-
       rows.forEach((row: EmployeeBenefit) => {
         if (row.status === 'ACTIVE' && row.benefit?.id) {
           selected[row.benefit.id] = true;
         }
       });
-
       setSelectedOptional(selected);
     }).catch((error) => {
       console.error("Failed to fetch active employee benefits:", error)
@@ -89,10 +103,34 @@ export default function BenefitsPage() {
 
         <CompanyBenefitCards />
 
-        <OptionalBenefitsCard
-          selected_benefits={selectedOptional}
-          set_selected_benefits={setSelectedOptional}
-        />
+        <div className="flex flex-col gap-4">
+          {!eligibility.eligible && (
+            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <Info className="mt-0.5 h-5 w-5 shrink-0 text-amber-500 dark:text-amber-400" />
+                <div className="space-y-1">
+                  <p className="font-semibold text-amber-600 dark:text-amber-400">
+                    You are not currently eligible to enroll in optional benefits
+                  </p>
+                  {eligibility.reason && (
+                    <p className="text-sm text-amber-700/80 dark:text-amber-300/80">
+                      {eligibility.reason}
+                    </p>
+                  )}
+                  <p className="text-xs text-amber-600/70 dark:text-amber-400/70 pt-1 border-t border-amber-500/20 mt-2">
+                    Your company-provided benefits remain active at no cost. Contact HR if your scheduled hours have changed.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <OptionalBenefitsCard
+            selected_benefits={selectedOptional}
+            set_selected_benefits={setSelectedOptional}
+            eligibility={eligibility}
+          />
+        </div>
       </div>
 
       <ImportantInfoCard />

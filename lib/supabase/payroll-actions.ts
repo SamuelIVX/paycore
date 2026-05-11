@@ -5,6 +5,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { TablesInsert, Tables } from "@/lib/interfaces/database.types";
 import { calculatePayRollForEmployee } from "@/lib/supabase/payroll";
 import { getActiveOptionalEmployeeBenefits } from "@/lib/supabase/benefits";
+import { shouldApplyOptionalDeductions } from "@/lib/benefits/eligibility";
 
 type EmployeeBenefitRow = Tables<"employee_benefits"> & {
     benefit?: Pick<Tables<"benefits">, "id" | "type" | "monthly_cost"> | null;
@@ -149,7 +150,13 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
         const employeeRecords = await Promise.all(
             employees.map(async (employee) => {
                 const benefits = await getActiveOptionalEmployeeBenefits(employee.id, supabase);
-                const benefitDeduction = benefits.reduce((sum: number, row: EmployeeBenefitRow) => sum + (row.benefit?.monthly_cost || 0), 0);
+                const rawDeduction = benefits.reduce((sum: number, row: EmployeeBenefitRow) => sum + (row.benefit?.monthly_cost || 0), 0);
+                const eligible = shouldApplyOptionalDeductions({
+                    employmentStatus: employee.employment_status,
+                    hoursPerWeek: (employee as Record<string, unknown>).hours_per_week as number | null ?? null,
+                    state: employee.state,
+                });
+                const benefitDeduction = eligible ? rawDeduction : 0;
                 return calculatePayRollForEmployee(employee, time_entries, payroll_run, benefitDeduction);
             })
         );

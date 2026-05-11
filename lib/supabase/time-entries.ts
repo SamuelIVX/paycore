@@ -52,3 +52,20 @@ export const getRecentTimeEntries = async () => {
 
   return data ?? []
 }
+
+export const getApprovedHoursWorked = async (): Promise<number> => {
+  const supabase = createClient()
+  const { employee } = await getCurrentEmployee()
+
+  const { data, error } = await supabase
+    .from("time_entries")
+    .select("hours_worked")
+    .eq("employee_id", employee.id)
+    .eq("status", "APPROVED")
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []).reduce((sum, entry) => sum + (entry.hours_worked ?? 0), 0)
+}
