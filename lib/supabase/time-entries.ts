@@ -1,6 +1,10 @@
 import { createClient } from "@/utils/supabase/client"
 import { getCurrentEmployee } from "./employee"
-import { getWeekStartUTC } from "@/lib/utils/date-helpers"
+import { getWeekStartKey, getWeekStartUTC } from "@/lib/utils/date-helpers"
+
+// How many Mon→Sun weeks (including the current one) to scan when deciding
+// whether the employee meets the per-week eligibility threshold.
+const ELIGIBILITY_LOOKBACK_WEEKS = 4
 
 
 export const createTimeEntry = async (workDate: string, hoursWorked: number) => {
@@ -58,18 +62,22 @@ export const getApprovedHoursWorked = async (referenceDate?: Date): Promise<numb
   const supabase = createClient()
   const { employee } = await getCurrentEmployee()
 
-  // Monday → Sunday UTC week, derived from the reference date's UTC components
-  // so local timezone offsets don't shift the boundary.
-  const start = getWeekStartUTC(referenceDate ?? new Date())
-  const end = new Date(start)
-  end.setUTCDate(end.getUTCDate() + 6)
+  // Scan the last ELIGIBILITY_LOOKBACK_WEEKS Mon→Sun UTC weeks and return the
+  // highest single-week total. A single look-back week is too narrow — on a
+  // Monday morning the current week is empty, so a worker with 40 approved
+  // hours last week would otherwise read as 0 and fail the gate.
+  const currentMonday = getWeekStartUTC(referenceDate ?? new Date())
+  const windowStart = new Date(currentMonday)
+  windowStart.setUTCDate(windowStart.getUTCDate() - 7 * (ELIGIBILITY_LOOKBACK_WEEKS - 1))
+  const windowEnd = new Date(currentMonday)
+  windowEnd.setUTCDate(windowEnd.getUTCDate() + 6)
 
-  const startISO = start.toISOString().slice(0, 10)
-  const endISO = end.toISOString().slice(0, 10)
+  const startISO = windowStart.toISOString().slice(0, 10)
+  const endISO = windowEnd.toISOString().slice(0, 10)
 
   const { data, error } = await supabase
     .from("time_entries")
-    .select("hours_worked")
+    .select("hours_worked, work_date")
     .eq("employee_id", employee.id)
     .eq("status", "APPROVED")
     .gte("work_date", startISO)
@@ -79,5 +87,12 @@ export const getApprovedHoursWorked = async (referenceDate?: Date): Promise<numb
     throw error
   }
 
-  return (data ?? []).reduce((sum, entry) => sum + (entry.hours_worked ?? 0), 0)
+  const weeklyHours = new Map<string, number>()
+  for (const entry of data ?? []) {
+    if (!entry.work_date) continue
+    const key = getWeekStartKey(entry.work_date)
+    weeklyHours.set(key, (weeklyHours.get(key) ?? 0) + (entry.hours_worked ?? 0))
+  }
+
+  return weeklyHours.size > 0 ? Math.max(...weeklyHours.values()) : 0
 }
