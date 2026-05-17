@@ -126,13 +126,14 @@ export type Database = {
           federal_tax_rate: number | null
           first_name: string | null
           hire_date: string
+          hours_per_week: number | null
           id: string
           last_name: string | null
           pay_frequency: string
           pay_rate: number
           phone: string | null
           position: string
-          "profile.id": string | null
+          profile_id: string | null
           role: string | null
           social_security_tax_rate: number | null
           state: string | null
@@ -152,13 +153,14 @@ export type Database = {
           federal_tax_rate?: number | null
           first_name?: string | null
           hire_date: string
+          hours_per_week?: number | null
           id?: string
           last_name?: string | null
           pay_frequency: string
           pay_rate: number
           phone?: string | null
           position: string
-          "profile.id"?: string | null
+          profile_id?: string | null
           role?: string | null
           social_security_tax_rate?: number | null
           state?: string | null
@@ -178,13 +180,14 @@ export type Database = {
           federal_tax_rate?: number | null
           first_name?: string | null
           hire_date?: string
+          hours_per_week?: number | null
           id?: string
           last_name?: string | null
           pay_frequency?: string
           pay_rate?: number
           phone?: string | null
           position?: string
-          "profile.id"?: string | null
+          profile_id?: string | null
           role?: string | null
           social_security_tax_rate?: number | null
           state?: string | null
@@ -202,7 +205,7 @@ export type Database = {
           },
           {
             foreignKeyName: "employees_profile.id_fkey"
-            columns: ["profile.id"]
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
