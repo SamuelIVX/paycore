@@ -43,6 +43,10 @@ export async function searchEmployeesByNameAction(
 
     const supabase = await createClient();
     const role = await resolveAuthenticatedRole(supabase);
+    if (role === 'visitor') {
+        return { results: [], role };
+    }
+
     const columns = getColumnsForRole(role);
 
     // Escape PostgREST/ilike special chars: backslash, percent, underscore, quote.

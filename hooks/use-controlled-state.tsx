@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 interface CommonControlledStateProps<T> {
+  /** Passing the `value` prop makes the state controlled, even when the value is `undefined`. */
   value?: T;
   defaultValue?: T;
 }
@@ -12,21 +13,19 @@ export function useControlledState<T, Rest extends any[] = []>(
   },
 ): readonly [T, (next: T, ...args: Rest) => void] {
   const { value, defaultValue, onChange } = props;
+  const isControlled = Object.prototype.hasOwnProperty.call(props, 'value');
 
-  const [state, setInternalState] = React.useState<T>(
-    value !== undefined ? value : (defaultValue as T),
+  const [uncontrolledState, setInternalState] = React.useState<T>(
+    () => defaultValue as T,
   );
-
-  React.useEffect(() => {
-    if (value !== undefined) setInternalState(value);
-  }, [value]);
+  const state = (isControlled ? value : uncontrolledState) as T;
 
   const setState = React.useCallback(
     (next: T, ...args: Rest) => {
-      setInternalState(next);
+      if (!isControlled) setInternalState(next);
       onChange?.(next, ...args);
     },
-    [onChange],
+    [isControlled, onChange],
   );
 
   return [state, setState] as const;
