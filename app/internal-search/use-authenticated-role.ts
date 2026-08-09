@@ -4,35 +4,49 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { getAuthenticatedUserRoleAction } from "./actions";
 
-export function useAuthenticatedRole(): string {
-    const [role, setRole] = useState<string>('visitor');
+type AuthenticatedRoleState = {
+    role: string;
+    userId: string | null;
+};
+
+export function useAuthenticatedRole(): AuthenticatedRoleState {
+    const [authState, setAuthState] = useState<AuthenticatedRoleState>({
+        role: 'visitor',
+        userId: null,
+    });
 
     useEffect(() => {
         const supabase = createClient();
         let mounted = true;
+        let requestId = 0;
 
-        const handleSession = async (hasSession: boolean) => {
-            if (!hasSession) {
-                if (mounted) setRole('visitor');
+        const handleSession = async (userId: string | null) => {
+            const currentRequestId = ++requestId;
+            if (!userId) {
+                if (mounted) setAuthState({ role: 'visitor', userId: null });
                 return;
             }
 
             try {
                 const next = await getAuthenticatedUserRoleAction();
-                if (mounted) setRole(next);
+                if (mounted && currentRequestId === requestId) {
+                    setAuthState({ role: next, userId });
+                }
             } catch (err) {
                 console.error("Error loading user role:", err);
-                if (mounted) setRole('visitor');
+                if (mounted && currentRequestId === requestId) {
+                    setAuthState({ role: 'visitor', userId: null });
+                }
             }
         };
 
         supabase.auth.getSession().then(({ data }) => {
-            handleSession(Boolean(data.session?.user.id));
+            handleSession(data.session?.user.id ?? null);
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (_event, session) => {
-                await handleSession(Boolean(session?.user.id));
+                await handleSession(session?.user.id ?? null);
             },
         );
 
@@ -42,5 +56,5 @@ export function useAuthenticatedRole(): string {
         };
     }, []);
 
-    return role;
+    return authState;
 }

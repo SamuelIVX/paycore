@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Search } from "lucide-react";
@@ -8,57 +8,99 @@ import { type EmployeeWithProfile } from "@/lib/supabase/employee";
 import { searchEmployeesByNameAction } from "./actions";
 import { ExternalSearchNavbar } from "@/components/ui/navbars/external-search-navbar";
 import { Button } from "@/components/animate-ui/components/buttons/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuthenticatedRole } from "./use-authenticated-role";
 import { EmployeeResultCard } from "./employee-result-card";
-import { capitalizeRole } from "./utils";
+
+type SearchState = {
+  sessionKey: string;
+  query: string;
+  results: EmployeeWithProfile[];
+  isSearching: boolean;
+  error: string | null;
+  hasSearched: boolean;
+};
+
+function createSearchState(sessionKey: string): SearchState {
+  return {
+    sessionKey,
+    query: "",
+    results: [],
+    isSearching: false,
+    error: null,
+    hasSearched: false,
+  };
+}
 
 export default function ExternalEmployeeSearchPage() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<EmployeeWithProfile[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [hasSearched, setHasSearched] = useState(false);
-  const role = useAuthenticatedRole();
+  const { role, userId } = useAuthenticatedRole();
+  const sessionKey = userId ?? "visitor";
+  const latestSessionKey = useRef(sessionKey);
 
-  // Clear results when the user logs out so privileged data isn't left on screen.
   useEffect(() => {
-    if (role === 'visitor') {
-      setResults([]);
-      setHasSearched(false);
-    }
-  }, [role]);
+    latestSessionKey.current = sessionKey;
+  }, [sessionKey]);
+
+  const [searchState, setSearchState] = useState<SearchState>(() =>
+    createSearchState(sessionKey),
+  );
+  const currentSearchState =
+    searchState.sessionKey === sessionKey ? searchState : createSearchState(sessionKey);
+  const { query, results, isSearching, error, hasSearched } = currentSearchState;
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isSearching) return;
     const trimmed = query.trim();
     if (!trimmed) {
-      setError("Enter a name to search.");
-      setHasSearched(false);
+      setSearchState({
+        ...currentSearchState,
+        error: "Enter a name to search.",
+        hasSearched: false,
+      });
       return;
     }
 
-    setError(null);
-    setIsSearching(true);
-    setHasSearched(true);
+    const requestSessionKey = sessionKey;
+    setSearchState({
+      ...currentSearchState,
+      error: null,
+      isSearching: true,
+      hasSearched: true,
+    });
 
     try {
       const { results: employees } = await searchEmployeesByNameAction(trimmed);
-      setResults(employees);
+      if (latestSessionKey.current !== requestSessionKey) return;
+
+      setSearchState({
+        sessionKey: requestSessionKey,
+        query,
+        results: employees,
+        isSearching: false,
+        error: null,
+        hasSearched: true,
+      });
     } catch (searchError) {
+      if (latestSessionKey.current !== requestSessionKey) return;
+
       console.error(searchError);
-      setError("Search failed. Please try again.");
-      setResults([]);
-    } finally {
-      setIsSearching(false);
+      setSearchState({
+        sessionKey: requestSessionKey,
+        query,
+        results: [],
+        isSearching: false,
+        error: "Search failed. Please try again.",
+        hasSearched: true,
+      });
     }
   };
 
-  const showEmptyState = hasSearched && !error && !isSearching && results.length === 0;
-  const showResults = results.length > 0;
+  const visibleResults = role === "visitor" ? [] : results;
+  const visibleHasSearched = role === "visitor" ? false : hasSearched;
+  const showEmptyState = visibleHasSearched && !error && !isSearching && visibleResults.length === 0;
+  const showResults = visibleResults.length > 0;
 
   return (
     <>
@@ -85,7 +127,12 @@ export default function ExternalEmployeeSearchPage() {
                       id="external-search"
                       placeholder="Type a first or last name"
                       value={query}
-                      onChange={(e) => setQuery(e.target.value)}
+                      onChange={(e) =>
+                        setSearchState({
+                          ...currentSearchState,
+                          query: e.target.value,
+                        })
+                      }
                       className="pl-10"
                       aria-invalid={Boolean(error)}
                       aria-describedby={error ? "external-search-error" : undefined}
@@ -132,10 +179,10 @@ export default function ExternalEmployeeSearchPage() {
           {showResults && (
             <section className="space-y-3" aria-label="Search results">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                {results.length} {results.length === 1 ? "result" : "results"}
+                {visibleResults.length} {visibleResults.length === 1 ? "result" : "results"}
               </p>
               <div className="space-y-3">
-                {results.map((employee) => (
+                {visibleResults.map((employee) => (
                   <EmployeeResultCard key={employee.id} employee={employee} />
                 ))}
               </div>
