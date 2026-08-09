@@ -25,5 +25,5 @@ jobs:
                 RENOVATE_TOKEN: ${{ secrets.RENOVATE_PAT }}
                 RENOVATE_REPOSITORIES: ${{ github.repository }}
               with:
-                renovate-version: latest
+                renovate-version: 44.16.1
                 configurationFile: .github/renovate.json
