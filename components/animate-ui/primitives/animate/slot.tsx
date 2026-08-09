@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable react-hooks/static-components -- Dynamic asChild slots wrap arbitrary child element types; wrappers are cached by element type so identity stays stable. */
+
 import * as React from 'react';
 import { motion, isMotionComponent, type HTMLMotionProps } from 'motion/react';
 import { cn } from '@/lib/utils';
@@ -19,6 +21,17 @@ type SlotProps<T extends HTMLElement = HTMLElement> = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   children?: any;
 } & DOMMotionProps<T>;
+
+const motionComponentCache = new Map<React.ElementType, React.ElementType>();
+
+function getMotionComponent(type: React.ElementType): React.ElementType {
+  const existing = motionComponentCache.get(type);
+  if (existing) return existing;
+
+  const created = motion.create(type);
+  motionComponentCache.set(type, created);
+  return created;
+}
 
 function mergeRefs<T>(
   ...refs: (React.Ref<T> | undefined)[]
@@ -72,7 +85,7 @@ function Slot<T extends HTMLElement = HTMLElement>({
     () =>
       isAlreadyMotion
         ? (children.type as React.ElementType)
-        : motion.create(children.type as React.ElementType),
+        : getMotionComponent(children.type as React.ElementType),
     [isAlreadyMotion, children.type],
   );
 

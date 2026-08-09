@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Search } from "lucide-react";
@@ -8,12 +8,10 @@ import { type EmployeeWithProfile } from "@/lib/supabase/employee";
 import { searchEmployeesByNameAction } from "./actions";
 import { ExternalSearchNavbar } from "@/components/ui/navbars/external-search-navbar";
 import { Button } from "@/components/animate-ui/components/buttons/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuthenticatedRole } from "./use-authenticated-role";
 import { EmployeeResultCard } from "./employee-result-card";
-import { capitalizeRole } from "./utils";
 
 export default function ExternalEmployeeSearchPage() {
   const [query, setQuery] = useState("");
@@ -22,14 +20,6 @@ export default function ExternalEmployeeSearchPage() {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const role = useAuthenticatedRole();
-
-  // Clear results when the user logs out so privileged data isn't left on screen.
-  useEffect(() => {
-    if (role === 'visitor') {
-      setResults([]);
-      setHasSearched(false);
-    }
-  }, [role]);
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -57,8 +47,10 @@ export default function ExternalEmployeeSearchPage() {
     }
   };
 
-  const showEmptyState = hasSearched && !error && !isSearching && results.length === 0;
-  const showResults = results.length > 0;
+  const visibleResults = role === "visitor" ? [] : results;
+  const visibleHasSearched = role === "visitor" ? false : hasSearched;
+  const showEmptyState = visibleHasSearched && !error && !isSearching && visibleResults.length === 0;
+  const showResults = visibleResults.length > 0;
 
   return (
     <>
@@ -132,10 +124,10 @@ export default function ExternalEmployeeSearchPage() {
           {showResults && (
             <section className="space-y-3" aria-label="Search results">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                {results.length} {results.length === 1 ? "result" : "results"}
+                {visibleResults.length} {visibleResults.length === 1 ? "result" : "results"}
               </p>
               <div className="space-y-3">
-                {results.map((employee) => (
+                {visibleResults.map((employee) => (
                   <EmployeeResultCard key={employee.id} employee={employee} />
                 ))}
               </div>
