@@ -113,7 +113,10 @@ const defaultNavigationLinks: EmployeeNavbarNavLink[] = [
 ]
 
 /**
- * Renders the Employee Navbar UI.
+ * Employee Navbar component.
+ * @returns The rendered EmployeeNavbar UI.
+ * @example
+ * <EmployeeNavbar />
  */
 export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>(
   (

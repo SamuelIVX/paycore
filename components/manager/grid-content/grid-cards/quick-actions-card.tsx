@@ -17,7 +17,10 @@ import { useAddEmployee } from "@/hooks/use-add-employee"
 import { useState } from "react"
 
 /**
- * Default export: Quick Action Card.
+ * Quick Action Card presentational component.
+ * @returns The rendered QuickActionCard UI.
+ * @example
+ * <QuickActionCard />
  */
 export default function QuickActionCard() {
 

@@ -156,6 +156,10 @@ function formatDate(dateStr: string): string {
 /**
  * Renders a multi-page paystub PDF from CheckData.
  * SECURITY: document includes net pay, address, and synthetic SSN/YTD — do not log `data`.
+ * @param data - Data payload driving this view.
+ * @returns The rendered CheckPDF UI.
+ * @example
+ * <CheckPDF data={...} />
  */
 export function CheckPDF({ data }: { data: CheckData }) {
 	const ytdMultiplier = data.grossPay > 0 ? data.ytdGross / data.grossPay : 1;

@@ -14,7 +14,10 @@ const AVG_PER_CHECK = NET_YTD / COMPLETED_PERIODS
 const progressPct = Math.round((COMPLETED_PERIODS / TOTAL_PAY_PERIODS) * 100)
 
 /**
- * Default export: YTDEarnings Card.
+ * YTDEarnings Card presentational component.
+ * @returns The rendered YTDEarningsCard UI.
+ * @example
+ * <YTDEarningsCard />
  */
 export default function YTDEarningsCard() {
     return (

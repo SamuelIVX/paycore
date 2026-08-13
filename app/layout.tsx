@@ -16,7 +16,11 @@ export const metadata: Metadata = {
 };
 
 /**
- * Default export: Root Layout.
+ * Root Layout component.
+ * @param children - Nested React nodes.
+ * @returns The rendered RootLayout UI.
+ * @example
+ * // <RootLayout children={...} />
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 

@@ -21,7 +21,10 @@ import { Input } from "@/components/ui/input";
 import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
- * Renders the Sortable Header UI.
+ * Sortable Header component.
+ * @returns The rendered SortableHeader UI.
+ * @example
+ * <SortableHeader />
  */
 export function SortableHeader<T>({ column, label }: { column: Column<T, unknown>; label: string }) {
   return (
@@ -48,7 +51,10 @@ interface DataTableProps<T> {
 }
 
 /**
- * Renders the Data Table UI.
+ * Data Table component.
+ * @returns The rendered DataTable UI.
+ * @example
+ * <DataTable />
  */
 export function DataTable<T>({
   columns,

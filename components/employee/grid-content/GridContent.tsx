@@ -8,7 +8,15 @@ import type { GridContentProps } from "./grid-cards/types"
 import QuickStatsCard from "./grid-cards/quick-stats-card"
 
 /**
- * Default export: Grid Content.
+ * Grid Content presentational component.
+ * @param timesheets - See component props.
+ * @param setTimesheets - See component props.
+ * @param hoursByDay - See component props.
+ * @param setHoursByDay - See component props.
+ * @param chartConfig - See component props.
+ * @returns The rendered GridContent UI.
+ * @example
+ * // <GridContent timesheets={...}, setTimesheets={...}, hoursByDay={...}, setHoursByDay={...} />
  */
 export default function GridContent({ timesheets, setTimesheets, hoursByDay, setHoursByDay, chartConfig }: GridContentProps) {
     return (

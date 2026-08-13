@@ -5,7 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Briefcase, Calendar, Heart, Building2 } from "lucide-react"
 
 /**
- * Default export: Quick Stats Card.
+ * Quick Stats Card presentational component.
+ * @returns The rendered QuickStatsCard UI.
+ * @example
+ * <QuickStatsCard />
  */
 export default function QuickStatsCard() {
     return (

@@ -10,7 +10,10 @@ import { BENEFIT_ICONS } from "../constants"
 import { getCompanyBenefits } from "@/lib/supabase/benefits"
 
 /**
- * Default export: Company Benefits Card.
+ * Company Benefits Card presentational component.
+ * @returns The rendered CompanyBenefitsCard UI.
+ * @example
+ * <CompanyBenefitsCard />
  */
 export default function CompanyBenefitsCard() {
     const [company_benefits, setCompanyBenefits] = useState<Awaited<ReturnType<typeof getCompanyBenefits>>>([]);

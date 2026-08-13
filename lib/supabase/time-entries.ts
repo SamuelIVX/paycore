@@ -15,7 +15,10 @@ const ELIGIBILITY_LOOKBACK_WEEKS = 4
  * Inserts a PENDING time entry for the current employee.
  * @param workDate - YYYY-MM-DD.
  * @param hoursWorked - Non-negative finite hours.
+ * @returns Inserted time_entries row.
  * @throws On validation or Supabase failure.
+ * @example
+ * await createTimeEntry("2026-08-12", 8);
  */
 export const createTimeEntry = async (workDate: string, hoursWorked: number) => {
   const supabase = createClient()
@@ -52,6 +55,10 @@ export const createTimeEntry = async (workDate: string, hoursWorked: number) => 
 
 /**
  * Latest 5 time entries for the current employee (newest work_date first).
+ * @returns Up to five recent entries for dashboard cards.
+ * @throws If unauthenticated or Supabase fails.
+ * @example
+ * const recent = await getRecentTimeEntries();
  */
 export const getRecentTimeEntries = async () => {
   const supabase = createClient()
@@ -74,6 +81,11 @@ export const getRecentTimeEntries = async () => {
 /**
  * Max approved hours in any single Mon–Sun UTC week over the last 4 weeks
  * (including the current week). Used as hoursPerWeek for eligibility.
+ * @param referenceDate - Anchor instant (defaults to now).
+ * @returns Peak weekly approved hours in the lookback window.
+ * @throws If unauthenticated or Supabase fails.
+ * @example
+ * const hours = await getApprovedHoursWorked(new Date("2026-08-13"));
  */
 export const getApprovedHoursWorked = async (referenceDate?: Date): Promise<number> => {
   const supabase = createClient()

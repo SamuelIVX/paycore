@@ -12,7 +12,11 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 /**
  * Builds a server Supabase client bound to the request cookie store.
  * SECURITY: session cookies — never log cookie values.
+ * @returns Promise of a cookie-aware Supabase client.
  * @throws If Supabase env vars are missing.
+ * @example
+ * const supabase = await createClient();
+ * const { data: { user } } = await supabase.auth.getUser();
  */
 export async function createClient() {
 

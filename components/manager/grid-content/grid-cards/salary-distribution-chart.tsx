@@ -28,7 +28,10 @@ const chartConfig = {
 } satisfies ChartConfig
 
 /**
- * Default export: Salary Distribution Bar Chart.
+ * Salary Distribution Bar Chart presentational component.
+ * @returns The rendered SalaryDistributionBarChart UI.
+ * @example
+ * <SalaryDistributionBarChart />
  */
 export default function SalaryDistributionBarChart() {
 

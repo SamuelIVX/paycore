@@ -27,7 +27,12 @@ import {
 import { useAddBenefit } from "@/hooks/use-add-benefit";
 
 /**
- * Renders the Company Benefit Details UI.
+ * Company Benefit Details component.
+ * @param title - See component props.
+ * @param value - See component props.
+ * @returns The rendered CompanyBenefitDetails UI.
+ * @example
+ * <CompanyBenefitDetails title={...}, value={...} />
  */
 export function CompanyBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
@@ -39,7 +44,10 @@ export function CompanyBenefitDetails({ title, value }: BenefitDetailsProps) {
 }
 
 /**
- * Default export: Company Benefits Grid.
+ * Company Benefits Grid presentational component.
+ * @returns The rendered CompanyBenefitsGrid UI.
+ * @example
+ * <CompanyBenefitsGrid />
  */
 export default function CompanyBenefitsGrid() {
     const router = useRouter();

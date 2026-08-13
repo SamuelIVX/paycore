@@ -9,7 +9,10 @@ import SalaryDistributionBarChart from "./grid-cards/salary-distribution-chart"
 import UpcomingTasksCard from "./grid-cards/upcoming-tasks"
 
 /**
- * Default export: Grid Content.
+ * Grid Content presentational component.
+ * @returns The rendered GridContent UI.
+ * @example
+ * <GridContent />
  */
 export default function GridContent() {
     return (

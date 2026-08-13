@@ -7,7 +7,14 @@ import { Users, Clock, DollarSign } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 
 /**
- * Renders the Manager Stat Card UI.
+ * Manager Stat Card presentational component.
+ * @param title - See component props.
+ * @param icon - See component props.
+ * @param value - See component props.
+ * @param description - See component props.
+ * @returns The rendered ManagerStatCard UI.
+ * @example
+ * <ManagerStatCard title={...}, icon={...}, value={...}, description={...} />
  */
 export function ManagerStatCard({ title, icon, value, description }: ManagerStatCardProps) {
     return (
@@ -28,7 +35,12 @@ export function ManagerStatCard({ title, icon, value, description }: ManagerStat
 }
 
 /**
- * Default export: Manager Stat Cards.
+ * Manager Stat Cards presentational component.
+ * @param totalEmployees - See component props.
+ * @param totalAnnualPayroll - See component props.
+ * @returns The rendered ManagerStatCards UI.
+ * @example
+ * // <ManagerStatCards totalEmployees={...}, totalAnnualPayroll={...} />
  */
 export default function ManagerStatCards({ totalEmployees, totalAnnualPayroll }: ManagerStatCardsProps) {
     return (

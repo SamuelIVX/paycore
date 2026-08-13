@@ -37,7 +37,10 @@ function createSearchState(sessionKey: string): SearchState {
 }
 
 /**
- * Default export: External Employee Search Page.
+ * Public/internal directory search page with role-aware result cards.
+ * @returns Search UI for looking up coworkers by name.
+ * @example
+ * // Routed at /internal-search
  */
 export default function ExternalEmployeeSearchPage() {
   const { role, userId } = useAuthenticatedRole();

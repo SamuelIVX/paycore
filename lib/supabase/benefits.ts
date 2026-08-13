@@ -18,6 +18,11 @@ export type BenefitUpdate = TablesUpdate<"benefits">;
 
 /**
  * Inserts a benefits catalog row (COMPANY or OPTIONAL).
+ * @param company_benefit - Insert payload for the benefits table.
+ * @returns Inserted row data from Supabase.
+ * @throws On Supabase error.
+ * @example
+ * await addBenefit({ name: "Dental", type: "OPTIONAL", monthly_cost: 40 });
  */
 export const addBenefit = async (company_benefit: BenefitInsert) => {
     const supabase = createClient();
@@ -33,6 +38,10 @@ export const addBenefit = async (company_benefit: BenefitInsert) => {
 
 /**
  * Lists benefits where type=COMPANY.
+ * @returns COMPANY benefit rows.
+ * @throws On Supabase error.
+ * @example
+ * const company = await getCompanyBenefits();
  */
 export const getCompanyBenefits = async () => {
     const supabase = createClient();
@@ -52,6 +61,10 @@ export const getCompanyBenefits = async () => {
 
 /**
  * Lists benefits where type=OPTIONAL.
+ * @returns OPTIONAL benefit rows.
+ * @throws On Supabase error.
+ * @example
+ * const optional = await getOptionalBenefits();
  */
 export const getOptionalBenefits = async () => {
     const supabase = createClient();
@@ -71,7 +84,12 @@ export const getOptionalBenefits = async () => {
 
 /**
  * ACTIVE employee_benefits joined to OPTIONAL benefit rows for one employee.
+ * @param employee_id - Target employee UUID.
  * @param supabaseClient - Optional server client (payroll path); else browser client.
+ * @returns Active optional enrollments with nested benefit.
+ * @throws On Supabase error.
+ * @example
+ * const rows = await getActiveOptionalEmployeeBenefits(employeeId, serverClient);
  */
 export const getActiveOptionalEmployeeBenefits = async (employee_id: string, supabaseClient?: SupabaseClient) => {
     const supabase = supabaseClient || createClient();
@@ -98,6 +116,12 @@ export const getActiveOptionalEmployeeBenefits = async (employee_id: string, sup
 /**
  * Upserts enrollment for the current employee on (employee_id, benefit_id).
  * SECURITY: derives employee_id from the auth session.
+ * @param args.benefit_id - Catalog benefit UUID.
+ * @param args.status - ACTIVE or NOT_ENROLLED.
+ * @returns Upsert result from Supabase.
+ * @throws If unauthenticated or Supabase fails.
+ * @example
+ * await upsertEmployeeBenefit({ benefit_id, status: "ACTIVE" });
  */
 export const upsertEmployeeBenefit = async ({
     benefit_id,
@@ -129,6 +153,10 @@ export const upsertEmployeeBenefit = async ({
 
 /**
  * Deletes a benefits catalog row by id.
+ * @param id - Benefits table UUID.
+ * @throws On Supabase error.
+ * @example
+ * await deleteBenefit(benefitId);
  */
 export const deleteBenefit = async (id: string) => {
     const supabase = createClient();
@@ -145,6 +173,12 @@ export const deleteBenefit = async (id: string) => {
 
 /**
  * Updates a benefits catalog row by id.
+ * @param id - Benefits table UUID.
+ * @param updates - Partial benefit fields to patch.
+ * @returns Updated row data.
+ * @throws On Supabase error.
+ * @example
+ * await updateBenefit(id, { monthly_cost: 55 });
  */
 export const updateBenefit = async (id: string, updates: BenefitUpdate) => {
     const supabase = createClient();
@@ -161,6 +195,10 @@ export const updateBenefit = async (id: string, updates: BenefitUpdate) => {
 
 /**
  * Exact count of COMPANY benefits.
+ * @returns Count integer (head-only query).
+ * @throws On Supabase error.
+ * @example
+ * const n = await getCompanyBenefitsCount();
  */
 export const getCompanyBenefitsCount = async () => {
     const supabase = createClient();
@@ -180,6 +218,10 @@ export const getCompanyBenefitsCount = async () => {
 
 /**
  * Exact count of OPTIONAL benefits.
+ * @returns Count integer (head-only query).
+ * @throws On Supabase error.
+ * @example
+ * const n = await getOptionalBenefitsCount();
  */
 export const getOptionalBenefitsCount = async () => {
     const supabase = createClient();

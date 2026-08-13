@@ -288,7 +288,10 @@ function PayStubCard({
 }
 
 /**
- * Default export: Pay Stubs Page.
+ * Pay Stubs Page App Router page.
+ * @returns The rendered PayStubsPage UI.
+ * @example
+ * // Routed page component (PayStubsPage)
  */
 export default function PayStubsPage() {
   const [paystubs, setPaystubs] = useState<ProcessedPaystub[]>([]);

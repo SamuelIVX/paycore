@@ -16,6 +16,8 @@ interface UseIsInViewOptions {
  * @param ref - Imperative handle target for the observed element.
  * @param options - inView gate, once, and margin forwarded to useInView.
  * @returns Local ref to attach and current isInView flag.
+ * @example
+ * const { ref, isInView } = useIsInView(outerRef, { inView: true, inViewOnce: true });
  */
 function useIsInView<T extends HTMLElement = HTMLElement>(
   ref: React.Ref<T>,

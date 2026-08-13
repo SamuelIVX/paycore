@@ -17,6 +17,12 @@ import {
     type ChartConfig,
 } from "@/components/ui/chart"
 
+/**
+ * description component.
+ * @returns The rendered description UI.
+ * @example
+ * <description />
+ */
 export const description = "A line chart"
 
 const chartData = [
@@ -35,7 +41,10 @@ const chartConfig = {
 } satisfies ChartConfig
 
 /**
- * Default export: Payroll Trend Chart.
+ * Payroll Trend Chart presentational component.
+ * @returns The rendered PayrollTrendChart UI.
+ * @example
+ * <PayrollTrendChart />
  */
 export default function PayrollTrendChart() {
     return (

@@ -8,7 +8,10 @@ import { ManagerNavbar } from "@/components/ui/navbars/manager-navbar";
 import { EmployeeNavbar } from "@/components/ui/navbars/employee-navbar";
 
 /**
- * Renders ManagerNavbar or EmployeeNavbar from pathname, or null on / and /internal-search.
+ * Chooses Manager vs Employee navbar from the URL path.
+ * @returns The rendered NavbarWrapper UI.
+ * @example
+ * <NavbarWrapper />
  */
 export function NavbarWrapper() {
     const pathname = usePathname();

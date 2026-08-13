@@ -26,7 +26,12 @@ import {
 import { useAddBenefit } from "@/hooks/use-add-benefit";
 
 /**
- * Renders the Optional Benefit Details UI.
+ * Optional Benefit Details component.
+ * @param title - See component props.
+ * @param value - See component props.
+ * @returns The rendered OptionalBenefitDetails UI.
+ * @example
+ * <OptionalBenefitDetails title={...}, value={...} />
  */
 export function OptionalBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
@@ -38,7 +43,10 @@ export function OptionalBenefitDetails({ title, value }: BenefitDetailsProps) {
 }
 
 /**
- * Default export: Optional Benefits Grid.
+ * Optional Benefits Grid presentational component.
+ * @returns The rendered OptionalBenefitsGrid UI.
+ * @example
+ * <OptionalBenefitsGrid />
  */
 export default function OptionalBenefitsGrid() {
     const router = useRouter();

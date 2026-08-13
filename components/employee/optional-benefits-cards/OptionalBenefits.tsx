@@ -14,7 +14,13 @@ import type { OptionalBenefitsCardProps } from "../types"
 import { getOptionalBenefits, upsertEmployeeBenefit } from "@/lib/supabase/benefits"
 
 /**
- * Default export: Optional Benefits Card.
+ * Optional Benefits Card presentational component.
+ * @param selected_benefits - See component props.
+ * @param set_selected_benefits - See component props.
+ * @param eligibility - See component props.
+ * @returns The rendered OptionalBenefitsCard UI.
+ * @example
+ * // <OptionalBenefitsCard selected_benefits={...}, set_selected_benefits={...}, eligibility={...} />
  */
 export default function OptionalBenefitsCard({ selected_benefits, set_selected_benefits, eligibility }: OptionalBenefitsCardProps) {
     const ineligible = eligibility !== undefined && !eligibility.eligible && !eligibility.loading

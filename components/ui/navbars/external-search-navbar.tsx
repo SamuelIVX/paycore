@@ -11,7 +11,10 @@ import { ArrowLeft, Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 /**
- * Renders the External Search Navbar UI.
+ * External Search Navbar component.
+ * @returns The rendered ExternalSearchNavbar UI.
+ * @example
+ * <ExternalSearchNavbar />
  */
 export function ExternalSearchNavbar() {
   const { theme, setTheme } = useTheme()

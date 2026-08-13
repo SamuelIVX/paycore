@@ -6,7 +6,14 @@ import { Progress } from "@/components/ui/progress"
 import type { ProgressBarCardProps } from "./types"
 
 /**
- * Default export: Progress Bar Card.
+ * Progress Bar Card presentational component.
+ * @param company_count - See component props.
+ * @param optional_count - See component props.
+ * @param selected_count - See component props.
+ * @param pct_company - See component props.
+ * @returns The rendered ProgressBarCard UI.
+ * @example
+ * // <ProgressBarCard company_count={...}, optional_count={...}, selected_count={...}, pct_company={...} />
  */
 export default function ProgressBarCard({ company_count, optional_count, selected_count, pct_company }: ProgressBarCardProps) {
     const clampedPct = Math.max(0, Math.min(100, pct_company));

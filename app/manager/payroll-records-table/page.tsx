@@ -31,7 +31,10 @@ function formatHours(value: number | null): string {
 }
 
 /**
- * Default export: Payroll Table.
+ * Payroll Table App Router page.
+ * @returns The rendered PayrollTable UI.
+ * @example
+ * // Routed page component (PayrollTable)
  */
 export default function PayrollTable() {
   const [startDate, setStartDate] = useState("");

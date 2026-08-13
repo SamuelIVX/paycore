@@ -17,6 +17,12 @@ export const COMPANY_INFO = {
  * Deterministic pseudo-random in [min, min+range) from a string seed.
  * Used for synthetic YTD/SSN display values on demo paystubs (not real SSN).
  * SECURITY: output can look like an SSN — never treat as a real identifier.
+ * @param seed - Hash seed (usually record id).
+ * @param min - Inclusive lower bound.
+ * @param range - Width of the half-open interval.
+ * @returns Integer in [min, min+range).
+ * @example
+ * stableNumber("rec-1", 1000, 9000) // => deterministic 4-digit-ish int
  */
 function stableNumber(seed: string, min: number, range: number): number {
   let hash = 0;
@@ -29,6 +35,11 @@ function stableNumber(seed: string, min: number, range: number): number {
 /**
  * Normalizes a RawPaystubRow into ProcessedPaystub for PDF/list UI.
  * SECURITY: carries pay and address fields through to the PDF.
+ * @param row - Payroll record with nested run + employee joins.
+ * @returns Display/PDF-ready paystub including synthetic YTD/SSN demo fields.
+ * @example
+ * const stub = processPaystubData(rawRow);
+ * // stub.netPay / stub.ssn ready for CheckPDF
  */
 export function processPaystubData(row: RawPaystubRow): ProcessedPaystub {
   const payrollRun = row.payroll_runs;
