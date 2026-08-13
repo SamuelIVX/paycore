@@ -7,16 +7,10 @@ import OptionalBenefitsGrid from "@/components/manager/optional-benefits/Optiona
 import { getCompanyBenefitsCount, getOptionalBenefitsCount } from "@/lib/supabase/benefits"
 import { getAverageBenefitDeductions } from "@/lib/supabase/payroll"
 
-/**
- * Manager benefits catalog App Router page.
- * @returns The rendered dynamic UI.
- * @example
- * // Routed page component (dynamic)
- */
 export const dynamic = "force-dynamic"
 
 /**
- * Benefits Page App Router page.
+ * Manager benefits catalog App Router page.
  * @returns The rendered BenefitsPage UI.
  * @example
  * // Routed page component (BenefitsPage)

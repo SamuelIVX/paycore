@@ -5,16 +5,10 @@ import ManagerStatCards from "@/components/manager/stat-cards/Statcards"
 import GridContent from "@/components/manager/grid-content/GridContent"
 import { getActiveEmployeesCount, getTotalAnnualPayroll } from "@/lib/supabase/employee"
 
-/**
- * Manager dashboard App Router page.
- * @returns The rendered dynamic UI.
- * @example
- * // Routed page component (dynamic)
- */
 export const dynamic = "force-dynamic"
 
 /**
- * Manager Dashboard Page App Router page.
+ * Manager dashboard App Router page.
  * @returns The rendered ManagerDashboardPage UI.
  * @example
  * // Routed page component (ManagerDashboardPage)
