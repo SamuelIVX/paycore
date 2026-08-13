@@ -1,10 +1,20 @@
+/**
+ * Pure payroll math + browser-client fetches for payroll runs/records.
+ * Uses a fixed 26 bi-weekly periods/year; overtime is computed per Mon–Sun UTC week.
+ * SECURITY: handles pay rates, tax rates, and net pay — do not log employee compensation.
+ */
 import { createClient } from "@/utils/supabase/client";
 import { Tables } from "@/lib/interfaces/database.types";
 
 const supabase = createClient();
 const BI_WEEKLY_PAY_PERIODS = 26;
+/** Rounds to cents using EPSILON to reduce binary float noise. */
 const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
 
+/**
+ * Fetches all payroll_runs rows.
+ * @throws Relays Supabase errors after console.error.
+ */
 export const getPayrollRuns = async () => {
     const { data: payroll_runs, error } = await supabase
         .from("payroll_runs")
@@ -18,6 +28,11 @@ export const getPayrollRuns = async () => {
     return payroll_runs;
 };
 
+/**
+ * Fetches payroll_records with joined employee name + pay_frequency.
+ * SECURITY: includes compensation fields — manager-facing.
+ * @throws Relays Supabase errors.
+ */
 export const getPayrollRecords = async () => {
     const { data: payroll_records, error } = await supabase
         .from("payroll_records")
@@ -68,6 +83,17 @@ function computeWeeklyOvertime(
 }
 
 // Now accepts benefitDeduction (number) and subtracts it from net_pay
+/**
+ * Computes one employee's payroll_record fields for a run.
+ * HOURLY/BI_WEEKLY: per-week OT at 1.5× after 40h; SALARY: pay_rate/26.
+ * Monthly benefitDeduction is prorated by 12/26 only when gross_pay > 0.
+ * SECURITY: input/output contain pay and tax amounts — do not log.
+ * @param employee - Employee row with pay_rate, frequency, and tax rates.
+ * @param time_entries - Period entries (filtered to this employee inside).
+ * @param payroll_run - Parent run (id stamped onto the result).
+ * @param benefitDeduction - Monthly optional/company deduction total (default 0).
+ * @returns Insert-shaped record fields (hours, taxes, net_pay).
+ */
 export const calculatePayRollForEmployee = (
     employee: Tables<"employees">,
     time_entries: Tables<"time_entries">[],
@@ -120,6 +146,10 @@ export const calculatePayRollForEmployee = (
     };
 };
 
+/**
+ * Average benefit_deductions across the latest 6 payroll_records (by period start).
+ * @returns 0 when no records exist.
+ */
 export const getAverageBenefitDeductions = async () => {
     const supabase = createClient()
     const LATEST_PAY_PERIODS = 6

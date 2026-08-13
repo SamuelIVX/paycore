@@ -1,3 +1,6 @@
+/**
+ * Manager benefits admin page (company + optional catalogs).
+ */
 import SummaryCards from "@/components/manager/summary-cards/SummaryCards"
 import CompanyBenefitsGrid from "@/components/manager/company-benefits/CompanyBenefits"
 import OptionalBenefitsGrid from "@/components/manager/optional-benefits/OptionalBenefits"
@@ -6,6 +9,9 @@ import { getAverageBenefitDeductions } from "@/lib/supabase/payroll"
 
 export const dynamic = "force-dynamic"
 
+/**
+ * Default export: Benefits Page.
+ */
 export default async function BenefitsPage() {
     const results = await Promise.allSettled([
         getCompanyBenefitsCount(),

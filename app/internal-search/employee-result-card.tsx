@@ -1,3 +1,6 @@
+/**
+ * Directory search result card; fields shown depend on caller role.
+ */
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -31,6 +34,9 @@ function Field({ label, value }: FieldProps) {
     );
 }
 
+/**
+ * Renders the Employee Result Card UI.
+ */
 export function EmployeeResultCard({ employee }: Props) {
     const fullName = `${employee.first_name ?? ""} ${employee.last_name ?? ""}`.trim() || "Unknown";
     const payRate = hasPayInfo(employee) && employee.pay_rate != null

@@ -1,3 +1,6 @@
+/**
+ * Vitest coverage for app/employee/paystubs.
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { COMPANY_INFO } from '@/app/employee/paystubs/utils';

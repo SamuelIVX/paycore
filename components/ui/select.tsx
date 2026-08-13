@@ -1,29 +1,44 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: select.
+ */
 import * as React from "react"
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Select as SelectPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Select UI primitive (exported from this module).
+ */
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" {...props} />
 }
 
+/**
+ * SelectGroup UI primitive (exported from this module).
+ */
 function SelectGroup({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Group>) {
   return <SelectPrimitive.Group data-slot="select-group" {...props} />
 }
 
+/**
+ * SelectValue UI primitive (exported from this module).
+ */
 function SelectValue({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Value>) {
   return <SelectPrimitive.Value data-slot="select-value" {...props} />
 }
 
+/**
+ * SelectTrigger UI primitive (exported from this module).
+ */
 function SelectTrigger({
   className,
   size = "default",
@@ -50,6 +65,9 @@ function SelectTrigger({
   )
 }
 
+/**
+ * SelectContent UI primitive (exported from this module).
+ */
 function SelectContent({
   className,
   children,
@@ -87,6 +105,9 @@ function SelectContent({
   )
 }
 
+/**
+ * SelectLabel UI primitive (exported from this module).
+ */
 function SelectLabel({
   className,
   ...props
@@ -100,6 +121,9 @@ function SelectLabel({
   )
 }
 
+/**
+ * SelectItem UI primitive (exported from this module).
+ */
 function SelectItem({
   className,
   children,
@@ -127,6 +151,9 @@ function SelectItem({
   )
 }
 
+/**
+ * SelectSeparator UI primitive (exported from this module).
+ */
 function SelectSeparator({
   className,
   ...props
@@ -140,6 +167,9 @@ function SelectSeparator({
   )
 }
 
+/**
+ * SelectScrollUpButton UI primitive (exported from this module).
+ */
 function SelectScrollUpButton({
   className,
   ...props
@@ -158,6 +188,9 @@ function SelectScrollUpButton({
   )
 }
 
+/**
+ * SelectScrollDownButton UI primitive (exported from this module).
+ */
 function SelectScrollDownButton({
   className,
   ...props

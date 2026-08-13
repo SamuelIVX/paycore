@@ -1,3 +1,7 @@
+/**
+ * Optional-benefits eligibility rules: state hour thresholds (ACA/HI), employment-status
+ * exemptions, and loading/error lockout. Pure functions — no I/O.
+ */
 export interface EligibilityInput {
   employmentStatus: string | null;
   hoursPerWeek: number | null;
@@ -6,6 +10,9 @@ export interface EligibilityInput {
   error?: boolean;
 }
 
+/**
+ * EligibilityResult type/interface.
+ */
 export interface EligibilityResult {
   eligible: boolean;
   loading?: boolean;
@@ -43,6 +50,12 @@ const STATE_RULES: Record<string, StateRule> = {
 
 const EXEMPT_EMPLOYMENT_STATUSES = new Set(["CONTRACTOR", "SEASONAL", "INTERN", "1099"]);
 
+/**
+ * Evaluates optional-benefits eligibility for an employee snapshot.
+ * error=true locks enrollment; loading/null hours keep eligible=false with loading.
+ * @param employee - Status, hours/week, and state used for thresholds.
+ * @returns EligibilityResult with thresholdHours and optional reason/shortMessage.
+ */
 export function checkOptionalBenefitsEligibility(employee: EligibilityInput): EligibilityResult {
   const rule = (employee.state && STATE_RULES[employee.state.toUpperCase()]) || DEFAULT_STATE_RULE;
   const { thresholdHours, marketplaceMessage } = rule;
@@ -95,6 +108,9 @@ export function checkOptionalBenefitsEligibility(employee: EligibilityInput): El
   };
 }
 
+/**
+ * True when checkOptionalBenefitsEligibility(...).eligible — used by runPayroll.
+ */
 export function shouldApplyOptionalDeductions(employee: EligibilityInput): boolean {
   return checkOptionalBenefitsEligibility(employee).eligible;
 }

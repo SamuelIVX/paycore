@@ -1,6 +1,12 @@
+/**
+ * Employee-facing UI: ImportantInfoCard.
+ */
 import { Card, CardContent } from "@/components/ui/card"
 import { Info } from "lucide-react"
 
+/**
+ * Default export: Important Info Card.
+ */
 export default function ImportantInfoCard() {
     return (
 

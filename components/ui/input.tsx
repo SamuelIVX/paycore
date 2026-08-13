@@ -1,7 +1,13 @@
+/**
+ * shadcn/ui primitive wrapper: input.
+ */
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Input UI primitive (exported from this module).
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input

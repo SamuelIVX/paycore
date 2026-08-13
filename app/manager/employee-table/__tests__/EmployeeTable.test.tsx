@@ -1,3 +1,6 @@
+/**
+ * Vitest coverage for app/manager/employee-table.
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -485,14 +488,14 @@ describe('EmployeeTable Component', () => {
                 expect(addButton).toBeInTheDocument();
             });
 
-            // TODO: Implement dialog trigger verification
+            // TODO(#187): Implement dialog trigger verification
             // Requires: userEvent.click(addButton) + verify dialog content
         });
     });
 
     describe('Error Handling', () => {
         it.skip('displays error message when employee operations fail', async () => {
-            // TODO: Requires mocking failed API call, triggering error state
+            // TODO(#187): Requires mocking failed API call, triggering error state
             mockGetEmployees.mockResolvedValue([
                 makeEmployee({ id: 'emp-1' }),
             ]);

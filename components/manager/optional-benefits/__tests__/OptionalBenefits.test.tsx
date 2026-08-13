@@ -1,3 +1,6 @@
+/**
+ * Vitest coverage for components/manager/optional-benefits.
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { Tables } from '@/lib/interfaces/database.types';
@@ -194,7 +197,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it('opens dialog when Add button clicked', async () => {
-            // TODO: Requires userEvent.click + dialog visibility assertion
+            // TODO(#189): Requires userEvent.click + dialog visibility assertion
             mockGetOptionalBenefits.mockResolvedValue([]);
 
             render(<OptionalBenefitsGrid />);
@@ -206,7 +209,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('displays form fields in add dialog', async () => {
-            // TODO: Requires click + dialog fill + submit
+            // TODO(#189): Requires click + dialog fill + submit
             mockGetOptionalBenefits.mockResolvedValue([]);
 
             render(<OptionalBenefitsGrid />);
@@ -217,7 +220,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('requires monthly cost field for optional benefits', async () => {
-            // TODO: Requires form validation testing
+            // TODO(#189): Requires form validation testing
             mockGetOptionalBenefits.mockResolvedValue([]);
 
             render(<OptionalBenefitsGrid />);
@@ -228,7 +231,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('adds new optional benefit to list after submission', async () => {
-            // TODO: Requires click + fill + submit + mockCreate call verification
+            // TODO(#189): Requires click + fill + submit + mockCreate call verification
             mockGetOptionalBenefits
                 .mockResolvedValueOnce([])
                 .mockResolvedValueOnce([
@@ -243,7 +246,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('shows success feedback after adding', async () => {
-            // TODO: Requires full add flow + success toast assertion
+            // TODO(#189): Requires full add flow + success toast assertion
             const newBenefit = makeBenefit({ benefit: 'New Optional', monthly_cost: 30 });
             mockGetOptionalBenefits.mockResolvedValue([newBenefit]);
 
@@ -255,7 +258,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('closes dialog after successful addition', async () => {
-            // TODO: Requires click + submit + dialog close verification
+            // TODO(#189): Requires click + submit + dialog close verification
             mockGetOptionalBenefits.mockResolvedValue([]);
 
             render(<OptionalBenefitsGrid />);
@@ -268,7 +271,7 @@ describe('OptionalBenefitsGrid Component', () => {
 
     describe('Edit Optional Benefit', () => {
         it.skip('opens edit dialog when benefit card is clicked', async () => {
-            // TODO: Requires click + dialog visibility assertion
+            // TODO(#189): Requires click + dialog visibility assertion
             const benefit = makeBenefit({
                 benefit: 'Life Insurance',
             });
@@ -282,7 +285,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('pre-fills edit dialog with current benefit data', async () => {
-            // TODO: Requires click + form value verification
+            // TODO(#189): Requires click + form value verification
             const benefit = makeBenefit({
                 benefit: 'Life Insurance',
                 description: 'Current coverage',
@@ -301,7 +304,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('updates benefit on save', async () => {
-            // TODO: Requires click + fill + submit + mockUpdateBenefit call
+            // TODO(#189): Requires click + fill + submit + mockUpdateBenefit call
             const benefit = makeBenefit({ benefit: 'Life Insurance', monthly_cost: 25 });
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
             mockUpdateBenefit.mockResolvedValue({ id: benefit.id });
@@ -314,7 +317,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('reflects updates immediately in list', async () => {
-            // TODO: Requires update flow + DOM verification
+            // TODO(#189): Requires update flow + DOM verification
             const benefit = makeBenefit({ benefit: 'Life Insurance', monthly_cost: 25 });
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
 
@@ -326,7 +329,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('updates monthly cost when edited', async () => {
-            // TODO: Requires edit flow + cost verification
+            // TODO(#189): Requires edit flow + cost verification
             const benefit = makeBenefit({ monthly_cost: 25 });
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
 
@@ -340,7 +343,7 @@ describe('OptionalBenefitsGrid Component', () => {
 
     describe('Delete Optional Benefit', () => {
         it.skip('shows delete button on each benefit', async () => {
-            // TODO: Requires delete button presence check
+            // TODO(#189): Requires delete button presence check
             const benefit = makeBenefit({ benefit: 'Life Insurance' });
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
 
@@ -363,7 +366,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('confirms deletion and removes benefit', async () => {
-            // TODO: Requires click delete + confirm dialog + list verification
+            // TODO(#189): Requires click delete + confirm dialog + list verification
             const benefit = makeBenefit({ id: 'b1', benefit: 'Life Insurance' });
             mockGetOptionalBenefits
                 .mockResolvedValueOnce([benefit])
@@ -508,7 +511,7 @@ describe('OptionalBenefitsGrid Component', () => {
         });
 
         it.skip('displays benefit tags correctly', async () => {
-            // TODO: Component uses tag for icon lookup, not text display. Tag is not rendered as text.
+            // TODO(#189): Component uses tag for icon lookup, not text display. Tag is not rendered as text.
             // This test should verify icon rendering instead of text.
             const benefits = [
                 makeBenefit({ tag: 'Life' }),

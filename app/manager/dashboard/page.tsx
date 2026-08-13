@@ -1,9 +1,15 @@
+/**
+ * Manager dashboard shell (force-dynamic) composing stat and grid cards.
+ */
 import ManagerStatCards from "@/components/manager/stat-cards/Statcards"
 import GridContent from "@/components/manager/grid-content/GridContent"
 import { getActiveEmployeesCount, getTotalAnnualPayroll } from "@/lib/supabase/employee"
 
 export const dynamic = "force-dynamic"
 
+/**
+ * Default export: Manager Dashboard Page.
+ */
 export default async function ManagerDashboardPage() {
     const results = await Promise.allSettled([
         getActiveEmployeesCount(),

@@ -1,10 +1,16 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: label.
+ */
 import * as React from "react"
 import { Label as LabelPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Label UI primitive (exported from this module).
+ */
 function Label({
   className,
   ...props

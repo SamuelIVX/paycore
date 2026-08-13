@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * Employee-facing UI: OptionalBenefits.
+ */
 import { createElement, useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { BENEFIT_ICONS } from "../constants"
@@ -10,6 +13,9 @@ import { Lock } from "lucide-react"
 import type { OptionalBenefitsCardProps } from "../types"
 import { getOptionalBenefits, upsertEmployeeBenefit } from "@/lib/supabase/benefits"
 
+/**
+ * Default export: Optional Benefits Card.
+ */
 export default function OptionalBenefitsCard({ selected_benefits, set_selected_benefits, eligibility }: OptionalBenefitsCardProps) {
     const ineligible = eligibility !== undefined && !eligibility.eligible && !eligibility.loading
     const [optional_benefits, setOptionalBenefits] = useState<Awaited<ReturnType<typeof getOptionalBenefits>>>([]);

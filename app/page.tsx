@@ -1,4 +1,8 @@
 'use client'
+/**
+ * Login page: email/password sign-in, then routes by profiles.role (MANAGER/EMPLOYEE).
+ * SECURITY: auth credentials handled by Supabase Auth — never log passwords.
+ */
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,6 +22,9 @@ import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import SplitText from "@/components/SplitText";
 
+/**
+ * Default export: Login Page.
+ */
 export default function LoginPage() {
   const supabase = createClient();
 

@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * Manager-facing UI: OptionalBenefits.
+ */
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -22,6 +25,9 @@ import {
 } from "@/components/ui/dialog";
 import { useAddBenefit } from "@/hooks/use-add-benefit";
 
+/**
+ * Renders the Optional Benefit Details UI.
+ */
 export function OptionalBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
         <div className="flex items-center justify-between">
@@ -31,6 +37,9 @@ export function OptionalBenefitDetails({ title, value }: BenefitDetailsProps) {
     )
 }
 
+/**
+ * Default export: Optional Benefits Grid.
+ */
 export default function OptionalBenefitsGrid() {
     const router = useRouter();
     const [optional_benefits, setOptionalBenefits] = useState<Awaited<ReturnType<typeof getOptionalBenefits>>>([]);

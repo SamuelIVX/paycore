@@ -1,8 +1,14 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: spinner.
+ */
 import { LoaderCircleIcon, LoaderIcon, LoaderPinwheelIcon, type LucideProps } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+/**
+ * SpinnerProps type/interface.
+ */
 export type SpinnerProps = LucideProps & {
   variant?:
   | "default"
@@ -266,6 +272,9 @@ const Infinite = ({ size = 24, ...props }: SpinnerVariantProps) => {
   )
 }
 
+/**
+ * Renders the Spinner UI.
+ */
 export const Spinner = ({ variant, ...props }: SpinnerProps) => {
   switch (variant) {
     case "circle":

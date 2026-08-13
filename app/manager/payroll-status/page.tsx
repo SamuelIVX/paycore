@@ -1,5 +1,9 @@
 'use client'
 
+/**
+ * Manager payroll status/run UI: trigger runPayroll for a pay period.
+ * SECURITY: initiates payroll mutation affecting compensation records.
+ */
 import { Suspense } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner";
@@ -18,6 +22,9 @@ import { runPayroll } from "@/lib/supabase/payroll-actions";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
+/**
+ * Renders the Payroll Section UI.
+ */
 export function PayrollSection({ title, value, icon, color }: PayrollSectionProps) {
     return (
         <>
@@ -30,6 +37,9 @@ export function PayrollSection({ title, value, icon, color }: PayrollSectionProp
     )
 }
 
+/**
+ * Renders the Status Card UI.
+ */
 export function StatusCard({ text, icon, color, children }: StatusCardProps) {
     return (
         <Card className={`border-2 ${color.border} ${color.bg}`}>
@@ -183,6 +193,9 @@ function PayrollStatusContent() {
     )
 }
 
+/**
+ * Default export: Payroll Status Page.
+ */
 export default function PayrollStatusPage() {
     return (
         <Suspense fallback={

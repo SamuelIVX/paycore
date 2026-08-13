@@ -1,5 +1,11 @@
+/**
+ * Factory for a typed React context that throws if used outside its provider.
+ */
 import * as React from 'react';
 
+/**
+ * Get Strict Context.
+ */
 function getStrictContext<T>(
   name?: string,
 ): readonly [

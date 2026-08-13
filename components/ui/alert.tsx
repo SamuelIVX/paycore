@@ -1,3 +1,6 @@
+/**
+ * shadcn/ui primitive wrapper: alert.
+ */
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -19,6 +22,9 @@ const alertVariants = cva(
   }
 )
 
+/**
+ * Alert UI primitive (exported from this module).
+ */
 function Alert({
   className,
   variant,
@@ -34,6 +40,9 @@ function Alert({
   )
 }
 
+/**
+ * AlertTitle UI primitive (exported from this module).
+ */
 function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -47,6 +56,9 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * AlertDescription UI primitive (exported from this module).
+ */
 function AlertDescription({
   className,
   ...props

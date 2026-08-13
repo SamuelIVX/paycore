@@ -1,11 +1,24 @@
+/**
+ * Browser-client benefit catalog CRUD and employee_benefits enrollment upserts.
+ * SECURITY: enrollment ties to the authenticated employee via getCurrentEmployee.
+ */
 import { createClient } from "@/utils/supabase/client";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { getCurrentEmployee } from "./employee";
 import { TablesInsert, TablesUpdate } from "../interfaces/database.types";
 
+/**
+ * BenefitInsert type/interface.
+ */
 export type BenefitInsert = TablesInsert<"benefits">;
+/**
+ * BenefitUpdate type/interface.
+ */
 export type BenefitUpdate = TablesUpdate<"benefits">;
 
+/**
+ * Inserts a benefits catalog row (COMPANY or OPTIONAL).
+ */
 export const addBenefit = async (company_benefit: BenefitInsert) => {
     const supabase = createClient();
     const { error } = await supabase
@@ -18,6 +31,9 @@ export const addBenefit = async (company_benefit: BenefitInsert) => {
     }
 }
 
+/**
+ * Lists benefits where type=COMPANY.
+ */
 export const getCompanyBenefits = async () => {
     const supabase = createClient();
 
@@ -34,6 +50,9 @@ export const getCompanyBenefits = async () => {
     return company_benefits
 }
 
+/**
+ * Lists benefits where type=OPTIONAL.
+ */
 export const getOptionalBenefits = async () => {
     const supabase = createClient();
 
@@ -50,6 +69,10 @@ export const getOptionalBenefits = async () => {
     return optional_benefits
 }
 
+/**
+ * ACTIVE employee_benefits joined to OPTIONAL benefit rows for one employee.
+ * @param supabaseClient - Optional server client (payroll path); else browser client.
+ */
 export const getActiveOptionalEmployeeBenefits = async (employee_id: string, supabaseClient?: SupabaseClient) => {
     const supabase = supabaseClient || createClient();
 
@@ -72,6 +95,10 @@ export const getActiveOptionalEmployeeBenefits = async (employee_id: string, sup
     return optionalBenefits;
 }
 
+/**
+ * Upserts enrollment for the current employee on (employee_id, benefit_id).
+ * SECURITY: derives employee_id from the auth session.
+ */
 export const upsertEmployeeBenefit = async ({
     benefit_id,
     status
@@ -100,6 +127,9 @@ export const upsertEmployeeBenefit = async ({
     return data;
 };
 
+/**
+ * Deletes a benefits catalog row by id.
+ */
 export const deleteBenefit = async (id: string) => {
     const supabase = createClient();
     const { error } = await supabase
@@ -113,6 +143,9 @@ export const deleteBenefit = async (id: string) => {
     }
 }
 
+/**
+ * Updates a benefits catalog row by id.
+ */
 export const updateBenefit = async (id: string, updates: BenefitUpdate) => {
     const supabase = createClient();
     const { error } = await supabase
@@ -126,6 +159,9 @@ export const updateBenefit = async (id: string, updates: BenefitUpdate) => {
     }
 }
 
+/**
+ * Exact count of COMPANY benefits.
+ */
 export const getCompanyBenefitsCount = async () => {
     const supabase = createClient();
 
@@ -142,6 +178,9 @@ export const getCompanyBenefitsCount = async () => {
     return count || 0;
 };
 
+/**
+ * Exact count of OPTIONAL benefits.
+ */
 export const getOptionalBenefitsCount = async () => {
     const supabase = createClient();
 

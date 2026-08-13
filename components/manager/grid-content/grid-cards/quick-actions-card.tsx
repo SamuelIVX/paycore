@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * Manager-facing UI: quick-actions-card.
+ */
 import { ArrowRight, DollarSign, FileCheck, Heart, UserPlus } from "lucide-react"
 import { Button } from "@/components/animate-ui/components/buttons/button"
 import { Button as BaseButton } from "@/components/ui/button"
@@ -13,6 +16,9 @@ import Link from "next/link"
 import { useAddEmployee } from "@/hooks/use-add-employee"
 import { useState } from "react"
 
+/**
+ * Default export: Quick Action Card.
+ */
 export default function QuickActionCard() {
 
     const {

@@ -1,4 +1,7 @@
 'use client'
+/**
+ * Employee-facing UI: recent-timesheets-card.
+ */
 import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,6 +14,9 @@ import { createTimeEntry } from "@/lib/supabase/time-entries"
 import { getShortDay } from "@/lib/utils"
 import type { RecentTimesheetsCardProps } from "./types"
 
+/**
+ * Default export: Recent Timesheets Card.
+ */
 export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHoursByDay }: RecentTimesheetsCardProps) {
     const recentEntries = [...(timeEntries || [])]
         .sort((a, b) => b.date.localeCompare(a.date))

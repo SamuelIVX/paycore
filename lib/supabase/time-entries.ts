@@ -1,3 +1,7 @@
+/**
+ * Time-entry create/list helpers and approved-hours lookback for benefits eligibility.
+ * SECURITY: scopes all queries to the authenticated employee.
+ */
 import { createClient } from "@/utils/supabase/client"
 import { getCurrentEmployee } from "./employee"
 import { getWeekStartKey, getWeekStartUTC } from "@/lib/utils/date-helpers"
@@ -7,6 +11,12 @@ import { getWeekStartKey, getWeekStartUTC } from "@/lib/utils/date-helpers"
 const ELIGIBILITY_LOOKBACK_WEEKS = 4
 
 
+/**
+ * Inserts a PENDING time entry for the current employee.
+ * @param workDate - YYYY-MM-DD.
+ * @param hoursWorked - Non-negative finite hours.
+ * @throws On validation or Supabase failure.
+ */
 export const createTimeEntry = async (workDate: string, hoursWorked: number) => {
   const supabase = createClient()
 
@@ -40,6 +50,9 @@ export const createTimeEntry = async (workDate: string, hoursWorked: number) => 
   return data
 }
 
+/**
+ * Latest 5 time entries for the current employee (newest work_date first).
+ */
 export const getRecentTimeEntries = async () => {
   const supabase = createClient()
   const { employee } = await getCurrentEmployee()
@@ -58,6 +71,10 @@ export const getRecentTimeEntries = async () => {
   return data ?? []
 }
 
+/**
+ * Max approved hours in any single Mon–Sun UTC week over the last 4 weeks
+ * (including the current week). Used as hoursPerWeek for eligibility.
+ */
 export const getApprovedHoursWorked = async (referenceDate?: Date): Promise<number> => {
   const supabase = createClient()
   const { employee } = await getCurrentEmployee()

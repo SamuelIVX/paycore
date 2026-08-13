@@ -1,6 +1,12 @@
+/**
+ * React Query mutation hook for adding a COMPANY or OPTIONAL benefit.
+ */
 import { useState } from "react"
 import { addBenefit } from "@/lib/supabase/benefits"
 
+/**
+ * Hook: use Add Benefit.
+ */
 export function useAddBenefit(initialType: "COMPANY" | "OPTIONAL" = "COMPANY") {
     const [benefit, setBenefit] = useState("")
     const [tag, setTag] = useState("")

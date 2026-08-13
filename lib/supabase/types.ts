@@ -1,3 +1,6 @@
+/**
+ * Shared directory-entry shape used by employee directory mapping.
+ */
 export type DirectoryEntry = {
     id: string;
     first_name: string | null;

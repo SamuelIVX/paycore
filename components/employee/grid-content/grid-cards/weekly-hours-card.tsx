@@ -1,9 +1,15 @@
 'use client'
+/**
+ * Employee-facing UI: weekly-hours-card.
+ */
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import type { HoursByDay } from "./types";
 
+/**
+ * Default export: Weekly Hours Card Breakdown.
+ */
 export default function WeeklyHoursCardBreakdown({ chartConfig, hoursByDay }: { chartConfig?: ChartConfig; hoursByDay?: HoursByDay[] }) {
     if (!chartConfig || !hoursByDay) {
         return (

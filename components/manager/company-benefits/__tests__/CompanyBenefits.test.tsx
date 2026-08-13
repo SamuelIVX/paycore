@@ -1,3 +1,6 @@
+/**
+ * Vitest coverage for components/manager/company-benefits.
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { Tables } from '@/lib/interfaces/database.types';
@@ -188,7 +191,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it('opens dialog when Add button clicked', async () => {
-            // TODO: Requires userEvent.click + dialog visibility assertion
+            // TODO(#188): Requires userEvent.click + dialog visibility assertion
             mockGetCompanyBenefits.mockResolvedValue([]);
 
             render(<CompanyBenefitsGrid />);
@@ -200,7 +203,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it.skip('displays form fields in add dialog', async () => {
-            // TODO: Requires userEvent.click to open dialog + fill form + submit
+            // TODO(#188): Requires userEvent.click to open dialog + fill form + submit
             mockGetCompanyBenefits.mockResolvedValue([]);
 
             render(<CompanyBenefitsGrid />);
@@ -211,7 +214,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it.skip('adds new benefit to list after submission', async () => {
-            // TODO: Requires mockAddCompanyBenefit + click + fill + submit + list verification
+            // TODO(#188): Requires mockAddCompanyBenefit + click + fill + submit + list verification
             mockGetCompanyBenefits
                 .mockResolvedValueOnce([])
                 .mockResolvedValueOnce([
@@ -226,7 +229,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it('shows success feedback after adding', async () => {
-            // TODO: Requires full add flow + success toast assertion
+            // TODO(#188): Requires full add flow + success toast assertion
             const newBenefit = makeBenefit({ benefit: 'New Benefit' });
             mockGetCompanyBenefits.mockResolvedValue([newBenefit]);
 
@@ -238,7 +241,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it.skip('closes dialog after successful addition', async () => {
-            // TODO: Requires click + submit + dialog close verification
+            // TODO(#188): Requires click + submit + dialog close verification
             mockGetCompanyBenefits.mockResolvedValue([]);
 
             render(<CompanyBenefitsGrid />);
@@ -251,7 +254,7 @@ describe('CompanyBenefitsGrid Component', () => {
 
     describe('Edit Company Benefit', () => {
         it.skip('opens edit dialog when benefit card is clicked', async () => {
-            // TODO: Requires click card + dialog visibility assertion
+            // TODO(#188): Requires click card + dialog visibility assertion
             const benefit = makeBenefit({
                 benefit: 'Health Insurance',
             });
@@ -265,7 +268,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it.skip('pre-fills edit dialog with current benefit data', async () => {
-            // TODO: Requires click + dialog open + form value verification
+            // TODO(#188): Requires click + dialog open + form value verification
             const benefit = makeBenefit({
                 benefit: 'Health Insurance',
                 description: 'Current coverage',
@@ -283,7 +286,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it.skip('updates benefit on save', async () => {
-            // TODO: Requires click benefit card + fill form + submit + mockUpdateBenefit call
+            // TODO(#188): Requires click benefit card + fill form + submit + mockUpdateBenefit call
             const benefit = makeBenefit({ benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
             mockUpdateBenefit.mockResolvedValue({ id: benefit.id });
@@ -296,7 +299,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it.skip('cancels deletion without removing benefit', async () => {
-            // TODO: Requires click delete + confirm dialog + cancel
+            // TODO(#188): Requires click delete + confirm dialog + cancel
             const benefit = makeBenefit({ benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
 
@@ -308,7 +311,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it.skip('shows error if deletion fails', async () => {
-            // TODO: Requires click delete + mockDeleteBenefit rejection + error assertion
+            // TODO(#188): Requires click delete + mockDeleteBenefit rejection + error assertion
             const benefit = makeBenefit({ benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
             mockDeleteBenefit.mockRejectedValue(new Error('Delete failed'));
@@ -321,7 +324,7 @@ describe('CompanyBenefitsGrid Component', () => {
         });
 
         it.skip('shows loading state during deletion', async () => {
-            // TODO: Requires click delete + loading state assertion
+            // TODO(#188): Requires click delete + loading state assertion
             const benefit = makeBenefit({ benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
             mockDeleteBenefit.mockImplementation(() => new Promise(() => { }));

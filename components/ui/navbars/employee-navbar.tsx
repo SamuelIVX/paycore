@@ -1,5 +1,8 @@
 "use client"
 
+/**
+ * Role/shell navbar UI: employee navbar.
+ */
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/animate-ui/components/buttons/button"
@@ -24,6 +27,9 @@ import Link from "next/link"
 import Image from "next/image"
 
 // Simple logo component for the navbar
+/**
+ * Logo UI primitive (exported from this module).
+ */
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
   return (
     <svg
@@ -43,6 +49,9 @@ const Logo = (props: React.SVGAttributes<SVGElement>) => {
 }
 
 // Hamburger icon component
+/**
+ * HamburgerIcon UI primitive (exported from this module).
+ */
 const HamburgerIcon = ({ className, ...props }: React.SVGAttributes<SVGElement>) => (
   <svg
     aria-label="Menu"
@@ -74,6 +83,9 @@ const HamburgerIcon = ({ className, ...props }: React.SVGAttributes<SVGElement>)
   </svg>
 )
 
+/**
+ * EmployeeNavbarNavLink type/interface.
+ */
 export interface EmployeeNavbarNavLink {
   href: string
   icon?: React.ReactNode
@@ -81,6 +93,9 @@ export interface EmployeeNavbarNavLink {
   active?: boolean
 }
 
+/**
+ * EmployeeNavbarProps type/interface.
+ */
 export interface EmployeeNavbarProps extends React.HTMLAttributes<HTMLElement> {
   logo?: React.ReactNode
   logoHref?: string
@@ -97,6 +112,9 @@ const defaultNavigationLinks: EmployeeNavbarNavLink[] = [
   { href: "/employee/paystubs", icon: <HandCoins />, label: "Pay Stubs" },
 ]
 
+/**
+ * Renders the Employee Navbar UI.
+ */
 export const EmployeeNavbar = React.forwardRef<HTMLElement, EmployeeNavbarProps>(
   (
     {

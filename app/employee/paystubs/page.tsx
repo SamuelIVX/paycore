@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * Employee paystubs list + PDF download UI.
+ * SECURITY: displays net pay and address from payroll records.
+ */
 import { useEffect, useState } from "react";
 import { Download, ChevronDown } from "lucide-react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -283,6 +287,9 @@ function PayStubCard({
   );
 }
 
+/**
+ * Default export: Pay Stubs Page.
+ */
 export default function PayStubsPage() {
   const [paystubs, setPaystubs] = useState<ProcessedPaystub[]>([]);
   const [loading, setLoading] = useState(true);

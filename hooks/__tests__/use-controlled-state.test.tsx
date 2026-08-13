@@ -1,3 +1,6 @@
+/**
+ * Vitest coverage for hooks.
+ */
 import { renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 

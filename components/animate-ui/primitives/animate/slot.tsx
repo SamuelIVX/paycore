@@ -1,5 +1,8 @@
 'use client';
 
+/**
+ * animate-ui motion primitive/component: slot.
+ */
 /* eslint-disable react-hooks/static-components -- Dynamic asChild slots wrap arbitrary child element types; wrappers are cached by element type so identity stays stable. */
 
 import * as React from 'react';
@@ -71,6 +74,9 @@ function mergeProps<T extends HTMLElement>(
   return merged;
 }
 
+/**
+ * Slot UI primitive (exported from this module).
+ */
 function Slot<T extends HTMLElement = HTMLElement>({
   children,
   ref,

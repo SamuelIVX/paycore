@@ -1,5 +1,8 @@
 "use client"
 
+/**
+ * Role/shell navbar UI: manager navbar.
+ */
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/animate-ui/components/buttons/button"
@@ -25,6 +28,9 @@ import Link from "next/link"
 import Image from "next/image"
 
 // Simple logo component for the navbar
+/**
+ * Logo UI primitive (exported from this module).
+ */
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
   return (
     <svg
@@ -44,6 +50,9 @@ const Logo = (props: React.SVGAttributes<SVGElement>) => {
 }
 
 // Hamburger icon component
+/**
+ * HamburgerIcon UI primitive (exported from this module).
+ */
 const HamburgerIcon = ({ className, ...props }: React.SVGAttributes<SVGElement>) => (
   <svg
     aria-label="Menu"
@@ -76,6 +85,9 @@ const HamburgerIcon = ({ className, ...props }: React.SVGAttributes<SVGElement>)
 )
 
 // Types
+/**
+ * ManagerNavbarNavLink type/interface.
+ */
 export interface ManagerNavbarNavLink {
   href: string
   icon?: React.ReactNode
@@ -83,6 +95,9 @@ export interface ManagerNavbarNavLink {
   active?: boolean
 }
 
+/**
+ * ManagerNavbarProps type/interface.
+ */
 export interface ManagerNavbarProps extends React.HTMLAttributes<HTMLElement> {
   logo?: React.ReactNode
   logoHref?: string
@@ -101,6 +116,9 @@ const defaultNavigationLinks: ManagerNavbarNavLink[] = [
   { href: "/manager/benefits", icon: <FileText />, label: "Benefits" },
 ]
 
+/**
+ * Renders the Manager Navbar UI.
+ */
 export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
   (
     {

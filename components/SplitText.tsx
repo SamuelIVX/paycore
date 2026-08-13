@@ -1,5 +1,8 @@
 'use client';
 
+/**
+ * Shared UI component: SplitText.
+ */
 import React, { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -8,6 +11,9 @@ import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
 
+/**
+ * SplitTextProps type/interface.
+ */
 export interface SplitTextProps {
   text: string;
   className?: string;

@@ -1,3 +1,6 @@
+/**
+ * Employee-facing UI: ytd-earnings-card.
+ */
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { TrendingUp } from "lucide-react"
@@ -10,6 +13,9 @@ const DEDUCTIONS_YTD = GROSS_YTD - NET_YTD
 const AVG_PER_CHECK = NET_YTD / COMPLETED_PERIODS
 const progressPct = Math.round((COMPLETED_PERIODS / TOTAL_PAY_PERIODS) * 100)
 
+/**
+ * Default export: YTDEarnings Card.
+ */
 export default function YTDEarningsCard() {
     return (
         <Card className="shadow-sm overflow-hidden">

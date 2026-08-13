@@ -1,3 +1,6 @@
+/**
+ * Controlled/uncontrolled state helper (prop value + onChange vs internal state).
+ */
 import * as React from 'react';
 
 interface CommonControlledStateProps<T> {
@@ -7,6 +10,9 @@ interface CommonControlledStateProps<T> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+/**
+ * Hook: use Controlled State.
+ */
 export function useControlledState<T, Rest extends any[] = []>(
   props: CommonControlledStateProps<T> & {
     onChange?: (value: T, ...args: Rest) => void;

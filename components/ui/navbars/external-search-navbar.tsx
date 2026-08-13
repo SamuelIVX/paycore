@@ -1,5 +1,8 @@
 "use client"
 
+/**
+ * Role/shell navbar UI: external search navbar.
+ */
 import Image from "next/image"
 import Link from "next/link"
 import { useTheme } from "next-themes"
@@ -7,6 +10,9 @@ import { cn } from "@/lib/utils"
 import { ArrowLeft, Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+/**
+ * Renders the External Search Navbar UI.
+ */
 export function ExternalSearchNavbar() {
   const { theme, setTheme } = useTheme()
 

@@ -1,8 +1,14 @@
+/**
+ * Employee-facing UI: SummaryCards.
+ */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SummaryCardProps, SummaryCardsProps } from "../types"
 import { DollarSign } from "lucide-react"
 
 
+/**
+ * Renders the Summary Card UI.
+ */
 export function SummaryCard({ title, value, color, description }: SummaryCardProps) {
     return (
         <div className="rounded-md border bg-background dark:bg-blue-950/40 border-none p-4 text-center">
@@ -13,6 +19,9 @@ export function SummaryCard({ title, value, color, description }: SummaryCardPro
     )
 }
 
+/**
+ * Default export: Summary Cards.
+ */
 export default function SummaryCards({ company_count, optional_count, monthly_deduction }: SummaryCardsProps) {
     return (
         <div className="mb-8 mt-4">

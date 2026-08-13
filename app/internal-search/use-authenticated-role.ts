@@ -1,5 +1,8 @@
 'use client';
 
+/**
+ * Client hook that loads the signed-in profiles.role for directory column gating.
+ */
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { getAuthenticatedUserRoleAction } from "./actions";
@@ -9,6 +12,9 @@ type AuthenticatedRoleState = {
     userId: string | null;
 };
 
+/**
+ * Hook: use Authenticated Role.
+ */
 export function useAuthenticatedRole(): AuthenticatedRoleState {
     const [authState, setAuthState] = useState<AuthenticatedRoleState>({
         role: 'visitor',

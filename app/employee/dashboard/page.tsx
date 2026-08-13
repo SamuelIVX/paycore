@@ -1,5 +1,8 @@
 "use client"
 
+/**
+ * Employee dashboard: hours, stats, timesheets, and grid cards.
+ */
 import * as React from "react"
 
 import { type ChartConfig } from "@/components/ui/chart"
@@ -30,6 +33,9 @@ const initialTimesheets = [
 
 const weeklyTarget = 40
 
+/**
+ * Default export: Employee Dashboard Page.
+ */
 export default function EmployeeDashboardPage() {
 
   const [hoursByDay, setHoursByDay] = React.useState<HoursByDay[]>(initialHoursByDay)

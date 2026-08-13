@@ -1,5 +1,8 @@
 "use client"
 
+/**
+ * Manager-facing UI: team-distribution.
+ */
 import { Pie, PieChart, Cell } from "recharts"
 import {
     Card,
@@ -17,6 +20,9 @@ import { getEmployeeByDepartment } from "@/lib/supabase/employee"
 import { useEffect, useState } from "react"
 import { ChartData, chartConfig, DEPARTMENT_COLORS } from "./types"
 
+/**
+ * Default export: Team Distribution Pie Chart.
+ */
 export default function TeamDistributionPieChart() {
 
     const [chartData, setChartData] = useState<ChartData[]>([])

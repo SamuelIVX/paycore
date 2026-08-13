@@ -1,5 +1,8 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: calendar.
+ */
 import * as React from "react"
 
 type CalendarClassNames = {
@@ -7,6 +10,9 @@ type CalendarClassNames = {
   nav?: string
 }
 
+/**
+ * CalendarProps type/interface.
+ */
 export type CalendarProps = {
   mode?: "single"
   selected?: Date
@@ -33,6 +39,9 @@ function parseDateFromInput(value: string) {
   return new Date(year, month - 1, day)
 }
 
+/**
+ * Renders the Calendar UI.
+ */
 export function Calendar({
   selected,
   onSelect,

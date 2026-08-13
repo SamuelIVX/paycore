@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * Internal employee directory search UI with role-tiered result cards.
+ */
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +36,9 @@ function createSearchState(sessionKey: string): SearchState {
   };
 }
 
+/**
+ * Default export: External Employee Search Page.
+ */
 export default function ExternalEmployeeSearchPage() {
   const { role, userId } = useAuthenticatedRole();
   const sessionKey = userId ?? "visitor";

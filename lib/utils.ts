@@ -1,14 +1,26 @@
+/**
+ * General UI helpers: Tailwind class merge (cn), day/period formatting.
+ */
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+/**
+ * Merges class names with clsx + tailwind-merge.
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/**
+ * Short weekday label for a Date (en-US).
+ */
 export function getShortDay(date: Date) {
   return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date)
 }
 
+/**
+ * Formats start/end date-only strings as "Mon D–Mon D, YYYY" (noon-anchored).
+ */
 export function formatPayPeriod(start?: string | null, end?: string | null) {
   if (!start || !end) return "Unknown period"
 
@@ -29,6 +41,9 @@ export function formatPayPeriod(start?: string | null, end?: string | null) {
   return `${startText}–${endText}`
 }
 
+/**
+ * Formats a paid-on date string; noon-anchors date-only values to avoid TZ shifts.
+ */
 export function formatPaidOn(date?: string | null) {
   if (!date) return "Unknown"
 

@@ -1,3 +1,6 @@
+/**
+ * Employee-facing UI: types.
+ */
 export interface ProgressBarCardProps {
     company_count: number;
     optional_count: number;
