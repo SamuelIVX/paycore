@@ -11,10 +11,10 @@ import { EmployeeStatCardProps, HoursByDayProps } from "./types"
 
 /**
  * Employee Stat Card presentational component.
- * @param title - See component props.
- * @param icon - See component props.
- * @param value - See component props.
- * @param description - See component props.
+ * @param title - Section/card title text.
+ * @param icon - Icon element or icon component.
+ * @param value - Primary metric or display value.
+ * @param description - Supporting description text.
  * @returns The rendered EmployeeStatCard UI.
  * @example
  * <EmployeeStatCard title={...}, icon={...}, value={...}, description={...} />
@@ -36,8 +36,8 @@ export function EmployeeStatCard({ title, icon, value, description }: EmployeeSt
 
 /**
  * Employee Stat Cards presentational component.
- * @param hoursThisWeek - See component props.
- * @param weeklyTarget - See component props.
+ * @param hoursThisWeek - Component input controlling render behavior.
+ * @param weeklyTarget - Component input controlling render behavior.
  * @returns The rendered EmployeeStatCards UI.
  * @example
  * // <EmployeeStatCards hoursThisWeek={...}, weeklyTarget={...} />

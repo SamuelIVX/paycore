@@ -13,10 +13,10 @@ import { formatCurrency } from "@/utils/formatCurrency";
 
 /**
  * Benefit Summary Card presentational component.
- * @param title - See component props.
- * @param icon - See component props.
- * @param count - See component props.
- * @param description - See component props.
+ * @param title - Section/card title text.
+ * @param icon - Icon element or icon component.
+ * @param count - Component input controlling render behavior.
+ * @param description - Supporting description text.
  * @returns The rendered BenefitSummaryCard UI.
  * @example
  * <BenefitSummaryCard title={...}, icon={...}, count={...}, description={...} />
@@ -40,9 +40,9 @@ export function BenefitSummaryCard({ title, icon, count, description }: BenefitS
 
 /**
  * Summary Cards presentational component.
- * @param companyBenefitsCount - See component props.
- * @param optionalBenefitsCount - See component props.
- * @param avgDeductions - See component props.
+ * @param companyBenefitsCount - Component input controlling render behavior.
+ * @param optionalBenefitsCount - Component input controlling render behavior.
+ * @param avgDeductions - Collection rendered by this component.
  * @returns The rendered SummaryCards UI.
  * @example
  * // <SummaryCards companyBenefitsCount={...}, optionalBenefitsCount={...}, avgDeductions={...} />

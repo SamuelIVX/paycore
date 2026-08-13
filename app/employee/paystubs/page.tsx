@@ -288,7 +288,7 @@ function PayStubCard({
 }
 
 /**
- * Pay Stubs Page App Router page.
+ * Employee paystubs list/PDF App Router page.
  * @returns The rendered PayStubsPage UI.
  * @example
  * // Routed page component (PayStubsPage)

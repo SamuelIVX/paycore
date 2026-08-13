@@ -8,10 +8,10 @@ import { formatCurrency } from "@/utils/formatCurrency";
 
 /**
  * Manager Stat Card presentational component.
- * @param title - See component props.
- * @param icon - See component props.
- * @param value - See component props.
- * @param description - See component props.
+ * @param title - Section/card title text.
+ * @param icon - Icon element or icon component.
+ * @param value - Primary metric or display value.
+ * @param description - Supporting description text.
  * @returns The rendered ManagerStatCard UI.
  * @example
  * <ManagerStatCard title={...}, icon={...}, value={...}, description={...} />
@@ -36,8 +36,8 @@ export function ManagerStatCard({ title, icon, value, description }: ManagerStat
 
 /**
  * Manager Stat Cards presentational component.
- * @param totalEmployees - See component props.
- * @param totalAnnualPayroll - See component props.
+ * @param totalEmployees - Collection rendered by this component.
+ * @param totalAnnualPayroll - Component input controlling render behavior.
  * @returns The rendered ManagerStatCards UI.
  * @example
  * // <ManagerStatCards totalEmployees={...}, totalAnnualPayroll={...} />

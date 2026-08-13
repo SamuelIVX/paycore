@@ -9,8 +9,8 @@ import type { HoursByDay } from "./types";
 
 /**
  * Weekly Hours Card Breakdown presentational component.
- * @param chartConfig - See component props.
- * @param hoursByDay - See component props.
+ * @param chartConfig - Component input controlling render behavior.
+ * @param hoursByDay - Component input controlling render behavior.
  * @returns The rendered WeeklyHoursCardBreakdown UI.
  * @example
  * // <WeeklyHoursCardBreakdown chartConfig={...}, hoursByDay={...} />

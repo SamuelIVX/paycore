@@ -8,7 +8,7 @@ import { getCompanyBenefitsCount, getOptionalBenefitsCount } from "@/lib/supabas
 import { getAverageBenefitDeductions } from "@/lib/supabase/payroll"
 
 /**
- * dynamic App Router page.
+ * Manager benefits catalog App Router page.
  * @returns The rendered dynamic UI.
  * @example
  * // Routed page component (dynamic)

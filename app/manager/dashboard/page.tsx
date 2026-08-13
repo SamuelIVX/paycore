@@ -6,7 +6,7 @@ import GridContent from "@/components/manager/grid-content/GridContent"
 import { getActiveEmployeesCount, getTotalAnnualPayroll } from "@/lib/supabase/employee"
 
 /**
- * dynamic App Router page.
+ * Manager dashboard App Router page.
  * @returns The rendered dynamic UI.
  * @example
  * // Routed page component (dynamic)

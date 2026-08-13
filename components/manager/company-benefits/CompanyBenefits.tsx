@@ -28,8 +28,8 @@ import { useAddBenefit } from "@/hooks/use-add-benefit";
 
 /**
  * Company Benefit Details component.
- * @param title - See component props.
- * @param value - See component props.
+ * @param title - Section/card title text.
+ * @param value - Primary metric or display value.
  * @returns The rendered CompanyBenefitDetails UI.
  * @example
  * <CompanyBenefitDetails title={...}, value={...} />

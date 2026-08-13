@@ -23,11 +23,11 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 /**
- * Payroll Section App Router page.
- * @param title - See component props.
- * @param value - See component props.
- * @param icon - See component props.
- * @param color - See component props.
+ * Payroll Section presentational component.
+ * @param title - Section/card title text.
+ * @param value - Primary metric or display value.
+ * @param icon - Icon element or icon component.
+ * @param color - Text color class for the value.
  * @returns The rendered PayrollSection UI.
  * @example
  * <PayrollSection title={...}, value={...}, icon={...}, color={...} />
@@ -45,10 +45,10 @@ export function PayrollSection({ title, value, icon, color }: PayrollSectionProp
 }
 
 /**
- * Status Card App Router page.
- * @param text - See component props.
- * @param icon - See component props.
- * @param color - See component props.
+ * Status Card presentational component.
+ * @param text - Title/description copy for the status state.
+ * @param icon - Icon element or icon component.
+ * @param color - Border/background color classes for the card.
  * @param children - Nested React nodes.
  * @returns The rendered StatusCard UI.
  * @example
@@ -208,7 +208,7 @@ function PayrollStatusContent() {
 }
 
 /**
- * Payroll Status Page App Router page.
+ * Manager payroll-run status App Router page.
  * @returns The rendered PayrollStatusPage UI.
  * @example
  * // Routed page component (PayrollStatusPage)

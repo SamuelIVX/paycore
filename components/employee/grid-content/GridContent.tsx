@@ -9,11 +9,11 @@ import QuickStatsCard from "./grid-cards/quick-stats-card"
 
 /**
  * Grid Content presentational component.
- * @param timesheets - See component props.
- * @param setTimesheets - See component props.
- * @param hoursByDay - See component props.
- * @param setHoursByDay - See component props.
- * @param chartConfig - See component props.
+ * @param timesheets - Collection rendered by this component.
+ * @param setTimesheets - Collection rendered by this component.
+ * @param hoursByDay - Component input controlling render behavior.
+ * @param setHoursByDay - Component input controlling render behavior.
+ * @param chartConfig - Component input controlling render behavior.
  * @returns The rendered GridContent UI.
  * @example
  * // <GridContent timesheets={...}, setTimesheets={...}, hoursByDay={...}, setHoursByDay={...} />

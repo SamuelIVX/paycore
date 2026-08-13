@@ -31,7 +31,7 @@ function formatHours(value: number | null): string {
 }
 
 /**
- * Payroll Table App Router page.
+ * Payroll Table presentational component.
  * @returns The rendered PayrollTable UI.
  * @example
  * // Routed page component (PayrollTable)

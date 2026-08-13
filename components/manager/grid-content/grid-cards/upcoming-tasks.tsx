@@ -7,10 +7,10 @@ import { TaskCardProps } from "./types"
 
 /**
  * Task Card presentational component.
- * @param title - See component props.
- * @param description - See component props.
- * @param icon - See component props.
- * @param color - See component props.
+ * @param title - Section/card title text.
+ * @param description - Supporting description text.
+ * @param icon - Icon element or icon component.
+ * @param color - Accent/theme color token or class.
  * @returns The rendered TaskCard UI.
  * @example
  * <TaskCard title={...}, description={...}, icon={...}, color={...} />

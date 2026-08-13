@@ -34,7 +34,7 @@ const initialTimesheets = [
 const weeklyTarget = 40
 
 /**
- * Employee Dashboard Page App Router page.
+ * Employee dashboard App Router page.
  * @returns The rendered EmployeeDashboardPage UI.
  * @example
  * // Routed page component (EmployeeDashboardPage)

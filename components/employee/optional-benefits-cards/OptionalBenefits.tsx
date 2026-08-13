@@ -15,9 +15,9 @@ import { getOptionalBenefits, upsertEmployeeBenefit } from "@/lib/supabase/benef
 
 /**
  * Optional Benefits Card presentational component.
- * @param selected_benefits - See component props.
- * @param set_selected_benefits - See component props.
- * @param eligibility - See component props.
+ * @param selected_benefits - Collection rendered by this component.
+ * @param set_selected_benefits - Collection rendered by this component.
+ * @param eligibility - Component input controlling render behavior.
  * @returns The rendered OptionalBenefitsCard UI.
  * @example
  * // <OptionalBenefitsCard selected_benefits={...}, set_selected_benefits={...}, eligibility={...} />

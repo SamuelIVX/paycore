@@ -27,8 +27,8 @@ import { useAddBenefit } from "@/hooks/use-add-benefit";
 
 /**
  * Optional Benefit Details component.
- * @param title - See component props.
- * @param value - See component props.
+ * @param title - Section/card title text.
+ * @param value - Primary metric or display value.
  * @returns The rendered OptionalBenefitDetails UI.
  * @example
  * <OptionalBenefitDetails title={...}, value={...} />

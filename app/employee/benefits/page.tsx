@@ -22,7 +22,7 @@ import { checkOptionalBenefitsEligibility } from "@/lib/benefits/eligibility"
 import type { EmployeeBenefit, BenefitOption } from "@/app/employee/benefits/types"
 
 /**
- * Benefits Page App Router page.
+ * Employee benefits enrollment App Router page.
  * @returns The rendered BenefitsPage UI.
  * @example
  * // Routed page component (BenefitsPage)

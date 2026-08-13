@@ -16,9 +16,9 @@ import type { RecentTimesheetsCardProps } from "./types"
 
 /**
  * Recent Timesheets Card presentational component.
- * @param timeEntries - See component props.
- * @param setTimesheets - See component props.
- * @param setHoursByDay - See component props.
+ * @param timeEntries - Collection rendered by this component.
+ * @param setTimesheets - Collection rendered by this component.
+ * @param setHoursByDay - Component input controlling render behavior.
  * @returns The rendered RecentTimesheetsCard UI.
  * @example
  * // <RecentTimesheetsCard timeEntries={...}, setTimesheets={...}, setHoursByDay={...} />

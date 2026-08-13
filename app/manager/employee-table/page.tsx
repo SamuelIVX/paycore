@@ -178,7 +178,7 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
 }
 
 /**
- * Employee Table App Router page.
+ * Employee Table presentational component.
  * @returns The rendered EmployeeTable UI.
  * @example
  * // Routed page component (EmployeeTable)
