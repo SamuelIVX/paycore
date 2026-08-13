@@ -23,7 +23,14 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 /**
- * Renders the Payroll Section UI.
+ * Payroll Section presentational component.
+ * @param title - Section/card title text.
+ * @param value - Primary metric or display value.
+ * @param icon - Icon element or icon component.
+ * @param color - Text color class for the value.
+ * @returns The rendered PayrollSection UI.
+ * @example
+ * <PayrollSection title={...}, value={...}, icon={...}, color={...} />
  */
 export function PayrollSection({ title, value, icon, color }: PayrollSectionProps) {
     return (
@@ -38,7 +45,14 @@ export function PayrollSection({ title, value, icon, color }: PayrollSectionProp
 }
 
 /**
- * Renders the Status Card UI.
+ * Status Card presentational component.
+ * @param text - Title/description copy for the status state.
+ * @param icon - Icon element or icon component.
+ * @param color - Border/background color classes for the card.
+ * @param children - Nested React nodes.
+ * @returns The rendered StatusCard UI.
+ * @example
+ * <StatusCard text={...}, icon={...}, color={...}, children={...} />
  */
 export function StatusCard({ text, icon, color, children }: StatusCardProps) {
     return (
@@ -194,7 +208,10 @@ function PayrollStatusContent() {
 }
 
 /**
- * Default export: Payroll Status Page.
+ * Manager payroll-run status App Router page.
+ * @returns The rendered PayrollStatusPage UI.
+ * @example
+ * // Routed page component (PayrollStatusPage)
  */
 export default function PayrollStatusPage() {
     return (

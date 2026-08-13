@@ -4,7 +4,12 @@
 import type { EmployeeWithProfile } from "@/lib/supabase/employee";
 
 /**
- * Format Location.
+ * Joins address fields for directory cards; falls back when none present.
+ * @param employee - Directory row (visitor-safe or elevated columns).
+ * @returns Comma-joined location, or "Location not available".
+ * @example
+ * formatLocation({ city: "Austin", state: "TX" } as EmployeeWithProfile)
+ * // => "Austin, TX"
  */
 export function formatLocation(employee: EmployeeWithProfile) {
     const pieces = [
@@ -18,7 +23,11 @@ export function formatLocation(employee: EmployeeWithProfile) {
 }
 
 /**
- * Has Pay Info.
+ * Type guard: employee payload includes pay_rate (elevated roles).
+ * @param employee - Directory search result row.
+ * @returns Whether pay_rate is present on the object.
+ * @example
+ * if (hasPayInfo(row)) console.log(row.pay_rate);
  */
 export function hasPayInfo(
     employee: EmployeeWithProfile,
@@ -27,7 +36,11 @@ export function hasPayInfo(
 }
 
 /**
- * Has Address Info.
+ * Type guard: employee payload includes address_line.
+ * @param employee - Directory search result row.
+ * @returns Whether address_line is present on the object.
+ * @example
+ * if (hasAddressInfo(row)) console.log(row.address_line);
  */
 export function hasAddressInfo(
     employee: EmployeeWithProfile,
@@ -36,7 +49,11 @@ export function hasAddressInfo(
 }
 
 /**
- * Has Pay Frequency.
+ * Type guard: employee payload includes pay_frequency.
+ * @param employee - Directory search result row.
+ * @returns Whether pay_frequency is present on the object.
+ * @example
+ * if (hasPayFrequency(row)) console.log(row.pay_frequency);
  */
 export function hasPayFrequency(
     employee: EmployeeWithProfile,
@@ -45,7 +62,12 @@ export function hasPayFrequency(
 }
 
 /**
- * Capitalize Role.
+ * Title-cases a profiles.role string for display; defaults to Visitor.
+ * @param role - Raw role from auth/profile (any casing), or null.
+ * @returns Capitalized role label.
+ * @example
+ * capitalizeRole("MANAGER") // => "Manager"
+ * capitalizeRole(null) // => "Visitor"
  */
 export function capitalizeRole(role: string | null): string {
     const normalized = role?.toLowerCase() ?? 'visitor';
@@ -53,7 +75,12 @@ export function capitalizeRole(role: string | null): string {
 }
 
 /**
- * Get Initials.
+ * Two-letter initials for avatar fallbacks.
+ * @param firstName - Given name (may be null/blank).
+ * @param lastName - Family name (may be null/blank).
+ * @returns Uppercase initials, or "?" when both missing.
+ * @example
+ * getInitials("Ada", "Lovelace") // => "AL"
  */
 export function getInitials(firstName: string | null, lastName: string | null): string {
     const first = firstName?.trim().charAt(0) ?? '';

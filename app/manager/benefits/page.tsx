@@ -10,7 +10,10 @@ import { getAverageBenefitDeductions } from "@/lib/supabase/payroll"
 export const dynamic = "force-dynamic"
 
 /**
- * Default export: Benefits Page.
+ * Manager benefits catalog App Router page.
+ * @returns The rendered BenefitsPage UI.
+ * @example
+ * // Routed page component (BenefitsPage)
  */
 export default async function BenefitsPage() {
     const results = await Promise.allSettled([

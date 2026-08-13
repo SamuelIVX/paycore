@@ -8,7 +8,12 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import type { HoursByDay } from "./types";
 
 /**
- * Default export: Weekly Hours Card Breakdown.
+ * Weekly Hours Card Breakdown presentational component.
+ * @param chartConfig - Component input controlling render behavior.
+ * @param hoursByDay - Component input controlling render behavior.
+ * @returns The rendered WeeklyHoursCardBreakdown UI.
+ * @example
+ * // <WeeklyHoursCardBreakdown chartConfig={...}, hoursByDay={...} />
  */
 export default function WeeklyHoursCardBreakdown({ chartConfig, hoursByDay }: { chartConfig?: ChartConfig; hoursByDay?: HoursByDay[] }) {
     if (!chartConfig || !hoursByDay) {

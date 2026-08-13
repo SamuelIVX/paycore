@@ -8,6 +8,8 @@
  * per-week eligibility window agree on the workweek boundary.
  * @param date - Instant or date-only/ISO string (defaults to now).
  * @returns Monday 00:00:00.000Z for that week.
+ * @example
+ * getWeekStartUTC("2026-08-13").toISOString().slice(0, 10) // => "2026-08-10"
  */
 export function getWeekStartUTC(date: Date | string = new Date()): Date {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -24,6 +26,8 @@ export function getWeekStartUTC(date: Date | string = new Date()): Date {
  * ISO date key (YYYY-MM-DD) of the Monday that starts the UTC week for `date`.
  * @param date - Instant or date-only/ISO string (defaults to now).
  * @returns Week-start key used as Map keys in overtime/eligibility bucketing.
+ * @example
+ * getWeekStartKey("2026-08-13") // => "2026-08-10"
  */
 export function getWeekStartKey(date: Date | string = new Date()): string {
   return getWeekStartUTC(date).toISOString().slice(0, 10);

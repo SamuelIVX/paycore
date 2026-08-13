@@ -13,7 +13,10 @@ type AuthenticatedRoleState = {
 };
 
 /**
- * Hook: use Authenticated Role.
+ * Client hook that loads the signed-in profiles.role via server action.
+ * @returns `{ role, loading, error }` for directory UI gating.
+ * @example
+ * const { role, loading } = useAuthenticatedRole();
  */
 export function useAuthenticatedRole(): AuthenticatedRoleState {
     const [authState, setAuthState] = useState<AuthenticatedRoleState>({

@@ -7,7 +7,14 @@ import { DollarSign } from "lucide-react"
 
 
 /**
- * Renders the Summary Card UI.
+ * Summary Card presentational component.
+ * @param title - Section/card title text.
+ * @param value - Primary metric or display value.
+ * @param color - Accent/theme color token or class.
+ * @param description - Supporting description text.
+ * @returns The rendered SummaryCard UI.
+ * @example
+ * <SummaryCard title={...}, value={...}, color={...}, description={...} />
  */
 export function SummaryCard({ title, value, color, description }: SummaryCardProps) {
     return (
@@ -20,7 +27,13 @@ export function SummaryCard({ title, value, color, description }: SummaryCardPro
 }
 
 /**
- * Default export: Summary Cards.
+ * Summary Cards presentational component.
+ * @param company_count - Component input controlling render behavior.
+ * @param optional_count - Component input controlling render behavior.
+ * @param monthly_deduction - Component input controlling render behavior.
+ * @returns The rendered SummaryCards UI.
+ * @example
+ * // <SummaryCards company_count={...}, optional_count={...}, monthly_deduction={...} />
  */
 export default function SummaryCards({ company_count, optional_count, monthly_deduction }: SummaryCardsProps) {
     return (

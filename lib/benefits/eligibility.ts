@@ -11,7 +11,7 @@ export interface EligibilityInput {
 }
 
 /**
- * EligibilityResult type/interface.
+ * Outcome of optional-benefits eligibility evaluation.
  */
 export interface EligibilityResult {
   eligible: boolean;
@@ -55,6 +55,10 @@ const EXEMPT_EMPLOYMENT_STATUSES = new Set(["CONTRACTOR", "SEASONAL", "INTERN", 
  * error=true locks enrollment; loading/null hours keep eligible=false with loading.
  * @param employee - Status, hours/week, and state used for thresholds.
  * @returns EligibilityResult with thresholdHours and optional reason/shortMessage.
+ * @example
+ * checkOptionalBenefitsEligibility({
+ *   employmentStatus: "FULL_TIME", hoursPerWeek: 32, state: "NY",
+ * }).eligible // => true
  */
 export function checkOptionalBenefitsEligibility(employee: EligibilityInput): EligibilityResult {
   const rule = (employee.state && STATE_RULES[employee.state.toUpperCase()]) || DEFAULT_STATE_RULE;
@@ -110,6 +114,12 @@ export function checkOptionalBenefitsEligibility(employee: EligibilityInput): El
 
 /**
  * True when checkOptionalBenefitsEligibility(...).eligible — used by runPayroll.
+ * @param employee - Same snapshot shape as eligibility input.
+ * @returns Whether optional benefit deductions should reduce net pay.
+ * @example
+ * shouldApplyOptionalDeductions({
+ *   employmentStatus: "CONTRACTOR", hoursPerWeek: 40, state: "CA",
+ * }) // => false
  */
 export function shouldApplyOptionalDeductions(employee: EligibilityInput): boolean {
   return checkOptionalBenefitsEligibility(employee).eligible;

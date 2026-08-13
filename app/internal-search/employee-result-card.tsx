@@ -35,7 +35,11 @@ function Field({ label, value }: FieldProps) {
 }
 
 /**
- * Renders the Employee Result Card UI.
+ * Directory result card; field visibility follows role-gated payload shape.
+ * @param employee - Search hit (visitor-safe or elevated columns).
+ * @returns Card showing name, role, and optional pay/address.
+ * @example
+ * <EmployeeResultCard employee={hit} />
  */
 export function EmployeeResultCard({ employee }: Props) {
     const fullName = `${employee.first_name ?? ""} ${employee.last_name ?? ""}`.trim() || "Unknown";

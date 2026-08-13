@@ -178,7 +178,10 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
 }
 
 /**
- * Default export: Employee Table.
+ * Employee Table presentational component.
+ * @returns The rendered EmployeeTable UI.
+ * @example
+ * // Routed page component (EmployeeTable)
  */
 export default function EmployeeTable() {
   const {

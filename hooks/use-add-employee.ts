@@ -5,7 +5,11 @@ import { useState } from "react"
 import { addEmployee as addEmployeeToDB } from "@/lib/supabase/employee"
 
 /**
- * Hook: use Add Employee.
+ * React Query mutation hook that inserts an employees row.
+ * @returns Mutation helpers for the manager add-employee dialog.
+ * @example
+ * const { mutateAsync } = useAddEmployee();
+ * await mutateAsync(newEmployee);
  */
 export function useAddEmployee() {
     const [firstName, setFirstName] = useState("")

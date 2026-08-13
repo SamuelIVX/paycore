@@ -15,7 +15,13 @@ import { getShortDay } from "@/lib/utils"
 import type { RecentTimesheetsCardProps } from "./types"
 
 /**
- * Default export: Recent Timesheets Card.
+ * Recent Timesheets Card presentational component.
+ * @param timeEntries - Collection rendered by this component.
+ * @param setTimesheets - Collection rendered by this component.
+ * @param setHoursByDay - Component input controlling render behavior.
+ * @returns The rendered RecentTimesheetsCard UI.
+ * @example
+ * // <RecentTimesheetsCard timeEntries={...}, setTimesheets={...}, setHoursByDay={...} />
  */
 export default function RecentTimesheetsCard({ timeEntries, setTimesheets, setHoursByDay }: RecentTimesheetsCardProps) {
     const recentEntries = [...(timeEntries || [])]

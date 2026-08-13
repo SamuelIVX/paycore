@@ -10,7 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmployeeStatCardProps, HoursByDayProps } from "./types"
 
 /**
- * Renders the Employee Stat Card UI.
+ * Employee Stat Card presentational component.
+ * @param title - Section/card title text.
+ * @param icon - Icon element or icon component.
+ * @param value - Primary metric or display value.
+ * @param description - Supporting description text.
+ * @returns The rendered EmployeeStatCard UI.
+ * @example
+ * <EmployeeStatCard title={...}, icon={...}, value={...}, description={...} />
  */
 export function EmployeeStatCard({ title, icon, value, description }: EmployeeStatCardProps) {
     return (
@@ -28,7 +35,12 @@ export function EmployeeStatCard({ title, icon, value, description }: EmployeeSt
 }
 
 /**
- * Default export: Employee Stat Cards.
+ * Employee Stat Cards presentational component.
+ * @param hoursThisWeek - Component input controlling render behavior.
+ * @param weeklyTarget - Component input controlling render behavior.
+ * @returns The rendered EmployeeStatCards UI.
+ * @example
+ * // <EmployeeStatCards hoursThisWeek={...}, weeklyTarget={...} />
  */
 export default function EmployeeStatCards({ hoursThisWeek, weeklyTarget }: HoursByDayProps) {
     return (

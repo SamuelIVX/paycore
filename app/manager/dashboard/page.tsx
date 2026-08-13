@@ -8,7 +8,10 @@ import { getActiveEmployeesCount, getTotalAnnualPayroll } from "@/lib/supabase/e
 export const dynamic = "force-dynamic"
 
 /**
- * Default export: Manager Dashboard Page.
+ * Manager dashboard App Router page.
+ * @returns The rendered ManagerDashboardPage UI.
+ * @example
+ * // Routed page component (ManagerDashboardPage)
  */
 export default async function ManagerDashboardPage() {
     const results = await Promise.allSettled([

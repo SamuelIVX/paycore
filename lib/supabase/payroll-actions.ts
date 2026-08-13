@@ -35,8 +35,14 @@ const weeklyApprovedHours = (entries: Tables<"time_entries">[]): Map<string, num
 
 /**
  * Inserts a PROCESSING payroll_run for the given period.
+ * @param supabase - Server Supabase client.
+ * @param payPeriodStart - Inclusive YYYY-MM-DD.
+ * @param payPeriodEnd - Inclusive YYYY-MM-DD.
  * @param user - Auth user id stored as run_by.
+ * @returns Inserted payroll_runs row.
  * @throws On insert failure.
+ * @example
+ * const run = await insertPayrollRun(supabase, "2026-08-01", "2026-08-14", userId);
  */
 export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string, user: string) => {
     const { data: run, error: runError } = await supabase
@@ -62,6 +68,11 @@ export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart:
 /**
  * Loads all employees with employment_status ACTIVE.
  * SECURITY: full employee rows including pay/tax fields.
+ * @param supabase - Server Supabase client.
+ * @returns Active employee rows.
+ * @throws On Supabase error.
+ * @example
+ * const staff = await getActiveEmployees(supabase);
  */
 export const getActiveEmployees = async (supabase: SupabaseClient) => {
     const { data: employees, error: eError } = await supabase
@@ -79,6 +90,13 @@ export const getActiveEmployees = async (supabase: SupabaseClient) => {
 
 /**
  * APPROVED time_entries with work_date in [start, end] inclusive.
+ * @param supabase - Server Supabase client.
+ * @param payPeriodStart - Inclusive YYYY-MM-DD.
+ * @param payPeriodEnd - Inclusive YYYY-MM-DD.
+ * @returns Approved entries in the period.
+ * @throws On Supabase error.
+ * @example
+ * const entries = await getTimeEntriesForPayPeriod(supabase, start, end);
  */
 export const getTimeEntriesForPayPeriod = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string) => {
     const { data: time_entries, error: tError } = await supabase
@@ -98,6 +116,11 @@ export const getTimeEntriesForPayPeriod = async (supabase: SupabaseClient, payPe
 
 /**
  * Bulk-inserts computed payroll_records (nulls filtered out).
+ * @param supabase - Server Supabase client.
+ * @param records - Insert-shaped payroll_records (may include null holes).
+ * @throws On Supabase error.
+ * @example
+ * await insertPayrollRecords(supabase, computedRecords);
  */
 export const insertPayrollRecords = async (supabase: SupabaseClient, records: TablesInsert<"payroll_records">[]) => {
     const { error: rError } = await supabase
@@ -112,7 +135,14 @@ export const insertPayrollRecords = async (supabase: SupabaseClient, records: Ta
 
 /**
  * Aggregates record totals onto the run and sets status COMPLETED.
+ * @param supabase - Server Supabase client.
+ * @param records - Inserted/computed records used for totals.
+ * @param payroll_run - Run row being finalized.
+ * @param user - Auth user id for audit fields.
  * @returns Fixed-string totals for gross, net, and taxes.
+ * @throws On update failure.
+ * @example
+ * await updatePayrollRun(supabase, records, run, userId);
  */
 export const updatePayrollRun = async (supabase: SupabaseClient, records: TablesInsert<"payroll_records">[], payroll_run: Tables<"payroll_runs">, user: string) => {
     const valid_records = records.filter((r): r is NonNullable<typeof r> => !!r);
@@ -157,6 +187,8 @@ export const updatePayrollRun = async (supabase: SupabaseClient, records: Tables
  * @param payPeriodStart - Inclusive YYYY-MM-DD.
  * @param payPeriodEnd - Inclusive YYYY-MM-DD.
  * @throws If unauthenticated, dates invalid, or period already run.
+ * @example
+ * await runPayroll("2026-08-01", "2026-08-14");
  */
 export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) => {
     const supabase = await createClient();

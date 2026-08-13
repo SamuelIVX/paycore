@@ -6,7 +6,14 @@ import { Calendar, FileCheck, Heart } from "lucide-react"
 import { TaskCardProps } from "./types"
 
 /**
- * Renders the Task Card UI.
+ * Task Card presentational component.
+ * @param title - Section/card title text.
+ * @param description - Supporting description text.
+ * @param icon - Icon element or icon component.
+ * @param color - Accent/theme color token or class.
+ * @returns The rendered TaskCard UI.
+ * @example
+ * <TaskCard title={...}, description={...}, icon={...}, color={...} />
  */
 export function TaskCard({ title, description, icon, color }: TaskCardProps) {
     return (
@@ -21,7 +28,10 @@ export function TaskCard({ title, description, icon, color }: TaskCardProps) {
 }
 
 /**
- * Default export: Upcoming Tasks Card.
+ * Upcoming Tasks Card presentational component.
+ * @returns The rendered UpcomingTasksCard UI.
+ * @example
+ * <UpcomingTasksCard />
  */
 export default function UpcomingTasksCard() {
     return (

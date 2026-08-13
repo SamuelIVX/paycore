@@ -13,7 +13,10 @@ const payrollRecords = ([
 ]);
 
 /**
- * Default export: Recent Activity Card.
+ * Recent Activity Card presentational component.
+ * @returns The rendered RecentActivityCard UI.
+ * @example
+ * <RecentActivityCard />
  */
 export default function RecentActivityCard() {
     return (

@@ -40,6 +40,10 @@ async function resolveAuthenticatedRole(
 /**
  * Server-side name search returning role-appropriate employee fields.
  * SECURITY: pay/address only for elevated roles.
+ * @param name - Substring matched against first/last name.
+ * @returns Matching rows plus the caller's resolved role string.
+ * @example
+ * const { results, role } = await searchEmployeesByNameAction("hernandez");
  */
 export async function searchEmployeesByNameAction(
     name: string,
@@ -79,6 +83,9 @@ export async function searchEmployeesByNameAction(
 
 /**
  * Returns the signed-in profiles.role string (or empty when unauthenticated).
+ * @returns Role string from profiles, or "" when no session/profile.
+ * @example
+ * const role = await getAuthenticatedUserRoleAction(); // e.g. "MANAGER"
  */
 export async function getAuthenticatedUserRoleAction(): Promise<string> {
     const supabase = await createClient();

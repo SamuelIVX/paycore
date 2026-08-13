@@ -4,7 +4,11 @@
 import * as React from 'react';
 
 /**
- * Get Strict Context.
+ * Factory for a typed React context that throws if used outside its provider.
+ * @param name - Label included in the missing-provider error message.
+ * @returns `[Provider, useSafeContext]` pair.
+ * @example
+ * const [Provider, useCtx] = getStrictContext<Theme>("Theme");
  */
 function getStrictContext<T>(
   name?: string,

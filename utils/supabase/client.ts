@@ -17,6 +17,10 @@ if (!supabaseKey || !supabaseUrl) {
 /**
  * Returns a typed browser Supabase client.
  * SECURITY: uses the publishable anon key only.
+ * @returns Browser client bound to NEXT_PUBLIC_SUPABASE_* env.
+ * @example
+ * const supabase = createClient();
+ * const { data } = await supabase.from("employees").select("id");
  */
 export const createClient = () =>
     createBrowserClient<Database>(

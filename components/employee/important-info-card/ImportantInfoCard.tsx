@@ -5,7 +5,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Info } from "lucide-react"
 
 /**
- * Default export: Important Info Card.
+ * Important Info Card presentational component.
+ * @returns The rendered ImportantInfoCard UI.
+ * @example
+ * <ImportantInfoCard />
  */
 export default function ImportantInfoCard() {
     return (

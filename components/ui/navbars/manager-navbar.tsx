@@ -117,7 +117,10 @@ const defaultNavigationLinks: ManagerNavbarNavLink[] = [
 ]
 
 /**
- * Renders the Manager Navbar UI.
+ * Manager Navbar component.
+ * @returns The rendered ManagerNavbar UI.
+ * @example
+ * <ManagerNavbar />
  */
 export const ManagerNavbar = React.forwardRef<HTMLElement, ManagerNavbarProps>(
   (

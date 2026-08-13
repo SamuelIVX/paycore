@@ -13,7 +13,10 @@ const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100)
 
 /**
  * Fetches all payroll_runs rows.
+ * @returns Payroll run list for manager tables/charts.
  * @throws Relays Supabase errors after console.error.
+ * @example
+ * const runs = await getPayrollRuns();
  */
 export const getPayrollRuns = async () => {
     const { data: payroll_runs, error } = await supabase
@@ -31,7 +34,10 @@ export const getPayrollRuns = async () => {
 /**
  * Fetches payroll_records with joined employee name + pay_frequency.
  * SECURITY: includes compensation fields — manager-facing.
+ * @returns Records with nested employee display fields.
  * @throws Relays Supabase errors.
+ * @example
+ * const records = await getPayrollRecords();
  */
 export const getPayrollRecords = async () => {
     const { data: payroll_records, error } = await supabase
@@ -54,6 +60,15 @@ function getWeekStartKey(date: Date): string {
     return d.toISOString().slice(0, 10);
 }
 
+/**
+ * Buckets approved hours into Mon–Sun UTC weeks and applies 1.5× OT after 40h/week.
+ * @param entries - Time entries for one employee (work_date + hours_worked).
+ * @param pay_rate - Hourly rate used for regular and OT gross.
+ * @returns Aggregated regularHours, overtimeHours, and gross_pay.
+ * @example
+ * computeWeeklyOvertime([{ work_date: "2026-08-10", hours_worked: 45 }], 20)
+ * // => { regularHours: 40, overtimeHours: 5, gross_pay: 950 }
+ */
 function computeWeeklyOvertime(
     entries: Tables<"time_entries">[],
     pay_rate: number
@@ -93,6 +108,8 @@ function computeWeeklyOvertime(
  * @param payroll_run - Parent run (id stamped onto the result).
  * @param benefitDeduction - Monthly optional/company deduction total (default 0).
  * @returns Insert-shaped record fields (hours, taxes, net_pay).
+ * @example
+ * const row = calculatePayRollForEmployee(employee, entries, run, 200);
  */
 export const calculatePayRollForEmployee = (
     employee: Tables<"employees">,
@@ -148,7 +165,10 @@ export const calculatePayRollForEmployee = (
 
 /**
  * Average benefit_deductions across the latest 6 payroll_records (by period start).
- * @returns 0 when no records exist.
+ * @returns Mean deduction amount, or 0 when no records exist.
+ * @throws On Supabase error.
+ * @example
+ * const avg = await getAverageBenefitDeductions();
  */
 export const getAverageBenefitDeductions = async () => {
     const supabase = createClient()

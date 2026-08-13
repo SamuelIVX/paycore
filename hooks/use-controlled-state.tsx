@@ -11,7 +11,12 @@ interface CommonControlledStateProps<T> {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 /**
- * Hook: use Controlled State.
+ * Controlled/uncontrolled state helper (prop `value` + onChange vs internal state).
+ * Passing `value` (even undefined) makes the state controlled.
+ * @param props - Optional value/defaultValue and onChange rest args.
+ * @returns Tuple of current state and a setter that forwards onChange.
+ * @example
+ * const [open, setOpen] = useControlledState({ value, onChange: setValue });
  */
 export function useControlledState<T, Rest extends any[] = []>(
   props: CommonControlledStateProps<T> & {

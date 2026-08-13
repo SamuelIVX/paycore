@@ -5,7 +5,11 @@ import { useState } from "react"
 import { addBenefit } from "@/lib/supabase/benefits"
 
 /**
- * Hook: use Add Benefit.
+ * React Query mutation hook that inserts a benefits catalog row.
+ * @param initialType - Default benefit type for the dialog form (COMPANY|OPTIONAL).
+ * @returns Mutation helpers plus local form state setters.
+ * @example
+ * const { mutate, isPending } = useAddBenefit("OPTIONAL");
  */
 export function useAddBenefit(initialType: "COMPANY" | "OPTIONAL" = "COMPANY") {
     const [benefit, setBenefit] = useState("")

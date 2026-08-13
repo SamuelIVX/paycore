@@ -21,7 +21,10 @@ import { useEffect, useState } from "react"
 import { ChartData, chartConfig, DEPARTMENT_COLORS } from "./types"
 
 /**
- * Default export: Team Distribution Pie Chart.
+ * Team Distribution Pie Chart presentational component.
+ * @returns The rendered TeamDistributionPieChart UI.
+ * @example
+ * <TeamDistributionPieChart />
  */
 export default function TeamDistributionPieChart() {
 

@@ -23,7 +23,10 @@ import { createClient } from "@/utils/supabase/client";
 import SplitText from "@/components/SplitText";
 
 /**
- * Default export: Login Page.
+ * Email/password login; routes by profiles.role after sign-in.
+ * @returns The rendered LoginPage UI.
+ * @example
+ * // Routed page component (LoginPage)
  */
 export default function LoginPage() {
   const supabase = createClient();

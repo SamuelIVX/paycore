@@ -7,7 +7,11 @@ import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 
 /**
- * Renders the Theme Provider UI.
+ * Theme Provider component.
+ * @param children - Nested React nodes.
+ * @returns The rendered ThemeProvider UI.
+ * @example
+ * <ThemeProvider children={...} />
  */
 export function ThemeProvider({
     children,

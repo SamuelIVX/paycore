@@ -12,7 +12,14 @@ import { SummaryCardsProps } from "./types";
 import { formatCurrency } from "@/utils/formatCurrency";
 
 /**
- * Renders the Benefit Summary Card UI.
+ * Benefit Summary Card presentational component.
+ * @param title - Section/card title text.
+ * @param icon - Icon element or icon component.
+ * @param count - Component input controlling render behavior.
+ * @param description - Supporting description text.
+ * @returns The rendered BenefitSummaryCard UI.
+ * @example
+ * <BenefitSummaryCard title={...}, icon={...}, count={...}, description={...} />
  */
 export function BenefitSummaryCard({ title, icon, count, description }: BenefitSummaryCardProps) {
     return (
@@ -32,7 +39,13 @@ export function BenefitSummaryCard({ title, icon, count, description }: BenefitS
 }
 
 /**
- * Default export: Summary Cards.
+ * Summary Cards presentational component.
+ * @param companyBenefitsCount - Component input controlling render behavior.
+ * @param optionalBenefitsCount - Component input controlling render behavior.
+ * @param avgDeductions - Collection rendered by this component.
+ * @returns The rendered SummaryCards UI.
+ * @example
+ * // <SummaryCards companyBenefitsCount={...}, optionalBenefitsCount={...}, avgDeductions={...} />
  */
 export default function SummaryCards({
     companyBenefitsCount,

@@ -9,6 +9,10 @@ import { getCurrentEmployee } from "./employee";
 /**
  * Payroll records for the current employee with nested run + employee fields.
  * SECURITY: compensation and address PII for the authenticated employee.
+ * @returns Paystub source rows for the signed-in employee.
+ * @throws If unauthenticated or Supabase fails.
+ * @example
+ * const stubs = await getEmployeePaystubs();
  */
 export async function getEmployeePaystubs() {
 	const supabase = createClient();
