@@ -1,4 +1,7 @@
 "use client"
+/**
+ * Manager-facing UI: payroll-chart.
+ */
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 import {
     Card,
@@ -31,6 +34,9 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
+/**
+ * Default export: Payroll Trend Chart.
+ */
 export default function PayrollTrendChart() {
     return (
         <Card className="w-full">

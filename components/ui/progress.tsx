@@ -1,10 +1,16 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: progress.
+ */
 import * as React from "react"
 import { Progress as ProgressPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Progress UI primitive (exported from this module).
+ */
 function Progress({
   className,
   value,

@@ -1,6 +1,12 @@
+/**
+ * Employee-facing UI: quick-stats-card.
+ */
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Briefcase, Calendar, Heart, Building2 } from "lucide-react"
 
+/**
+ * Default export: Quick Stats Card.
+ */
 export default function QuickStatsCard() {
     return (
         <Card className="shadow-sm">

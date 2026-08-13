@@ -1,3 +1,6 @@
+/**
+ * Employee-facing UI: constants.
+ */
 import type { LucideIcon } from "lucide-react";
 import {
     BadgeCheck,
@@ -8,6 +11,9 @@ import {
     Stethoscope,
 } from "lucide-react"
 
+/**
+ * Benefit type/interface.
+ */
 export type Benefit = {
     title: string
     description: string

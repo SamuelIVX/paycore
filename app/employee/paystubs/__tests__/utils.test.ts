@@ -1,3 +1,6 @@
+/**
+ * Vitest coverage for app/employee/paystubs.
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { processPaystubData } from '@/app/employee/paystubs/utils';
 import type { RawPaystubRow } from '@/app/employee/paystubs/types';

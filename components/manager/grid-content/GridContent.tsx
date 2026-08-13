@@ -1,3 +1,6 @@
+/**
+ * Manager-facing UI: GridContent.
+ */
 import QuickActionCard from "./grid-cards/quick-actions-card"
 import TeamDistributionPieChart from "./grid-cards/team-distribution"
 import RecentActivityCard from "./grid-cards/recent-activity"
@@ -5,6 +8,9 @@ import PayrollTrendChart from "./grid-cards/payroll-chart"
 import SalaryDistributionBarChart from "./grid-cards/salary-distribution-chart"
 import UpcomingTasksCard from "./grid-cards/upcoming-tasks"
 
+/**
+ * Default export: Grid Content.
+ */
 export default function GridContent() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

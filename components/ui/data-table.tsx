@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * shadcn/ui primitive wrapper: data-table.
+ */
 import { useEffect, useState } from "react";
 import {
   ColumnDef,
@@ -17,6 +20,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 
+/**
+ * Renders the Sortable Header UI.
+ */
 export function SortableHeader<T>({ column, label }: { column: Column<T, unknown>; label: string }) {
   return (
     <Button
@@ -41,6 +47,9 @@ interface DataTableProps<T> {
   onRowClick?: (row: T) => void;
 }
 
+/**
+ * Renders the Data Table UI.
+ */
 export function DataTable<T>({
   columns,
   data,

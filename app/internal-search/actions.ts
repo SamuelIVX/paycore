@@ -1,5 +1,9 @@
 'use server';
 
+/**
+ * Server actions for directory search and authenticated role lookup.
+ * SECURITY: role gates which employee fields are returned (pay/address vs visitor-safe).
+ */
 import { createClient } from "@/utils/supabase/server";
 import type { EmployeeWithProfile } from "@/lib/supabase/employee";
 
@@ -33,6 +37,10 @@ async function resolveAuthenticatedRole(
     return employee?.role ?? 'visitor';
 }
 
+/**
+ * Server-side name search returning role-appropriate employee fields.
+ * SECURITY: pay/address only for elevated roles.
+ */
 export async function searchEmployeesByNameAction(
     name: string,
 ): Promise<{ results: EmployeeWithProfile[]; role: string }> {
@@ -69,6 +77,9 @@ export async function searchEmployeesByNameAction(
     };
 }
 
+/**
+ * Returns the signed-in profiles.role string (or empty when unauthenticated).
+ */
 export async function getAuthenticatedUserRoleAction(): Promise<string> {
     const supabase = await createClient();
     return resolveAuthenticatedRole(supabase);

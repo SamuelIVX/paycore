@@ -1,3 +1,6 @@
+/**
+ * Prop/types for the employee benefits page.
+ */
 export interface BenefitOption {
     id: string;
     benefit: string;
@@ -6,6 +9,9 @@ export interface BenefitOption {
     [key: string]: unknown;
 }
 
+/**
+ * EmployeeBenefit type/interface.
+ */
 export interface EmployeeBenefit {
     benefit_id: string;
     status: 'ACTIVE' | 'NOT_ENROLLED';

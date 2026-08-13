@@ -1,6 +1,12 @@
+/**
+ * React Query mutation hook for adding an employee row.
+ */
 import { useState } from "react"
 import { addEmployee as addEmployeeToDB } from "@/lib/supabase/employee"
 
+/**
+ * Hook: use Add Employee.
+ */
 export function useAddEmployee() {
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")

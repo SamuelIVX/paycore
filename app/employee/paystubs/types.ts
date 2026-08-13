@@ -1,9 +1,15 @@
+/**
+ * Raw and processed paystub row types for the employee paystubs UI.
+ */
 export interface PaystubInfoProps {
 	title: string;
 	value: string | number;
 	valueClassName?: string;
 }
 
+/**
+ * PayStub type/interface.
+ */
 export interface PayStub {
 	id: string;
 	period: string;
@@ -14,6 +20,9 @@ export interface PayStub {
 	benefits: number;
 }
 
+/**
+ * CheckData type/interface.
+ */
 export interface CheckData {
 	employeeName: string;
 	employeeAddress: string;
@@ -43,6 +52,9 @@ export interface CheckData {
 	companyAddress: string;
 	companyPhone: string;
 }
+/**
+ * RawPaystubRow type/interface.
+ */
 export interface RawPaystubRow {
 	id: string;
 	regular_hours: number | null;
@@ -83,6 +95,9 @@ export interface RawPaystubRow {
 	ytd_net_pay?: number;
 }
 
+/**
+ * PayStubRowProps type/interface.
+ */
 export interface PayStubRowProps {
 	label: string;
 	current: number;
@@ -90,6 +105,9 @@ export interface PayStubRowProps {
 	isNegative?: boolean;
 	isBold?: boolean;
 }
+/**
+ * ProcessedPaystub type/interface.
+ */
 export interface ProcessedPaystub extends CheckData {
 	id: string;
 	period: string;

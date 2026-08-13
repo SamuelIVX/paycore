@@ -1,3 +1,6 @@
+/**
+ * Vitest coverage for lib//supabase.
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/utils/supabase/client', () => ({

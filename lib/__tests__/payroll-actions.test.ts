@@ -1,3 +1,6 @@
+/**
+ * Vitest coverage for lib.
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock next/headers (required by server client)

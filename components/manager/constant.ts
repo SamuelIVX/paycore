@@ -1,3 +1,6 @@
+/**
+ * Manager-facing UI: constant.
+ */
 import type { LucideIcon } from "lucide-react";
 import {
     Heart,
@@ -9,6 +12,9 @@ import {
     Info
 } from "lucide-react"
 
+/**
+ * Benefit type/interface.
+ */
 export interface Benefit {
     id: string;
     name: string;

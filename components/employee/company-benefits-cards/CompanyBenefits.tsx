@@ -1,11 +1,17 @@
 "use client"
 
+/**
+ * Employee-facing UI: CompanyBenefits.
+ */
 import { createElement, useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BENEFIT_ICONS } from "../constants"
 import { getCompanyBenefits } from "@/lib/supabase/benefits"
 
+/**
+ * Default export: Company Benefits Card.
+ */
 export default function CompanyBenefitsCard() {
     const [company_benefits, setCompanyBenefits] = useState<Awaited<ReturnType<typeof getCompanyBenefits>>>([]);
     const [isLoading, setIsLoading] = useState(true);

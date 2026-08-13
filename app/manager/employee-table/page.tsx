@@ -1,5 +1,9 @@
 'use client'
 
+/**
+ * Manager employee table: list/add/edit/delete with dialogs.
+ * SECURITY: exposes pay rates and employee PII to managers.
+ */
 import { useMemo, useState, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -173,6 +177,9 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
   );
 }
 
+/**
+ * Default export: Employee Table.
+ */
 export default function EmployeeTable() {
   const {
     firstName, setFirstName,

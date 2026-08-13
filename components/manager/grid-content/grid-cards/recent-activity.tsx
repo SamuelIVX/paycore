@@ -1,3 +1,6 @@
+/**
+ * Manager-facing UI: recent-activity.
+ */
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,6 +12,9 @@ const payrollRecords = ([
     { id: "3", employeeName: "Mike Chen", grossPay: 6250.00, taxes: 1562.50, benefitDeductions: 0.00, netPay: 4687.50, status: "approved", date: "2026-01-15" },
 ]);
 
+/**
+ * Default export: Recent Activity Card.
+ */
 export default function RecentActivityCard() {
     return (
         <Card>

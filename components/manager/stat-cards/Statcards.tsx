@@ -1,8 +1,14 @@
+/**
+ * Manager-facing UI: Statcards.
+ */
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ManagerStatCardProps, ManagerStatCardsProps } from "./types";
 import { Users, Clock, DollarSign } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 
+/**
+ * Renders the Manager Stat Card UI.
+ */
 export function ManagerStatCard({ title, icon, value, description }: ManagerStatCardProps) {
     return (
         <Card>
@@ -21,6 +27,9 @@ export function ManagerStatCard({ title, icon, value, description }: ManagerStat
     )
 }
 
+/**
+ * Default export: Manager Stat Cards.
+ */
 export default function ManagerStatCards({ totalEmployees, totalAnnualPayroll }: ManagerStatCardsProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 mt-4">

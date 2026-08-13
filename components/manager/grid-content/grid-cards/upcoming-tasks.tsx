@@ -1,7 +1,13 @@
+/**
+ * Manager-facing UI: upcoming-tasks.
+ */
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Calendar, FileCheck, Heart } from "lucide-react"
 import { TaskCardProps } from "./types"
 
+/**
+ * Renders the Task Card UI.
+ */
 export function TaskCard({ title, description, icon, color }: TaskCardProps) {
     return (
         <div className={`flex items-start gap-3 p-3 rounded-lg border ${color.bg} ${color.border} transition-colors`}>
@@ -14,6 +20,9 @@ export function TaskCard({ title, description, icon, color }: TaskCardProps) {
     )
 }
 
+/**
+ * Default export: Upcoming Tasks Card.
+ */
 export default function UpcomingTasksCard() {
     return (
         <Card>

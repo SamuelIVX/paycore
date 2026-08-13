@@ -1,5 +1,9 @@
 'use client';
 
+/**
+ * Manager payroll records table for completed run line items.
+ * SECURITY: shows per-employee gross/net/tax figures.
+ */
 import { useMemo, useState, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -26,6 +30,9 @@ function formatHours(value: number | null): string {
   return value == null ? "—" : String(value);
 }
 
+/**
+ * Default export: Payroll Table.
+ */
 export default function PayrollTable() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");

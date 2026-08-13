@@ -1,6 +1,15 @@
+/**
+ * Fetches the authenticated employee's payroll_records joined with run + employee fields
+ * for paystub rendering.
+ * SECURITY: returns compensation and address PII for the current employee only.
+ */
 import { createClient } from "@/utils/supabase/client";
 import { getCurrentEmployee } from "./employee";
 
+/**
+ * Payroll records for the current employee with nested run + employee fields.
+ * SECURITY: compensation and address PII for the authenticated employee.
+ */
 export async function getEmployeePaystubs() {
 	const supabase = createClient();
 	const { employee } = await getCurrentEmployee();

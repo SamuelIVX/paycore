@@ -1,3 +1,6 @@
+/**
+ * Manager-facing UI: SummaryCards.
+ */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BenefitSummaryCardProps } from "../types";
 import {
@@ -8,6 +11,9 @@ import {
 import { SummaryCardsProps } from "./types";
 import { formatCurrency } from "@/utils/formatCurrency";
 
+/**
+ * Renders the Benefit Summary Card UI.
+ */
 export function BenefitSummaryCard({ title, icon, count, description }: BenefitSummaryCardProps) {
     return (
         <Card>
@@ -25,6 +31,9 @@ export function BenefitSummaryCard({ title, icon, count, description }: BenefitS
     )
 }
 
+/**
+ * Default export: Summary Cards.
+ */
 export default function SummaryCards({
     companyBenefitsCount,
     optionalBenefitsCount,

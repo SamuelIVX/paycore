@@ -1,3 +1,6 @@
+/**
+ * Employee-facing UI: StatCards.
+ */
 import {
     Clock,
     DollarSign,
@@ -6,6 +9,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmployeeStatCardProps, HoursByDayProps } from "./types"
 
+/**
+ * Renders the Employee Stat Card UI.
+ */
 export function EmployeeStatCard({ title, icon, value, description }: EmployeeStatCardProps) {
     return (
         <Card>
@@ -21,6 +27,9 @@ export function EmployeeStatCard({ title, icon, value, description }: EmployeeSt
     )
 }
 
+/**
+ * Default export: Employee Stat Cards.
+ */
 export default function EmployeeStatCards({ hoursThisWeek, weeklyTarget }: HoursByDayProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-4 mt-4">

@@ -1,5 +1,8 @@
 'use client';
 
+/**
+ * animate-ui motion primitive/component: particles.
+ */
 import * as React from 'react';
 import { motion, AnimatePresence, type HTMLMotionProps } from 'motion/react';
 
@@ -28,6 +31,9 @@ type ParticlesProps = WithAsChild<
   } & UseIsInViewOptions
 >;
 
+/**
+ * Particles UI primitive (exported from this module).
+ */
 function Particles({
   ref,
   animate = true,
@@ -72,6 +78,9 @@ type ParticlesEffectProps = Omit<HTMLMotionProps<'div'>, 'children'> & {
   delay?: number;
 };
 
+/**
+ * ParticlesEffect UI primitive (exported from this module).
+ */
 function ParticlesEffect({
   side = 'top',
   align = 'center',

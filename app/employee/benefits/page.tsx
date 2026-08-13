@@ -1,5 +1,8 @@
 "use client"
 
+/**
+ * Employee benefits page: company + optional enrollment with eligibility gating.
+ */
 import { useState, useEffect, useMemo } from "react"
 import { Info } from "lucide-react"
 import SummaryCards from "@/components/employee/summary-cards/SummaryCards"
@@ -18,6 +21,9 @@ import { getApprovedHoursWorked } from "@/lib/supabase/time-entries"
 import { checkOptionalBenefitsEligibility } from "@/lib/benefits/eligibility"
 import type { EmployeeBenefit, BenefitOption } from "@/app/employee/benefits/types"
 
+/**
+ * Default export: Benefits Page.
+ */
 export default function BenefitsPage() {
   const [employeeId, setEmployeeId] = useState<string>("");
   const [employmentStatus, setEmploymentStatus] = useState<string | null>(null);

@@ -1,5 +1,11 @@
+/**
+ * Manager-facing UI: types.
+ */
 import { type ChartConfig } from "@/components/ui/chart"
 
+/**
+ * TaskCardProps type/interface.
+ */
 export interface TaskCardProps {
     title: string
     description: string
@@ -10,17 +16,26 @@ export interface TaskCardProps {
         text: string
     }
 }
+/**
+ * ChartData type/interface.
+ */
 export interface ChartData {
     name: string;
     value: number;
 }
 
+/**
+ * Chart Config.
+ */
 export const chartConfig = {
     department: {
         label: "Employees by Department",
     },
 } satisfies ChartConfig
 
+/**
+ * DEPARTMENT COLORS.
+ */
 export const DEPARTMENT_COLORS = [
     "var(--chart-1)",
     "var(--chart-2)",

@@ -1,6 +1,11 @@
+/**
+ * Maps raw payroll_record rows into ProcessedPaystub for PDF/UI; company letterhead constants.
+ * SECURITY: processes compensation and address PII.
+ */
 import { formatPayPeriod, formatPaidOn } from "@/lib/utils";
 import type { RawPaystubRow, CheckData, ProcessedPaystub } from "./types";
 
+/** Letterhead constants stamped onto generated paystub PDFs. */
 export const COMPANY_INFO = {
   name: "PayCore Inc.",
   address: "123 Business Ave",
@@ -8,6 +13,11 @@ export const COMPANY_INFO = {
   phone: "(555) 123-4567",
 };
 
+/**
+ * Deterministic pseudo-random in [min, min+range) from a string seed.
+ * Used for synthetic YTD/SSN display values on demo paystubs (not real SSN).
+ * SECURITY: output can look like an SSN — never treat as a real identifier.
+ */
 function stableNumber(seed: string, min: number, range: number): number {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
@@ -16,6 +26,10 @@ function stableNumber(seed: string, min: number, range: number): number {
   return min + (Math.abs(hash) % range);
 }
 
+/**
+ * Normalizes a RawPaystubRow into ProcessedPaystub for PDF/list UI.
+ * SECURITY: carries pay and address fields through to the PDF.
+ */
 export function processPaystubData(row: RawPaystubRow): ProcessedPaystub {
   const payrollRun = row.payroll_runs;
   const employee = row.employees;

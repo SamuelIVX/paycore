@@ -1,5 +1,11 @@
+/**
+ * Prop types for payroll status section/status cards.
+ */
 import type React from "react";
 
+/**
+ * StatusCardProps type/interface.
+ */
 export interface StatusCardProps {
     text: {
         title: string
@@ -13,6 +19,9 @@ export interface StatusCardProps {
     children?: React.ReactNode
 }
 
+/**
+ * PayrollSectionProps type/interface.
+ */
 export interface PayrollSectionProps {
     title: string
     value: string | number

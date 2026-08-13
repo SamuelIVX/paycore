@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * Manager-facing UI: CompanyBenefits.
+ */
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, CircleMinus, CheckCircle2 } from "lucide-react";
@@ -23,6 +26,9 @@ import {
 } from "@/components/ui/dialog";
 import { useAddBenefit } from "@/hooks/use-add-benefit";
 
+/**
+ * Renders the Company Benefit Details UI.
+ */
 export function CompanyBenefitDetails({ title, value }: BenefitDetailsProps) {
     return (
         <div className="flex items-center justify-between">
@@ -32,6 +38,9 @@ export function CompanyBenefitDetails({ title, value }: BenefitDetailsProps) {
     )
 }
 
+/**
+ * Default export: Company Benefits Grid.
+ */
 export default function CompanyBenefitsGrid() {
     const router = useRouter();
     const [company_benefits, setCompanyBenefits] = useState<Awaited<ReturnType<typeof getCompanyBenefits>>>([]);

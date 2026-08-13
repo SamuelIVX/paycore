@@ -1,4 +1,7 @@
 "use client"
+/**
+ * Manager-facing UI: salary-distribution-chart.
+ */
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import {
     Card,
@@ -24,6 +27,9 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
+/**
+ * Default export: Salary Distribution Bar Chart.
+ */
 export default function SalaryDistributionBarChart() {
 
     const [chartData, setChartData] = useState<ChartData[]>([])

@@ -1,5 +1,8 @@
 'use client';
 
+/**
+ * animate-ui motion primitive/component: button.
+ */
 import * as React from 'react';
 import { motion, type HTMLMotionProps } from 'motion/react';
 
@@ -12,6 +15,9 @@ type ButtonProps = WithAsChild<
   }
 >;
 
+/**
+ * Button UI primitive (exported from this module).
+ */
 function Button({
   hoverScale = 1.05,
   tapScale = 0.95,

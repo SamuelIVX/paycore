@@ -1,5 +1,11 @@
 'use server'
 
+/**
+ * Server actions that orchestrate a payroll run: insert run, load ACTIVE employees +
+ * APPROVED time entries, compute per-employee records (with eligibility-gated optional
+ * benefit deductions), then mark the run COMPLETED.
+ * SECURITY: requires an authenticated user; mutates payroll_runs/payroll_records with PII-adjacent pay data.
+ */
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { TablesInsert, Tables } from "@/lib/interfaces/database.types";
@@ -12,9 +18,11 @@ type EmployeeBenefitRow = Tables<"employee_benefits"> & {
     benefit?: Pick<Tables<"benefits">, "id" | "type" | "monthly_cost"> | null;
 };
 
-// Buckets entries into Mon→Sun UTC weeks, returning a Map of week-start ISO
-// date → total approved hours that week. Shared by the per-week eligibility
-// calculation in runPayroll so payroll matches the UI's per-week gate.
+/**
+ * Buckets entries into Mon→Sun UTC weeks → total approved hours that week.
+ * Shared by the per-week eligibility calculation in runPayroll so payroll
+ * matches the UI's per-week gate.
+ */
 const weeklyApprovedHours = (entries: Tables<"time_entries">[]): Map<string, number> => {
     const weekTotals = new Map<string, number>();
     for (const entry of entries) {
@@ -25,6 +33,11 @@ const weeklyApprovedHours = (entries: Tables<"time_entries">[]): Map<string, num
     return weekTotals;
 };
 
+/**
+ * Inserts a PROCESSING payroll_run for the given period.
+ * @param user - Auth user id stored as run_by.
+ * @throws On insert failure.
+ */
 export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string, user: string) => {
     const { data: run, error: runError } = await supabase
         .from("payroll_runs")
@@ -46,6 +59,10 @@ export const insertPayrollRun = async (supabase: SupabaseClient, payPeriodStart:
     return run;
 }
 
+/**
+ * Loads all employees with employment_status ACTIVE.
+ * SECURITY: full employee rows including pay/tax fields.
+ */
 export const getActiveEmployees = async (supabase: SupabaseClient) => {
     const { data: employees, error: eError } = await supabase
         .from("employees")
@@ -60,6 +77,9 @@ export const getActiveEmployees = async (supabase: SupabaseClient) => {
     return employees;
 }
 
+/**
+ * APPROVED time_entries with work_date in [start, end] inclusive.
+ */
 export const getTimeEntriesForPayPeriod = async (supabase: SupabaseClient, payPeriodStart: string, payPeriodEnd: string) => {
     const { data: time_entries, error: tError } = await supabase
         .from("time_entries")
@@ -76,6 +96,9 @@ export const getTimeEntriesForPayPeriod = async (supabase: SupabaseClient, payPe
     return time_entries;
 }
 
+/**
+ * Bulk-inserts computed payroll_records (nulls filtered out).
+ */
 export const insertPayrollRecords = async (supabase: SupabaseClient, records: TablesInsert<"payroll_records">[]) => {
     const { error: rError } = await supabase
         .from("payroll_records")
@@ -87,6 +110,10 @@ export const insertPayrollRecords = async (supabase: SupabaseClient, records: Ta
     }
 };
 
+/**
+ * Aggregates record totals onto the run and sets status COMPLETED.
+ * @returns Fixed-string totals for gross, net, and taxes.
+ */
 export const updatePayrollRun = async (supabase: SupabaseClient, records: TablesInsert<"payroll_records">[], payroll_run: Tables<"payroll_runs">, user: string) => {
     const valid_records = records.filter((r): r is NonNullable<typeof r> => !!r);
     const total_gross_pay = valid_records.reduce((total, curr) => total + curr.gross_pay, 0);
@@ -121,6 +148,16 @@ export const updatePayrollRun = async (supabase: SupabaseClient, records: Tables
     };
 };
 
+/**
+ * End-to-end payroll orchestration for one pay period.
+ * Rejects unauthenticated callers, invalid dates, and duplicate PROCESSING/COMPLETED runs.
+ * Applies optional benefit deductions only when shouldApplyOptionalDeductions passes
+ * for that employee's weekly approved hours.
+ * SECURITY: mutates payroll tables; requires auth session.
+ * @param payPeriodStart - Inclusive YYYY-MM-DD.
+ * @param payPeriodEnd - Inclusive YYYY-MM-DD.
+ * @throws If unauthenticated, dates invalid, or period already run.
+ */
 export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) => {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

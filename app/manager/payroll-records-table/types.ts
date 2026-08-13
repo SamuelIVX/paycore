@@ -1,3 +1,6 @@
+/**
+ * Column/row types for the manager payroll records table.
+ */
 export type PayrollRecordType = {
     id: string;
     employee_id: string | null;

@@ -1,22 +1,34 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: popover.
+ */
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Popover UI primitive (exported from this module).
+ */
 function Popover({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />
 }
 
+/**
+ * PopoverTrigger UI primitive (exported from this module).
+ */
 function PopoverTrigger({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
 }
 
+/**
+ * PopoverContent UI primitive (exported from this module).
+ */
 function PopoverContent({
   className,
   align = "center",
@@ -39,12 +51,18 @@ function PopoverContent({
   )
 }
 
+/**
+ * PopoverAnchor UI primitive (exported from this module).
+ */
 function PopoverAnchor({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {
   return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />
 }
 
+/**
+ * PopoverHeader UI primitive (exported from this module).
+ */
 function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -55,6 +73,9 @@ function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * PopoverTitle UI primitive (exported from this module).
+ */
 function PopoverTitle({ className, ...props }: React.ComponentProps<"h2">) {
   return (
     <div
@@ -65,6 +86,9 @@ function PopoverTitle({ className, ...props }: React.ComponentProps<"h2">) {
   )
 }
 
+/**
+ * PopoverDescription UI primitive (exported from this module).
+ */
 function PopoverDescription({
   className,
   ...props

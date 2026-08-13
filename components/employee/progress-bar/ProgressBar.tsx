@@ -1,7 +1,13 @@
+/**
+ * Employee-facing UI: ProgressBar.
+ */
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import type { ProgressBarCardProps } from "./types"
 
+/**
+ * Default export: Progress Bar Card.
+ */
 export default function ProgressBarCard({ company_count, optional_count, selected_count, pct_company }: ProgressBarCardProps) {
     const clampedPct = Math.max(0, Math.min(100, pct_company));
 

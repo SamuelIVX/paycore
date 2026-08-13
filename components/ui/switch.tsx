@@ -1,10 +1,16 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: switch.
+ */
 import * as React from "react"
 import { Switch as SwitchPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Switch UI primitive (exported from this module).
+ */
 function Switch({
   className,
   size = "default",

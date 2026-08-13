@@ -1,10 +1,16 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: avatar.
+ */
 import * as React from "react"
 import { Avatar as AvatarPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Avatar UI primitive (exported from this module).
+ */
 function Avatar({
   className,
   size = "default",
@@ -25,6 +31,9 @@ function Avatar({
   )
 }
 
+/**
+ * AvatarImage UI primitive (exported from this module).
+ */
 function AvatarImage({
   className,
   ...props
@@ -38,6 +47,9 @@ function AvatarImage({
   )
 }
 
+/**
+ * AvatarFallback UI primitive (exported from this module).
+ */
 function AvatarFallback({
   className,
   ...props
@@ -54,6 +66,9 @@ function AvatarFallback({
   )
 }
 
+/**
+ * AvatarBadge UI primitive (exported from this module).
+ */
 function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
@@ -70,6 +85,9 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
   )
 }
 
+/**
+ * AvatarGroup UI primitive (exported from this module).
+ */
 function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -83,6 +101,9 @@ function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * AvatarGroupCount UI primitive (exported from this module).
+ */
 function AvatarGroupCount({
   className,
   ...props

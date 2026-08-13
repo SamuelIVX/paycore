@@ -1,4 +1,7 @@
 "use client"
+/**
+ * shadcn/ui primitive wrapper: navigation-menu.
+ */
 import * as React from "react"
 import { cva } from "class-variance-authority"
 import { ChevronDownIcon } from "lucide-react"
@@ -6,6 +9,9 @@ import { NavigationMenu as NavigationMenuPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * NavigationMenu UI primitive (exported from this module).
+ */
 function NavigationMenu({
   className,
   children,
@@ -30,6 +36,9 @@ function NavigationMenu({
   )
 }
 
+/**
+ * NavigationMenuList UI primitive (exported from this module).
+ */
 function NavigationMenuList({
   className,
   ...props
@@ -46,6 +55,9 @@ function NavigationMenuList({
   )
 }
 
+/**
+ * NavigationMenuItem UI primitive (exported from this module).
+ */
 function NavigationMenuItem({
   className,
   ...props
@@ -59,10 +71,16 @@ function NavigationMenuItem({
   )
 }
 
+/**
+ * Navigation Menu Trigger Style.
+ */
 const navigationMenuTriggerStyle = cva(
   "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-accent data-[state=open]:bg-accent/50 focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1"
 )
 
+/**
+ * NavigationMenuTrigger UI primitive (exported from this module).
+ */
 function NavigationMenuTrigger({
   className,
   children,
@@ -83,6 +101,9 @@ function NavigationMenuTrigger({
   )
 }
 
+/**
+ * NavigationMenuContent UI primitive (exported from this module).
+ */
 function NavigationMenuContent({
   className,
   ...props
@@ -100,6 +121,9 @@ function NavigationMenuContent({
   )
 }
 
+/**
+ * NavigationMenuViewport UI primitive (exported from this module).
+ */
 function NavigationMenuViewport({
   className,
   ...props
@@ -122,6 +146,9 @@ function NavigationMenuViewport({
   )
 }
 
+/**
+ * NavigationMenuLink UI primitive (exported from this module).
+ */
 function NavigationMenuLink({
   className,
   ...props
@@ -138,6 +165,9 @@ function NavigationMenuLink({
   )
 }
 
+/**
+ * NavigationMenuIndicator UI primitive (exported from this module).
+ */
 function NavigationMenuIndicator({
   className,
   ...props

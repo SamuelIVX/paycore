@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * React-PDF paystub/check document for employee downloads.
+ * SECURITY: renders compensation, address, and synthetic YTD/SSN fields — treat as PII.
+ */
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import type { CheckData } from "@/app/employee/paystubs/types";
 
@@ -149,6 +153,10 @@ function formatDate(dateStr: string): string {
 	});
 }
 
+/**
+ * Renders a multi-page paystub PDF from CheckData.
+ * SECURITY: document includes net pay, address, and synthetic SSN/YTD — do not log `data`.
+ */
 export function CheckPDF({ data }: { data: CheckData }) {
 	const ytdMultiplier = data.grossPay > 0 ? data.ytdGross / data.grossPay : 1;
 

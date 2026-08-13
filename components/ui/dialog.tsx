@@ -1,5 +1,8 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: dialog.
+ */
 import * as React from "react"
 import { XIcon } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
@@ -7,30 +10,45 @@ import { Dialog as DialogPrimitive } from "radix-ui"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
+/**
+ * Dialog UI primitive (exported from this module).
+ */
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
 }
 
+/**
+ * DialogTrigger UI primitive (exported from this module).
+ */
 function DialogTrigger({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
 }
 
+/**
+ * DialogPortal UI primitive (exported from this module).
+ */
 function DialogPortal({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Portal>) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
 }
 
+/**
+ * DialogClose UI primitive (exported from this module).
+ */
 function DialogClose({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Close>) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
+/**
+ * DialogOverlay UI primitive (exported from this module).
+ */
 function DialogOverlay({
   className,
   ...props
@@ -47,6 +65,9 @@ function DialogOverlay({
   )
 }
 
+/**
+ * DialogContent UI primitive (exported from this module).
+ */
 function DialogContent({
   className,
   children,
@@ -81,6 +102,9 @@ function DialogContent({
   )
 }
 
+/**
+ * DialogHeader UI primitive (exported from this module).
+ */
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -91,6 +115,9 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * DialogFooter UI primitive (exported from this module).
+ */
 function DialogFooter({
   className,
   showCloseButton = false,
@@ -118,6 +145,9 @@ function DialogFooter({
   )
 }
 
+/**
+ * DialogTitle UI primitive (exported from this module).
+ */
 function DialogTitle({
   className,
   ...props
@@ -131,6 +161,9 @@ function DialogTitle({
   )
 }
 
+/**
+ * DialogDescription UI primitive (exported from this module).
+ */
 function DialogDescription({
   className,
   ...props

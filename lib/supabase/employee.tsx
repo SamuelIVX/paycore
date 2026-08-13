@@ -1,3 +1,7 @@
+/**
+ * Browser-client employee CRUD, directory, dashboard aggregates, and current-user lookup.
+ * SECURITY: returns full employee rows (address, pay_rate, tax rates) — do not log or expose to unauthorized roles.
+ */
 import { createClient } from "@/utils/supabase/client";
 import { Tables, TablesInsert } from "../interfaces/database.types";
 import { DirectoryEntry } from "@/lib/supabase/types";
@@ -6,14 +10,31 @@ const supabase = createClient();
 type EmployeeInsert = TablesInsert<"employees">;
 
 // Role-based employee types for different access levels
+/**
+ * ManagerEmployee type/interface.
+ */
 export type ManagerEmployee = Tables<"employees">;
 
+/**
+ * EmployeeSearch type/interface.
+ */
 export type EmployeeSearch = Omit<Tables<"employees">, 'address_line' | 'zip_code' | 'city' | 'state' | 'pay_rate' | 'pay_frequency'>;
 
+/**
+ * VisitorSearch type/interface.
+ */
 export type VisitorSearch = Pick<Tables<"employees">, 'id' | 'first_name' | 'last_name' | 'position' | 'phone' | 'email'>;
 
+/**
+ * EmployeeWithProfile type/interface.
+ */
 export type EmployeeWithProfile = ManagerEmployee | EmployeeSearch | VisitorSearch;
 
+/**
+ * Inserts an employees row.
+ * SECURITY: accepts full PII + pay fields.
+ * @throws On Supabase error.
+ */
 export const addEmployee = async (employee: EmployeeInsert) => {
     const { error } = await supabase
         .from("employees")
@@ -25,6 +46,10 @@ export const addEmployee = async (employee: EmployeeInsert) => {
     }
 }
 
+/**
+ * Selects all employees.
+ * SECURITY: full rows — manager-only surfaces.
+ */
 export const getEmployees = async () => {
     const { data: employees, error } = await supabase
         .from("employees")
@@ -38,6 +63,9 @@ export const getEmployees = async () => {
     return employees;
 }
 
+/**
+ * Exact count of ACTIVE employees (head-only query).
+ */
 export const getActiveEmployeesCount = async () => {
     const { count, error } = await supabase
         .from("employees")
@@ -52,6 +80,10 @@ export const getActiveEmployeesCount = async () => {
     return count ?? 0;
 }
 
+/**
+ * Sums estimated annual pay for ACTIVE employees (salary / biweekly×26 / hourly×40×52).
+ * SECURITY: aggregates compensation.
+ */
 export const getTotalAnnualPayroll = async () => {
     const { data: employees, error } = await supabase
         .from("employees")
@@ -85,6 +117,10 @@ export const getTotalAnnualPayroll = async () => {
     return totalAnnual;
 }
 
+/**
+ * Partial update of an employee by id.
+ * SECURITY: may change pay/PII fields.
+ */
 export const updateEmployee = async (id: string, updates: Partial<EmployeeInsert>) => {
     const { error } = await supabase
         .from("employees")
@@ -97,6 +133,9 @@ export const updateEmployee = async (id: string, updates: Partial<EmployeeInsert
     }
 }
 
+/**
+ * Deletes an employee by id.
+ */
 export const deleteEmployee = async (id: string) => {
     const { error } = await supabase
         .from("employees")
@@ -109,6 +148,11 @@ export const deleteEmployee = async (id: string) => {
     }
 }
 
+/**
+ * Resolves auth user → profiles → employees for the signed-in session.
+ * SECURITY: returns user, profile, and full employee row.
+ * @throws If unauthenticated or profile/employee missing.
+ */
 export async function getCurrentEmployee() {
     const {
         data: { user },
@@ -146,6 +190,9 @@ export async function getCurrentEmployee() {
     }
 }
 
+/**
+ * Maps employees + departments into DirectoryEntry rows (no pay fields).
+ */
 export const getEmployeeDirectory = async (): Promise<DirectoryEntry[]> => {
     const { data: employees, error: employeesError } = await supabase
         .from("employees")
@@ -184,6 +231,9 @@ export const getEmployeeDirectory = async (): Promise<DirectoryEntry[]> => {
     });
 }
 
+/**
+ * Counts employees grouped by department name.
+ */
 export const getEmployeeByDepartment = async () => {
     const { data, error } = await supabase
         .from("employees")
@@ -203,6 +253,10 @@ export const getEmployeeByDepartment = async () => {
     return grouped;
 }
 
+/**
+ * Aggregates annualized pay by position for charts.
+ * SECURITY: compensation aggregates.
+ */
 export const getEmployeeSalaryByPosition = async () => {
     const { data, error } = await supabase
         .from("employees")

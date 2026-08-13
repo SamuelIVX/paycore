@@ -1,10 +1,16 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: separator.
+ */
 import * as React from "react"
 import { Separator as SeparatorPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Separator UI primitive (exported from this module).
+ */
 function Separator({
   className,
   orientation = "horizontal",

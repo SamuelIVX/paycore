@@ -1,5 +1,8 @@
 "use client"
 
+/**
+ * shadcn/ui primitive wrapper: chart.
+ */
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
@@ -8,6 +11,9 @@ import { cn } from "@/lib/utils"
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
 
+/**
+ * ChartConfig type/interface.
+ */
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode
@@ -34,6 +40,9 @@ function useChart() {
   return context
 }
 
+/**
+ * ChartContainer UI primitive (exported from this module).
+ */
 function ChartContainer({
   id,
   className,
@@ -69,6 +78,9 @@ function ChartContainer({
   )
 }
 
+/**
+ * ChartStyle UI primitive (exported from this module).
+ */
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme || config.color
@@ -102,8 +114,14 @@ ${colorConfig
   )
 }
 
+/**
+ * ChartTooltip UI primitive (exported from this module).
+ */
 const ChartTooltip = RechartsPrimitive.Tooltip
 
+/**
+ * ChartTooltipContent UI primitive (exported from this module).
+ */
 function ChartTooltipContent({
   active,
   payload,
@@ -250,8 +268,14 @@ function ChartTooltipContent({
   )
 }
 
+/**
+ * ChartLegend UI primitive (exported from this module).
+ */
 const ChartLegend = RechartsPrimitive.Legend
 
+/**
+ * ChartLegendContent UI primitive (exported from this module).
+ */
 function ChartLegendContent({
   className,
   hideIcon = false,
