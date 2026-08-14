@@ -20,6 +20,7 @@ import { UserCircle2, Lock } from "lucide-react";
 import PayCoreLogo from "../public/logo.png";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
+import { canonicalizeAuthRole } from "@/lib/auth/roles";
 import SplitText from "@/components/SplitText";
 
 /**
@@ -62,7 +63,7 @@ export default function LoginPage() {
       return;
     }
 
-    const role = profile.role;
+    const role = canonicalizeAuthRole(profile.role);
 
     if (role === "MANAGER") {
       router.push("/manager/dashboard");

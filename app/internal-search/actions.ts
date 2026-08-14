@@ -6,23 +6,11 @@
  */
 import { createClient } from "@/utils/supabase/server";
 import type { EmployeeWithProfile } from "@/lib/supabase/employee";
-
-function getColumnsForRole(role: string | null): string {
-    const normalizedRole = role?.toLowerCase();
-    switch (normalizedRole) {
-        case 'manager':
-            return "*";
-        case 'employee':
-            return "id, first_name, last_name, position, phone, email, hire_date, employment_status, department_id";
-        case 'visitor':
-        default:
-            return "id, first_name, last_name, position, phone, email";
-    }
-}
+import { canonicalizeSearchRole, getColumnsForRole, type SearchTier } from "@/lib/auth/roles";
 
 async function resolveAuthenticatedRole(
     supabase: Awaited<ReturnType<typeof createClient>>,
-): Promise<string> {
+): Promise<SearchTier> {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
         return 'visitor';
@@ -34,7 +22,7 @@ async function resolveAuthenticatedRole(
         .eq('profile_id', user.id)
         .single();
 
-    return employee?.role ?? 'visitor';
+    return canonicalizeSearchRole(employee?.role);
 }
 
 /**
