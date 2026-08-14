@@ -45,10 +45,10 @@ describe('lazy supabase clients', () => {
 
         expect(result.gross_pay).toBeGreaterThan(0);
 
-        // A data function triggers first-time client creation.
+        // A data function triggers first-time client creation per module.
         await getTotalAnnualPayroll();
         await getPayrollRuns();
         await getTotalAnnualPayroll();
-        expect(mockCreateClient).toHaveBeenCalledTimes(1);
+        expect(mockCreateClient).toHaveBeenCalledTimes(2);
     });
 });
