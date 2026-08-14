@@ -13,6 +13,7 @@ import { calculatePayRollForEmployee } from "@/lib/supabase/payroll";
 import { getActiveOptionalEmployeeBenefits } from "@/lib/supabase/benefits";
 import { shouldApplyOptionalDeductions } from "@/lib/benefits/eligibility";
 import { getWeekStartKey } from "@/lib/utils/date-helpers";
+import { roundMoney } from "@/lib/money";
 
 type EmployeeBenefitRow = Tables<"employee_benefits"> & {
     benefit?: Pick<Tables<"benefits">, "id" | "type" | "monthly_cost"> | null;
@@ -158,10 +159,10 @@ export const updatePayrollRun = async (supabase: SupabaseClient, records: Tables
         .update({
             "run_date": new Date().toISOString(),
             "run_by": user,
-            "total_gross": Number(total_gross_pay).toFixed(2),
-            "total_net": Number(total_net_pay).toFixed(2),
-            "total_taxes": Number((total_federal_tax + total_state_tax + total_social_security_tax).toFixed(2)),
-            "total_benefit_deductions": Number(total_benefit_deductions.toFixed(2)),
+            "total_gross": roundMoney(total_gross_pay),
+            "total_net": roundMoney(total_net_pay),
+            "total_taxes": roundMoney(total_federal_tax + total_state_tax + total_social_security_tax),
+            "total_benefit_deductions": roundMoney(total_benefit_deductions),
             "status": "COMPLETED"
         })
         .eq("id", payroll_run.id);
@@ -172,9 +173,9 @@ export const updatePayrollRun = async (supabase: SupabaseClient, records: Tables
     }
 
     return {
-        total_gross_pay: Number(total_gross_pay).toFixed(2),
-        total_net_pay: Number(total_net_pay).toFixed(2),
-        total_taxes: Number((total_federal_tax + total_state_tax + total_social_security_tax).toFixed(2))
+        total_gross_pay: roundMoney(total_gross_pay),
+        total_net_pay: roundMoney(total_net_pay),
+        total_taxes: roundMoney(total_federal_tax + total_state_tax + total_social_security_tax)
     };
 };
 

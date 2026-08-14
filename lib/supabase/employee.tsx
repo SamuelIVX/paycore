@@ -5,8 +5,14 @@
 import { createClient } from "@/utils/supabase/client";
 import { Tables, TablesInsert } from "../interfaces/database.types";
 import { DirectoryEntry } from "@/lib/supabase/types";
+import { BI_WEEKLY_PAY_PERIODS } from "@/lib/payroll-constants";
 
-const supabase = createClient();
+let supabase: ReturnType<typeof createClient> | null = null;
+const getSupabaseClient = () => {
+    if (!supabase) supabase = createClient();
+    return supabase;
+};
+
 type EmployeeInsert = TablesInsert<"employees">;
 
 // Role-based employee types for different access levels
@@ -40,7 +46,7 @@ export type EmployeeWithProfile = ManagerEmployee | EmployeeSearch | VisitorSear
  * await addEmployee({ first_name: "Ada", pay_rate: 50, pay_frequency: "HOURLY" });
  */
 export const addEmployee = async (employee: EmployeeInsert) => {
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
         .from("employees")
         .insert(employee);
 
@@ -59,7 +65,7 @@ export const addEmployee = async (employee: EmployeeInsert) => {
  * const all = await getEmployees();
  */
 export const getEmployees = async () => {
-    const { data: employees, error } = await supabase
+    const { data: employees, error } = await getSupabaseClient()
         .from("employees")
         .select("*");
 
@@ -79,7 +85,7 @@ export const getEmployees = async () => {
  * const active = await getActiveEmployeesCount();
  */
 export const getActiveEmployeesCount = async () => {
-    const { count, error } = await supabase
+    const { count, error } = await getSupabaseClient()
         .from("employees")
         .select("*", { count: "exact", head: true })
         .eq("employment_status", "ACTIVE");
@@ -101,7 +107,7 @@ export const getActiveEmployeesCount = async () => {
  * const annual = await getTotalAnnualPayroll();
  */
 export const getTotalAnnualPayroll = async () => {
-    const { data: employees, error } = await supabase
+    const { data: employees, error } = await getSupabaseClient()
         .from("employees")
         .select("id, pay_rate, pay_frequency")
         .eq("employment_status", "ACTIVE");
@@ -124,7 +130,7 @@ export const getTotalAnnualPayroll = async () => {
         if (pay_frequency === "SALARY") {
             totalAnnual += pay_rate;
         } else if (pay_frequency === "BI_WEEKLY") {
-            totalAnnual += pay_rate * 26;
+            totalAnnual += pay_rate * BI_WEEKLY_PAY_PERIODS;
         } else if (pay_frequency === "HOURLY") {
             totalAnnual += (pay_rate * 40) * 52;
         }
@@ -144,7 +150,7 @@ export const getTotalAnnualPayroll = async () => {
  * await updateEmployee(id, { pay_rate: 55 });
  */
 export const updateEmployee = async (id: string, updates: Partial<EmployeeInsert>) => {
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
         .from("employees")
         .update(updates)
         .eq("id", id);
@@ -163,7 +169,7 @@ export const updateEmployee = async (id: string, updates: Partial<EmployeeInsert
  * await deleteEmployee(id);
  */
 export const deleteEmployee = async (id: string) => {
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
         .from("employees")
         .delete()
         .eq("id", id);
@@ -186,13 +192,13 @@ export async function getCurrentEmployee() {
     const {
         data: { user },
         error: userError,
-    } = await supabase.auth.getUser()
+    } = await getSupabaseClient().auth.getUser()
 
     if (userError || !user) {
         throw new Error("User not authenticated")
     }
 
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await getSupabaseClient()
         .from("profiles")
         .select("*")
         .eq("id", user.id)
@@ -202,7 +208,7 @@ export async function getCurrentEmployee() {
         throw profileError ?? new Error("Profile not found")
     }
 
-    const { data: employee, error: employeeError } = await supabase
+    const { data: employee, error: employeeError } = await getSupabaseClient()
         .from("employees")
         .select("*")
         .eq('profile_id', profile.id)
@@ -227,7 +233,7 @@ export async function getCurrentEmployee() {
  * const directory = await getEmployeeDirectory();
  */
 export const getEmployeeDirectory = async (): Promise<DirectoryEntry[]> => {
-    const { data: employees, error: employeesError } = await supabase
+    const { data: employees, error: employeesError } = await getSupabaseClient()
         .from("employees")
         .select("*");
 
@@ -236,7 +242,7 @@ export const getEmployeeDirectory = async (): Promise<DirectoryEntry[]> => {
         throw employeesError;
     }
 
-    const { data: departments, error: departmentsError } = await supabase
+    const { data: departments, error: departmentsError } = await getSupabaseClient()
         .from("departments")
         .select("id, name");
 
@@ -272,7 +278,7 @@ export const getEmployeeDirectory = async (): Promise<DirectoryEntry[]> => {
  * const byDept = await getEmployeeByDepartment();
  */
 export const getEmployeeByDepartment = async () => {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
         .from("employees")
         .select("*, departments(name)")
         .not("departments", "is", null);
@@ -299,7 +305,7 @@ export const getEmployeeByDepartment = async () => {
  * const byPos = await getEmployeeSalaryByPosition();
  */
 export const getEmployeeSalaryByPosition = async () => {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseClient()
         .from("employees")
         .select("pay_rate, pay_frequency, position");
 
@@ -317,7 +323,7 @@ export const getEmployeeSalaryByPosition = async () => {
         if (pay_frequency === "SALARY") {
             annualSalary = pay_rate;
         } else if (pay_frequency === "BI_WEEKLY") {
-            annualSalary = pay_rate * 26;
+            annualSalary = pay_rate * BI_WEEKLY_PAY_PERIODS;
         } else if (pay_frequency === "HOURLY") {
             annualSalary = (pay_rate * 40) * 52;
         }

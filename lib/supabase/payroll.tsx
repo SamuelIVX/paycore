@@ -5,11 +5,14 @@
  */
 import { createClient } from "@/utils/supabase/client";
 import { Tables } from "@/lib/interfaces/database.types";
+import { roundMoney } from "@/lib/money";
+import { BI_WEEKLY_PAY_PERIODS } from "@/lib/payroll-constants";
 
-const supabase = createClient();
-const BI_WEEKLY_PAY_PERIODS = 26;
-/** Rounds to cents using EPSILON to reduce binary float noise. */
-const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
+let supabase: ReturnType<typeof createClient> | null = null;
+const getSupabaseClient = () => {
+    if (!supabase) supabase = createClient();
+    return supabase;
+};
 
 /**
  * Fetches all payroll_runs rows.
@@ -19,7 +22,7 @@ const roundMoney = (value: number) => Math.round((value + Number.EPSILON) * 100)
  * const runs = await getPayrollRuns();
  */
 export const getPayrollRuns = async () => {
-    const { data: payroll_runs, error } = await supabase
+    const { data: payroll_runs, error } = await getSupabaseClient()
         .from("payroll_runs")
         .select("*");
 
@@ -40,7 +43,7 @@ export const getPayrollRuns = async () => {
  * const records = await getPayrollRecords();
  */
 export const getPayrollRecords = async () => {
-    const { data: payroll_records, error } = await supabase
+    const { data: payroll_records, error } = await getSupabaseClient()
         .from("payroll_records")
         .select("*, employees!payroll_records_employee_id_fkey(pay_frequency, first_name, last_name)");
 
@@ -131,10 +134,12 @@ export const calculatePayRollForEmployee = (
         ({ regularHours, overtimeHours, gross_pay } = computeWeeklyOvertime(employeeEntries, pay_rate));
     } else if (pay_frequency === "SALARY") {
         // Salaried employees get their annual salary / 26 pay periods
-        gross_pay = roundMoney(pay_rate / BI_WEEKLY_PAY_PERIODS);
+        gross_pay = pay_rate / BI_WEEKLY_PAY_PERIODS;
         regularHours = hoursWorked; // Track for records
         overtimeHours = 0;
     }
+
+    gross_pay = roundMoney(gross_pay);
 
     // Calculate taxes
     const federal_tax = roundMoney(gross_pay * (federal_tax_rate ?? 0));
@@ -171,7 +176,7 @@ export const calculatePayRollForEmployee = (
  * const avg = await getAverageBenefitDeductions();
  */
 export const getAverageBenefitDeductions = async () => {
-    const supabase = createClient()
+    const supabase = getSupabaseClient()
     const LATEST_PAY_PERIODS = 6
 
     const { data, error } = await supabase
