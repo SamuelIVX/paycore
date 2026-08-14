@@ -134,7 +134,7 @@ this spec explicitly corrects a type inconsistency (R1.3) or that the plan flags
 - `lib/auth/roles.ts`:
   ```ts
   export type AuthRole = "MANAGER" | "EMPLOYEE";
-  export function canonicalizeAuthRole(role: string | null | undefined): AuthRole | "UNKNOWN";
+  export function canonicalizeAuthRole(role: string | null | undefined): AuthRole | null;
   export type SearchTier = "manager" | "employee" | "visitor";
   export function canonicalizeSearchRole(role: string | null | undefined): SearchTier;
   export function getColumnsForRole(role: SearchTier): string; // moved mapping, unchanged output

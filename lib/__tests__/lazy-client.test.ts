@@ -16,6 +16,7 @@ vi.mock('@/utils/supabase/client', () => ({
 
 import { calculatePayRollForEmployee } from '@/lib/supabase/payroll';
 import { getTotalAnnualPayroll } from '@/lib/supabase/employee';
+import { getPayrollRuns } from '@/lib/supabase/payroll';
 import { Tables } from '@/lib/interfaces/database.types';
 
 describe('lazy supabase clients', () => {
@@ -45,6 +46,8 @@ describe('lazy supabase clients', () => {
         expect(result.gross_pay).toBeGreaterThan(0);
 
         // A data function triggers first-time client creation.
+        await getTotalAnnualPayroll();
+        await getPayrollRuns();
         await getTotalAnnualPayroll();
         expect(mockCreateClient).toHaveBeenCalledTimes(1);
     });

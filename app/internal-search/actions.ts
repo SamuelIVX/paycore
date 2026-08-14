@@ -35,7 +35,7 @@ async function resolveAuthenticatedRole(
  */
 export async function searchEmployeesByNameAction(
     name: string,
-): Promise<{ results: EmployeeWithProfile[]; role: string }> {
+): Promise<{ results: EmployeeWithProfile[]; role: SearchTier }> {
     const trimmed = name.trim();
     if (!trimmed) {
         return { results: [], role: 'visitor' };

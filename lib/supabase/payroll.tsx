@@ -134,10 +134,12 @@ export const calculatePayRollForEmployee = (
         ({ regularHours, overtimeHours, gross_pay } = computeWeeklyOvertime(employeeEntries, pay_rate));
     } else if (pay_frequency === "SALARY") {
         // Salaried employees get their annual salary / 26 pay periods
-        gross_pay = roundMoney(pay_rate / BI_WEEKLY_PAY_PERIODS);
+        gross_pay = pay_rate / BI_WEEKLY_PAY_PERIODS;
         regularHours = hoursWorked; // Track for records
         overtimeHours = 0;
     }
+
+    gross_pay = roundMoney(gross_pay);
 
     // Calculate taxes
     const federal_tax = roundMoney(gross_pay * (federal_tax_rate ?? 0));

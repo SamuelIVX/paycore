@@ -7,6 +7,8 @@ describe('roundMoney (single monetary normalization boundary)', () => {
         expect(roundMoney(1.005)).toBe(1.01);
         expect(roundMoney(10.126)).toBe(10.13);
         expect(roundMoney(10.124)).toBe(10.12);
+        expect(roundMoney(10.075)).toBe(10.08);
+        expect(roundMoney(-1.005)).toBe(-1.01);
     });
 
     it('handles integers and zeros without drift', () => {
