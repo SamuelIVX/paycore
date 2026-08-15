@@ -108,7 +108,7 @@ function PayStubCard({
               <div className="space-y-1 text-sm">
                 <p className="font-semibold">{stub.employeeName}</p>
                 <p className="text-muted-foreground">{stub.employeeAddress}</p>
-                <p className="text-muted-foreground">SSN: {stub.ssn}</p>
+                <p className="text-muted-foreground">Demo SSN: {stub.ssn}</p>
                 <p className="text-muted-foreground">
                   Employee ID: {stub.employeeId}
                 </p>
