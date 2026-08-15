@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import {
     canonicalizeAuthRole,
     canonicalizeSearchRole,
-    getColumnsForRole,
 } from '@/lib/auth/roles';
 
 describe('canonicalizeAuthRole (profiles.role -> login routing)', () => {
@@ -39,23 +38,5 @@ describe('canonicalizeSearchRole (employees.role -> search tier)', () => {
         expect(canonicalizeSearchRole('')).toBe('visitor');
         expect(canonicalizeSearchRole(null)).toBe('visitor');
         expect(canonicalizeSearchRole(undefined)).toBe('visitor');
-    });
-});
-
-describe('getColumnsForRole (column exposure per tier)', () => {
-    it('manager sees all columns', () => {
-        expect(getColumnsForRole('manager')).toBe('*');
-    });
-
-    it('employee sees contact + employment fields', () => {
-        expect(getColumnsForRole('employee')).toBe(
-            'id, first_name, last_name, position, phone, email, hire_date, employment_status, department_id'
-        );
-    });
-
-    it('visitor sees reduced fields', () => {
-        expect(getColumnsForRole('visitor')).toBe(
-            'id, first_name, last_name, position, phone, email'
-        );
     });
 });

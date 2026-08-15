@@ -108,6 +108,13 @@ export type Database = {
             foreignKeyName: "employee_benefits_employee_id_fkey"
             columns: ["employee_id"]
             isOneToOne: false
+            referencedRelation: "employee_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_benefits_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
             referencedRelation: "employees"
             referencedColumns: ["id"]
           },
@@ -260,6 +267,13 @@ export type Database = {
             foreignKeyName: "payroll_records_employee_id_fkey"
             columns: ["employee_id"]
             isOneToOne: false
+            referencedRelation: "employee_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payroll_records_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
             referencedRelation: "employees"
             referencedColumns: ["id"]
           },
@@ -398,6 +412,13 @@ export type Database = {
             foreignKeyName: "time_entries_employee_id_fkey"
             columns: ["employee_id"]
             isOneToOne: false
+            referencedRelation: "employee_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_entries_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
             referencedRelation: "employees"
             referencedColumns: ["id"]
           },
@@ -405,7 +426,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      employee_directory: {
+        Row: {
+          email: string | null
+          first_name: string | null
+          id: string | null
+          last_name: string | null
+          phone: string | null
+          position: string | null
+        }
+        Insert: {
+          email?: string | null
+          first_name?: string | null
+          id?: string | null
+          last_name?: string | null
+          phone?: string | null
+          position?: string | null
+        }
+        Update: {
+          email?: string | null
+          first_name?: string | null
+          id?: string | null
+          last_name?: string | null
+          phone?: string | null
+          position?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

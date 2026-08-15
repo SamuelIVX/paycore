@@ -37,16 +37,3 @@ export function canonicalizeSearchRole(role: string | null | undefined): SearchT
     }
     return "visitor";
 }
-
-/** Column set exposed to a search tier. Mapping unchanged from the original. */
-export function getColumnsForRole(role: SearchTier): string {
-    switch (role) {
-        case "manager":
-            return "*";
-        case "employee":
-            return "id, first_name, last_name, position, phone, email, hire_date, employment_status, department_id";
-        case "visitor":
-        default:
-            return "id, first_name, last_name, position, phone, email";
-    }
-}
