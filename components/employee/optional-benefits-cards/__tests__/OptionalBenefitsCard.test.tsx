@@ -1,7 +1,7 @@
 /**
  * Vitest coverage for components/employee/optional-benefits-cards.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Tables } from '@/lib/interfaces/database.types';
 

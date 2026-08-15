@@ -152,8 +152,6 @@ describe('processPaystubData', () => {
                 id: 'emp-1',
                 first_name: 'John',
                 last_name: 'Doe',
-                email: 'john@test.com',
-                hire_date: '2024-01-01',
                 pay_frequency: 'SALARY',
                 pay_rate: null,
                 address_line: null,

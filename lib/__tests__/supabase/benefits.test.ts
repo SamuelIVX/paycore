@@ -46,10 +46,10 @@ import type { Tables } from '@/lib/interfaces/database.types';
 
 const makeBenefit = (overrides: Partial<Tables<'benefits'>> = {}): Tables<'benefits'> => ({
     id: 'benefit-1',
-    name: 'Health Insurance',
+    benefit: 'Health Insurance',
     description: 'Company health coverage',
     type: 'COMPANY',
-    is_free: true,
+    tag: 'health',
     monthly_cost: null,
     provider: null,
     coverage: null,
@@ -66,10 +66,10 @@ describe('benefits data layer', () => {
         it('inserts new benefit successfully', async () => {
             mockAddBenefit.mockResolvedValue(undefined);
             const benefit: BenefitInsert = {
-                name: 'Dental',
+                benefit: 'Dental',
                 description: 'Dental coverage',
                 type: 'COMPANY',
-                is_free: true,
+                tag: 'dental',
             };
 
             await expect(addBenefit(benefit)).resolves.not.toThrow();
@@ -78,10 +78,10 @@ describe('benefits data layer', () => {
         it('throws error when insert fails', async () => {
             mockAddBenefit.mockRejectedValue(new Error('Insert failed'));
             const benefit: BenefitInsert = {
-                name: 'Dental',
+                benefit: 'Dental',
                 description: 'Dental coverage',
                 type: 'COMPANY',
-                is_free: true,
+                tag: 'dental',
             };
 
             await expect(addBenefit(benefit)).rejects.toThrow('Insert failed');
@@ -180,8 +180,8 @@ describe('benefits data layer', () => {
 
     describe('updateBenefit', () => {
         it('updates benefit successfully', async () => {
-            mockUpdateBenefit.mockResolvedValue({ id: 'benefit-1', name: 'Updated' });
-            const updates: BenefitUpdate = { name: 'Updated Health Insurance' };
+            mockUpdateBenefit.mockResolvedValue({ id: 'benefit-1', benefit: 'Updated' });
+            const updates: BenefitUpdate = { benefit: 'Updated Health Insurance' };
 
             const result = await updateBenefit('benefit-1', updates);
 
@@ -191,13 +191,13 @@ describe('benefits data layer', () => {
         it('throws error when update fails', async () => {
             mockUpdateBenefit.mockRejectedValue(new Error('Update failed'));
 
-            await expect(updateBenefit('benefit-1', { name: 'Updated' })).rejects.toThrow('Update failed');
+            await expect(updateBenefit('benefit-1', { benefit: 'Updated' })).rejects.toThrow('Update failed');
         });
     });
 
     describe('getActiveOptionalEmployeeBenefits', () => {
         it('returns active optional benefits for employee', async () => {
-            const employeeBenefits: Tables<'employee_benefits'>[] = [{ id: 'emp-benefit-1', employee_id: 'emp-1', benefit_id: 'benefit-1', status: 'ACTIVE', benefit: makeBenefit({ type: 'OPTIONAL' }) }];
+            const employeeBenefits = [{ id: 'emp-benefit-1', employee_id: 'emp-1', benefit_id: 'benefit-1', status: 'ACTIVE', benefit: makeBenefit({ type: 'OPTIONAL' }) } as Tables<'employee_benefits'> & { benefit: Tables<'benefits'> }];
             mockGetActiveOptionalEmployeeBenefits.mockResolvedValue(employeeBenefits);
 
             const result = await getActiveOptionalEmployeeBenefits('emp-1');

@@ -67,6 +67,9 @@ describe('employee data layer', () => {
                 first_name: 'John',
                 last_name: 'Smith',
                 role: 'Engineer',
+                position: 'Engineer',
+                employee_number: 'E-1001',
+                hire_date: '2024-01-01',
                 pay_rate: 30,
                 pay_frequency: 'HOURLY',
                 federal_tax_rate: 0.22,
@@ -85,6 +88,9 @@ describe('employee data layer', () => {
                 first_name: 'John',
                 last_name: 'Smith',
                 role: 'Engineer',
+                position: 'Engineer',
+                employee_number: 'E-1001',
+                hire_date: '2024-01-01',
                 pay_rate: 30,
                 pay_frequency: 'HOURLY',
                 federal_tax_rate: 0.22,
@@ -153,12 +159,12 @@ describe('employee data layer', () => {
     describe('getCurrentEmployee', () => {
         it('returns current employee', async () => {
             const employee = makeEmployee();
-            mockGetCurrentEmployee.mockResolvedValue(employee);
+            mockGetCurrentEmployee.mockResolvedValue({ user: { id: 'user-1' }, profile: { id: 'user-1' }, employee });
 
             const result = await getCurrentEmployee();
 
             expect(result).toBeDefined();
-            expect(result.id).toBe('emp-1');
+            expect(result.employee.id).toBe('emp-1');
         });
 
         it('throws error when fetch fails', async () => {
