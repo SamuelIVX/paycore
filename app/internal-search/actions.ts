@@ -6,14 +6,14 @@
  */
 import { createClient } from "@/utils/supabase/server";
 import type { EmployeeWithProfile } from "@/lib/supabase/employee";
-import { canonicalizeSearchRole, getColumnsForRole, type SearchTier } from "@/lib/auth/roles";
+import { canonicalizeSearchRole, type SearchTier } from "@/lib/auth/roles";
 
 async function resolveAuthenticatedRole(
     supabase: Awaited<ReturnType<typeof createClient>>,
 ): Promise<SearchTier> {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-        return 'visitor';
+        return 'visitor' as SearchTier;
     }
 
     const { data: employee } = await supabase
@@ -38,7 +38,7 @@ export async function searchEmployeesByNameAction(
 ): Promise<{ results: EmployeeWithProfile[]; role: SearchTier }> {
     const trimmed = name.trim();
     if (!trimmed) {
-        return { results: [], role: 'visitor' };
+        return { results: [], role: 'visitor' as SearchTier };
     }
 
     const supabase = await createClient();
@@ -47,14 +47,16 @@ export async function searchEmployeesByNameAction(
         return { results: [], role };
     }
 
-    const columns = getColumnsForRole(role);
-
     // Escape PostgREST/ilike special chars: backslash, percent, underscore, quote.
     const escapedPattern = `%${trimmed.replace(/[\\%_"]/g, '\\$&')}%`;
 
-    const { data: employees, error } = await supabase
-        .from("employees")
-        .select(columns)
+    // Managers may read full employee rows under RLS; other tiers read the
+    // restricted employee_directory view (safe columns only).
+    const query = role === 'manager'
+        ? supabase.from("employees").select("*")
+        : supabase.from("employee_directory").select("*");
+
+    const { data: employees, error } = await query
         .or(`first_name.ilike."${escapedPattern}",last_name.ilike."${escapedPattern}"`)
         .limit(50);
 

@@ -2,8 +2,9 @@
  * Browser-client employee CRUD, directory, dashboard aggregates, and current-user lookup.
  * SECURITY: returns full employee rows (address, pay_rate, tax rates) — do not log or expose to unauthorized roles.
  */
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
-import { Tables, TablesInsert } from "../interfaces/database.types";
+import { Tables, TablesInsert, type Database } from "../interfaces/database.types";
 import { DirectoryEntry } from "@/lib/supabase/types";
 import { BI_WEEKLY_PAY_PERIODS } from "@/lib/payroll-constants";
 
@@ -40,13 +41,15 @@ export type EmployeeWithProfile = ManagerEmployee | EmployeeSearch | VisitorSear
  * Inserts an employees row.
  * SECURITY: accepts full PII + pay fields.
  * @param employee - Insert payload including pay/tax/address fields.
+ * @param supabase - Optional Supabase client; falls back to module-scope browser client.
  * @returns Inserted employee row.
  * @throws On Supabase error.
  * @example
  * await addEmployee({ first_name: "Ada", pay_rate: 50, pay_frequency: "HOURLY" });
  */
-export const addEmployee = async (employee: EmployeeInsert) => {
-    const { error } = await getSupabaseClient()
+export const addEmployee = async (employee: EmployeeInsert, supabase?: SupabaseClient<Database>) => {
+    const client = supabase ?? getSupabaseClient();
+    const { error } = await client
         .from("employees")
         .insert(employee);
 
@@ -59,13 +62,15 @@ export const addEmployee = async (employee: EmployeeInsert) => {
 /**
  * Selects all employees.
  * SECURITY: full rows — manager-only surfaces.
+ * @param supabase - Optional Supabase client; falls back to module-scope browser client.
  * @returns Every employees row (includes pay/PII).
  * @throws On Supabase error.
  * @example
  * const all = await getEmployees();
  */
-export const getEmployees = async () => {
-    const { data: employees, error } = await getSupabaseClient()
+export const getEmployees = async (supabase?: SupabaseClient<Database>) => {
+    const client = supabase ?? getSupabaseClient();
+    const { data: employees, error } = await client
         .from("employees")
         .select("*");
 
@@ -84,8 +89,8 @@ export const getEmployees = async () => {
  * @example
  * const active = await getActiveEmployeesCount();
  */
-export const getActiveEmployeesCount = async () => {
-    const { count, error } = await getSupabaseClient()
+export const getActiveEmployeesCount = async (supabase?: SupabaseClient<Database>) => {
+    const { count, error } = await (supabase ?? getSupabaseClient())
         .from("employees")
         .select("*", { count: "exact", head: true })
         .eq("employment_status", "ACTIVE");
@@ -106,8 +111,8 @@ export const getActiveEmployeesCount = async () => {
  * @example
  * const annual = await getTotalAnnualPayroll();
  */
-export const getTotalAnnualPayroll = async () => {
-    const { data: employees, error } = await getSupabaseClient()
+export const getTotalAnnualPayroll = async (supabase?: SupabaseClient<Database>) => {
+    const { data: employees, error } = await (supabase ?? getSupabaseClient())
         .from("employees")
         .select("id, pay_rate, pay_frequency")
         .eq("employment_status", "ACTIVE");
@@ -149,8 +154,8 @@ export const getTotalAnnualPayroll = async () => {
  * @example
  * await updateEmployee(id, { pay_rate: 55 });
  */
-export const updateEmployee = async (id: string, updates: Partial<EmployeeInsert>) => {
-    const { error } = await getSupabaseClient()
+export const updateEmployee = async (id: string, updates: Partial<EmployeeInsert>, supabase?: SupabaseClient<Database>) => {
+    const { error } = await (supabase ?? getSupabaseClient())
         .from("employees")
         .update(updates)
         .eq("id", id);
@@ -168,8 +173,8 @@ export const updateEmployee = async (id: string, updates: Partial<EmployeeInsert
  * @example
  * await deleteEmployee(id);
  */
-export const deleteEmployee = async (id: string) => {
-    const { error } = await getSupabaseClient()
+export const deleteEmployee = async (id: string, supabase?: SupabaseClient<Database>) => {
+    const { error } = await (supabase ?? getSupabaseClient())
         .from("employees")
         .delete()
         .eq("id", id);
@@ -188,17 +193,17 @@ export const deleteEmployee = async (id: string) => {
  * @example
  * const { employee } = await getCurrentEmployee();
  */
-export async function getCurrentEmployee() {
+export async function getCurrentEmployee(supabase?: SupabaseClient<Database>) {
     const {
         data: { user },
         error: userError,
-    } = await getSupabaseClient().auth.getUser()
+    } = await (supabase ?? getSupabaseClient()).auth.getUser()
 
     if (userError || !user) {
         throw new Error("User not authenticated")
     }
 
-    const { data: profile, error: profileError } = await getSupabaseClient()
+    const { data: profile, error: profileError } = await (supabase ?? getSupabaseClient())
         .from("profiles")
         .select("*")
         .eq("id", user.id)
@@ -208,7 +213,7 @@ export async function getCurrentEmployee() {
         throw profileError ?? new Error("Profile not found")
     }
 
-    const { data: employee, error: employeeError } = await getSupabaseClient()
+    const { data: employee, error: employeeError } = await (supabase ?? getSupabaseClient())
         .from("employees")
         .select("*")
         .eq('profile_id', profile.id)
@@ -232,8 +237,8 @@ export async function getCurrentEmployee() {
  * @example
  * const directory = await getEmployeeDirectory();
  */
-export const getEmployeeDirectory = async (): Promise<DirectoryEntry[]> => {
-    const { data: employees, error: employeesError } = await getSupabaseClient()
+export const getEmployeeDirectory = async (supabase?: SupabaseClient<Database>): Promise<DirectoryEntry[]> => {
+    const { data: employees, error: employeesError } = await (supabase ?? getSupabaseClient())
         .from("employees")
         .select("*");
 
@@ -242,7 +247,7 @@ export const getEmployeeDirectory = async (): Promise<DirectoryEntry[]> => {
         throw employeesError;
     }
 
-    const { data: departments, error: departmentsError } = await getSupabaseClient()
+    const { data: departments, error: departmentsError } = await (supabase ?? getSupabaseClient())
         .from("departments")
         .select("id, name");
 
@@ -277,8 +282,8 @@ export const getEmployeeDirectory = async (): Promise<DirectoryEntry[]> => {
  * @example
  * const byDept = await getEmployeeByDepartment();
  */
-export const getEmployeeByDepartment = async () => {
-    const { data, error } = await getSupabaseClient()
+export const getEmployeeByDepartment = async (supabase?: SupabaseClient<Database>) => {
+    const { data, error } = await (supabase ?? getSupabaseClient())
         .from("employees")
         .select("*, departments(name)")
         .not("departments", "is", null);
@@ -304,8 +309,8 @@ export const getEmployeeByDepartment = async () => {
  * @example
  * const byPos = await getEmployeeSalaryByPosition();
  */
-export const getEmployeeSalaryByPosition = async () => {
-    const { data, error } = await getSupabaseClient()
+export const getEmployeeSalaryByPosition = async (supabase?: SupabaseClient<Database>) => {
+    const { data, error } = await (supabase ?? getSupabaseClient())
         .from("employees")
         .select("pay_rate, pay_frequency, position");
 

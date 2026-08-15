@@ -195,15 +195,17 @@ export const updateBenefit = async (id: string, updates: BenefitUpdate) => {
 
 /**
  * Exact count of COMPANY benefits.
+ * @param supabase - Optional Supabase client; falls back to module-scope browser client.
  * @returns Count integer (head-only query).
  * @throws On Supabase error.
  * @example
  * const n = await getCompanyBenefitsCount();
+ * const n = await getCompanyBenefitsCount(serverClient);
  */
-export const getCompanyBenefitsCount = async () => {
-    const supabase = createClient();
+export const getCompanyBenefitsCount = async (supabase?: SupabaseClient) => {
+    const client = supabase || createClient();
 
-    const { count, error } = await supabase
+    const { count, error } = await client
         .from('benefits')
         .select('*', { count: 'exact', head: true })
         .eq('type', 'COMPANY');
@@ -218,15 +220,17 @@ export const getCompanyBenefitsCount = async () => {
 
 /**
  * Exact count of OPTIONAL benefits.
+ * @param supabase - Optional Supabase client; falls back to module-scope browser client.
  * @returns Count integer (head-only query).
  * @throws On Supabase error.
  * @example
  * const n = await getOptionalBenefitsCount();
+ * const n = await getOptionalBenefitsCount(serverClient);
  */
-export const getOptionalBenefitsCount = async () => {
-    const supabase = createClient();
+export const getOptionalBenefitsCount = async (supabase?: SupabaseClient) => {
+    const client = supabase || createClient();
 
-    const { count, error } = await supabase
+    const { count, error } = await client
         .from('benefits')
         .select('*', { count: 'exact', head: true })
         .eq('type', 'OPTIONAL');

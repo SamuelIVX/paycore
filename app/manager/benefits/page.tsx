@@ -6,6 +6,7 @@ import CompanyBenefitsGrid from "@/components/manager/company-benefits/CompanyBe
 import OptionalBenefitsGrid from "@/components/manager/optional-benefits/OptionalBenefits"
 import { getCompanyBenefitsCount, getOptionalBenefitsCount } from "@/lib/supabase/benefits"
 import { getAverageBenefitDeductions } from "@/lib/supabase/payroll"
+import { createClient } from "@/utils/supabase/server"
 
 export const dynamic = "force-dynamic"
 
@@ -16,10 +17,11 @@ export const dynamic = "force-dynamic"
  * // Routed page component (BenefitsPage)
  */
 export default async function BenefitsPage() {
+    const supabase = await createClient()
     const results = await Promise.allSettled([
-        getCompanyBenefitsCount(),
-        getOptionalBenefitsCount(),
-        getAverageBenefitDeductions()
+        getCompanyBenefitsCount(supabase),
+        getOptionalBenefitsCount(supabase),
+        getAverageBenefitDeductions(supabase)
     ])
 
     const companyBenefitsCount = results[0].status === "fulfilled" ? results[0].value : undefined
