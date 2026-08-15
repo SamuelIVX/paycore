@@ -337,7 +337,6 @@ describe('PayStubsPage', () => {
         it('displays payment details section', async () => {
             const paystubs = [makeRawPaystubRow({
                 id: 'payroll-1',
-                pay_frequency: 'HOURLY',
             })];
             mockGetEmployeePaystubs.mockResolvedValue(paystubs);
 
