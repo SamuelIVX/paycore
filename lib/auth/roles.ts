@@ -10,19 +10,23 @@
 
 export type AuthRole = "MANAGER" | "EMPLOYEE";
 
+const AUTH_ROLES: readonly AuthRole[] = ["MANAGER", "EMPLOYEE"];
+
 /**
  * Normalizes a `profiles.role` value to the canonical auth role.
  * Returns `null` for unknown/missing roles so login routing keeps its
  * existing fail-closed behavior (sign out + "Unauthorized role.").
  */
 export function canonicalizeAuthRole(role: string | null | undefined): AuthRole | null {
-    if (role === "MANAGER" || role === "EMPLOYEE") return role;
+    if (AUTH_ROLES.includes(role as AuthRole)) return role as AuthRole;
     return null;
 }
 
 // --- Search-tiering domain (employees.role) ---
 
 export type SearchTier = "manager" | "employee" | "visitor";
+
+const SEARCH_TIERS: readonly SearchTier[] = ["manager", "employee", "visitor"];
 
 /**
  * Normalizes an `employees.role` value to the canonical search tier.
@@ -32,9 +36,7 @@ export type SearchTier = "manager" | "employee" | "visitor";
  */
 export function canonicalizeSearchRole(role: string | null | undefined): SearchTier {
     const normalized = role?.toLowerCase();
-    if (normalized === "manager" || normalized === "employee") {
-        return normalized;
-    }
+    if (normalized && SEARCH_TIERS.includes(normalized as SearchTier)) return normalized as SearchTier;
     return "visitor";
 }
 
