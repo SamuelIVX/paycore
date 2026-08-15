@@ -4,6 +4,7 @@
 import ManagerStatCards from "@/components/manager/stat-cards/Statcards"
 import GridContent from "@/components/manager/grid-content/GridContent"
 import { getActiveEmployeesCount, getTotalAnnualPayroll } from "@/lib/supabase/employee"
+import { createClient } from "@/utils/supabase/server"
 
 export const dynamic = "force-dynamic"
 
@@ -14,9 +15,10 @@ export const dynamic = "force-dynamic"
  * // Routed page component (ManagerDashboardPage)
  */
 export default async function ManagerDashboardPage() {
+    const supabase = await createClient()
     const results = await Promise.allSettled([
-        getActiveEmployeesCount(),
-        getTotalAnnualPayroll()
+        getActiveEmployeesCount(supabase),
+        getTotalAnnualPayroll(supabase)
     ])
 
     const totalEmployees = results[0].status === "fulfilled" ? results[0].value : undefined

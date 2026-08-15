@@ -13,7 +13,7 @@ async function resolveAuthenticatedRole(
 ): Promise<SearchTier> {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-        return 'visitor';
+        return 'visitor' as SearchTier;
     }
 
     const { data: employee } = await supabase
@@ -38,7 +38,7 @@ export async function searchEmployeesByNameAction(
 ): Promise<{ results: EmployeeWithProfile[]; role: SearchTier }> {
     const trimmed = name.trim();
     if (!trimmed) {
-        return { results: [], role: 'visitor' };
+        return { results: [], role: 'visitor' as SearchTier };
     }
 
     const supabase = await createClient();

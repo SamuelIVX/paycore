@@ -3,8 +3,9 @@
  * Uses a fixed 26 bi-weekly periods/year; overtime is computed per Mon–Sun UTC week.
  * SECURITY: handles pay rates, tax rates, and net pay — do not log employee compensation.
  */
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
-import { Tables } from "@/lib/interfaces/database.types";
+import type { Tables, Database } from "@/lib/interfaces/database.types";
 import { roundMoney } from "@/lib/money";
 import { BI_WEEKLY_PAY_PERIODS } from "@/lib/payroll-constants";
 
@@ -16,13 +17,16 @@ const getSupabaseClient = () => {
 
 /**
  * Fetches all payroll_runs rows.
+ * @param supabase - Optional Supabase client; falls back to module-scope browser client.
  * @returns Payroll run list for manager tables/charts.
  * @throws Relays Supabase errors after console.error.
  * @example
  * const runs = await getPayrollRuns();
+ * const runs = await getPayrollRuns(serverClient);
  */
-export const getPayrollRuns = async () => {
-    const { data: payroll_runs, error } = await getSupabaseClient()
+export const getPayrollRuns = async (supabase?: SupabaseClient<Database>) => {
+    const client = supabase ?? getSupabaseClient();
+    const { data: payroll_runs, error } = await client
         .from("payroll_runs")
         .select("*");
 
@@ -37,13 +41,16 @@ export const getPayrollRuns = async () => {
 /**
  * Fetches payroll_records with joined employee name + pay_frequency.
  * SECURITY: includes compensation fields — manager-facing.
+ * @param supabase - Optional Supabase client; falls back to module-scope browser client.
  * @returns Records with nested employee display fields.
  * @throws Relays Supabase errors.
  * @example
  * const records = await getPayrollRecords();
+ * const records = await getPayrollRecords(serverClient);
  */
-export const getPayrollRecords = async () => {
-    const { data: payroll_records, error } = await getSupabaseClient()
+export const getPayrollRecords = async (supabase?: SupabaseClient<Database>) => {
+    const client = supabase ?? getSupabaseClient();
+    const { data: payroll_records, error } = await client
         .from("payroll_records")
         .select("*, employees!payroll_records_employee_id_fkey(pay_frequency, first_name, last_name)");
 
@@ -170,16 +177,18 @@ export const calculatePayRollForEmployee = (
 
 /**
  * Average benefit_deductions across the latest 6 payroll_records (by period start).
+ * @param supabase - Optional Supabase client; falls back to module-scope browser client.
  * @returns Mean deduction amount, or 0 when no records exist.
  * @throws On Supabase error.
  * @example
  * const avg = await getAverageBenefitDeductions();
+ * const avg = await getAverageBenefitDeductions(serverClient);
  */
-export const getAverageBenefitDeductions = async () => {
-    const supabase = getSupabaseClient()
+export const getAverageBenefitDeductions = async (supabase?: SupabaseClient<Database>) => {
+    const client = supabase ?? getSupabaseClient();
     const LATEST_PAY_PERIODS = 6
 
-    const { data, error } = await supabase
+    const { data, error } = await client
         .from("payroll_records")
         .select(`
             benefit_deductions,
@@ -197,6 +206,6 @@ export const getAverageBenefitDeductions = async () => {
         return 0
     }
 
-    const total = data.reduce((sum, record) => sum + (record.benefit_deductions || 0), 0)
+    const total = data.reduce((sum: number, record: { benefit_deductions: number | null }) => sum + (record.benefit_deductions || 0), 0)
     return total / data.length
 }
