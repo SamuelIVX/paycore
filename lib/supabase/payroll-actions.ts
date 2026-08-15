@@ -208,6 +208,36 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
         throw new Error("Pay period start date must be before or equal to end date.");
     }
 
+    // F-005: on-run-start reconciler — reset stale PROCESSING runs older than 30 minutes
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const { error: reconcileError } = await supabase
+        .from("payroll_runs")
+        .update({ status: "FAILED" })
+        .eq("status", "PROCESSING")
+        .lt("run_date", thirtyMinutesAgo);
+
+    if (reconcileError) {
+        console.error("Error reconciling stale payroll runs:", reconcileError);
+    }
+
+    // F-006: per-user rate throttle — max 1 run per 5 minutes
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { data: recentRun, error: throttleError } = await supabase
+        .from("payroll_runs")
+        .select("id, run_date")
+        .eq("run_by", userId)
+        .gte("run_date", fiveMinutesAgo)
+        .order("run_date", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (recentRun && !throttleError) {
+        throw new Error("Payroll can only be run once every 5 minutes. Please wait before retrying.");
+    }
+    if (throttleError) {
+        console.error("Error checking payroll rate limit:", throttleError);
+    }
+
     // Idempotency: reject if a completed run already exists for this period
     const { data: existingRun, error: existingRunError } = await supabase
         .from("payroll_runs")
