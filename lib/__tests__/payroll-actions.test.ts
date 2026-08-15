@@ -1,14 +1,9 @@
-/**
- * Vitest coverage for lib.
- */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock next/headers (required by server client)
 vi.mock('next/headers', () => ({
     cookies: () => ({ getAll: () => [], setAll: () => { } }),
 }));
 
-// Mock the server supabase client 
 const mockFrom = vi.fn();
 const mockAuth = { getUser: vi.fn() };
 
@@ -19,14 +14,11 @@ vi.mock('@/utils/supabase/server', () => ({
     }),
 }));
 
-// Mock client supabase (pulled in transitively via lib/payroll.tsx)
 vi.mock('@/utils/supabase/client', () => ({
     createClient: () => ({}),
 }));
 
 import { runPayroll } from '@/lib/supabase/payroll-actions';
-
-// ---- helpers ----
 
 const mockEmployee = {
     id: 'emp-1',
@@ -56,8 +48,6 @@ const mockPayrollRun = {
     total_taxes: null,
 };
 
-// Four 8-hour days in the Mon 2026-01-12 → Sun 2026-01-18 week — 32 hrs ≥ 30
-// satisfies the optional-benefits eligibility gate.
 const mockTimeEntries = [
     { id: 'entry-1', employee_id: 'emp-1', hours_worked: 8, work_date: '2026-01-15', status: 'APPROVED', clock_in: null, clock_out: null, approved_at: null, approved_by: null, created_at: null },
     { id: 'entry-2', employee_id: 'emp-1', hours_worked: 8, work_date: '2026-01-16', status: 'APPROVED', clock_in: null, clock_out: null, approved_at: null, approved_by: null, created_at: null },
@@ -65,7 +55,11 @@ const mockTimeEntries = [
     { id: 'entry-4', employee_id: 'emp-1', hours_worked: 8, work_date: '2026-01-18', status: 'APPROVED', clock_in: null, clock_out: null, approved_at: null, approved_by: null, created_at: null },
 ];
 
-// ---- tests ----
+function chainable(terminal: any) {
+    const fn = vi.fn().mockReturnThis();
+    Object.assign(fn, { terminal });
+    return fn;
+}
 
 describe('runPayroll', () => {
     beforeEach(() => {
@@ -87,17 +81,102 @@ describe('runPayroll', () => {
     });
 
     it('throws if payroll for this period already exists', async () => {
-        mockFrom.mockReturnValue({
-            select: vi.fn().mockReturnThis(),
-            eq: vi.fn().mockReturnThis(),
-            in: vi.fn().mockReturnThis(),
-            maybeSingle: vi.fn().mockResolvedValue({
-                data: { id: 'run-existing', status: 'COMPLETED' },
-                error: null,
-            }),
+        let callCount = 0;
+        mockFrom.mockImplementation(() => {
+            callCount++;
+            if (callCount === 1) {
+                return {
+                    update: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    lt: vi.fn().mockResolvedValue({ error: null }),
+                };
+            }
+            if (callCount === 2) {
+                return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    gte: vi.fn().mockReturnThis(),
+                    order: vi.fn().mockReturnThis(),
+                    limit: vi.fn().mockReturnThis(),
+                    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+                };
+            }
+            return {
+                select: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockReturnThis(),
+                in: vi.fn().mockReturnThis(),
+                maybeSingle: vi.fn().mockResolvedValue({
+                    data: { id: 'run-existing', status: 'COMPLETED' },
+                    error: null,
+                }),
+            };
         });
 
         await expect(runPayroll('2026-01-15', '2026-01-28')).rejects.toThrow('already been completed');
+    });
+
+    it('reconciles stale PROCESSING runs older than 30 minutes to FAILED (F-005)', async () => {
+        let callCount = 0;
+        const mockReconcileUpdate = vi.fn().mockReturnThis();
+        const mockReconcileEq = vi.fn().mockReturnThis();
+        const mockReconcileLt = vi.fn().mockResolvedValue({ error: null });
+
+        mockFrom.mockImplementation(() => {
+            callCount++;
+            if (callCount === 1) {
+                return { update: mockReconcileUpdate, eq: mockReconcileEq, lt: mockReconcileLt };
+            }
+            if (callCount === 2) {
+                return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    gte: vi.fn().mockReturnThis(),
+                    order: vi.fn().mockReturnThis(),
+                    limit: vi.fn().mockReturnThis(),
+                    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+                };
+            }
+            return {
+                select: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockReturnThis(),
+                in: vi.fn().mockReturnThis(),
+                maybeSingle: vi.fn().mockResolvedValue({
+                    data: { id: 'run-existing', status: 'COMPLETED' },
+                    error: null,
+                }),
+            };
+        });
+
+        await expect(runPayroll('2026-01-15', '2026-01-28')).rejects.toThrow('already been completed');
+
+        expect(mockReconcileUpdate).toHaveBeenCalledWith({ status: 'FAILED' });
+        expect(mockReconcileEq).toHaveBeenCalledWith('status', 'PROCESSING');
+        expect(mockReconcileLt).toHaveBeenCalledWith('run_date', expect.any(String));
+    });
+
+    it('rejects a second run within 5 minutes for the same user (F-006)', async () => {
+        let callCount = 0;
+
+        mockFrom.mockImplementation(() => {
+            callCount++;
+            if (callCount === 1) {
+                return {
+                    update: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    lt: vi.fn().mockResolvedValue({ error: null }),
+                };
+            }
+            return {
+                select: vi.fn().mockReturnThis(),
+                eq: vi.fn().mockReturnThis(),
+                gte: vi.fn().mockReturnThis(),
+                order: vi.fn().mockReturnThis(),
+                limit: vi.fn().mockReturnThis(),
+                maybeSingle: vi.fn().mockResolvedValue({ data: { id: 'recent-run', run_date: new Date().toISOString() }, error: null }),
+            };
+        });
+
+        await expect(runPayroll('2026-01-15', '2026-01-28')).rejects.toThrow('only be run once every 5 minutes');
     });
 
     it('returns totals on a successful payroll run', async () => {
@@ -117,34 +196,45 @@ describe('runPayroll', () => {
 
         mockFrom.mockImplementation(() => {
             callCount++;
-
-            // 1st call: idempotency check — no existing run
-            if (callCount === 1) return {
+            if (callCount === 1) {
+                return {
+                    update: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    lt: vi.fn().mockResolvedValue({ error: null }),
+                };
+            }
+            if (callCount === 2) {
+                return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    gte: vi.fn().mockReturnThis(),
+                    order: vi.fn().mockReturnThis(),
+                    limit: vi.fn().mockReturnThis(),
+                    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+                };
+            }
+            if (callCount === 3) return {
                 select: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockReturnThis(),
                 in: vi.fn().mockReturnThis(),
                 maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
             };
-            // 2nd call: insertPayrollRun
-            if (callCount === 2) return {
+            if (callCount === 4) return {
                 insert: vi.fn().mockReturnThis(),
                 select: vi.fn().mockReturnThis(),
                 single: vi.fn().mockResolvedValue({ data: mockPayrollRun, error: null }),
             };
-            // 3rd call: getActiveEmployees
-            if (callCount === 3) return {
+            if (callCount === 5) return {
                 select: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockResolvedValue({ data: [mockEmployee], error: null }),
             };
-            // 4th call: getTimeEntriesForPayPeriod
-            if (callCount === 4) return {
+            if (callCount === 6) return {
                 select: vi.fn().mockReturnThis(),
                 gte: vi.fn().mockReturnThis(),
                 lte: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockResolvedValue({ data: mockTimeEntries, error: null }),
             };
-            // 5th call: getActiveOptionalEmployeeBenefits (per employee in Promise.all)
-            if (callCount === 5) {
+            if (callCount === 7) {
                 const firstEq = vi.fn().mockReturnValue({
                     eq: vi.fn().mockResolvedValue({ data: [mockOptionalBenefit], error: null }),
                 });
@@ -154,17 +244,10 @@ describe('runPayroll', () => {
                     }),
                 };
             }
-            // 6th call: insertPayrollRecords
-            if (callCount === 6) return {
+            if (callCount === 8) return {
                 insert: mockInsertPayrollRecords,
             };
-            // 7th call: updatePayrollRun
-            if (callCount === 7) return {
-                update: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-            };
-            // 8th call: mark FAILED on catch (safety net)
-            if (callCount === 8) return {
+            if (callCount === 9) return {
                 update: vi.fn().mockReturnThis(),
                 eq: vi.fn().mockResolvedValue({ data: null, error: null }),
             };
@@ -175,7 +258,6 @@ describe('runPayroll', () => {
         expect(result.total_gross).toBeDefined();
         expect(result.total_net).toBeDefined();
         expect(result.total_taxes).toBeDefined();
-        // 32 hours * $30/hr = $960 gross (4 days × 8 hrs in one workweek, all regular)
         expect(Number(result.total_gross)).toBeCloseTo(960);
         expect(mockInsertPayrollRecords).toHaveBeenCalledWith(
             expect.arrayContaining([
@@ -191,24 +273,47 @@ describe('runPayroll', () => {
 
         mockFrom.mockImplementation(() => {
             callCount++;
-            if (callCount === 1) return {
-                select: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockReturnThis(),
-                in: vi.fn().mockReturnThis(),
-                maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-            };
-            if (callCount === 2) return {
-                insert: vi.fn().mockReturnThis(),
-                select: vi.fn().mockReturnThis(),
-                single: vi.fn().mockResolvedValue({ data: mockPayrollRun, error: null }),
-            };
-            // getActiveEmployees throws
-            if (callCount === 3) return {
-                select: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
-            };
-            // FAILED update
-            if (callCount === 4) return { update: mockUpdate, eq: mockEq };
+            if (callCount === 1) {
+                return {
+                    update: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    lt: vi.fn().mockResolvedValue({ error: null }),
+                };
+            }
+            if (callCount === 2) {
+                return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    gte: vi.fn().mockReturnThis(),
+                    order: vi.fn().mockReturnThis(),
+                    limit: vi.fn().mockReturnThis(),
+                    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+                };
+            }
+            if (callCount === 3) {
+                return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    in: vi.fn().mockReturnThis(),
+                    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+                };
+            }
+            if (callCount === 4) {
+                return {
+                    insert: vi.fn().mockReturnThis(),
+                    select: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: mockPayrollRun, error: null }),
+                };
+            }
+            if (callCount === 5) {
+                return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+                };
+            }
+            if (callCount === 6) {
+                return { update: mockUpdate, eq: mockEq };
+            }
         });
 
         await expect(runPayroll('2026-01-15', '2026-01-28')).rejects.toThrow();
