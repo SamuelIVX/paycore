@@ -1,6 +1,7 @@
 // StrykerJS mutation testing.
-// Scoped to files changed vs the PR base (`--since` in the workflow), so it only ever
-// mutates new/changed code and stays fast enough to run per-PR.
+// CI scopes to files changed vs the PR base by passing an explicit `--mutate`
+// list (Stryker v10 removed the `--since` flag/config), so PR runs only ever
+// mutate new/changed code and stay fast enough to run per-PR.
 //
 // Requires devDeps: @stryker-mutator/core, @stryker-mutator/vitest-runner
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
@@ -23,7 +24,4 @@ export default {
 
   // Mutation-score gate. `break` fails the run; tune as the suites mature.
   thresholds: { high: 80, low: 60, break: 60 },
-
-  // Don't treat changes to test files themselves as code needing mutation.
-  since: { ignoreChangesInFilePatterns: ['**/*.{test,spec}.{ts,tsx}', '**/__tests__/**'] },
 };
