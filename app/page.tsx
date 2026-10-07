@@ -182,6 +182,39 @@ export default function LoginPage() {
             </div>
 
           </form>
+
+          <section
+            aria-labelledby="demo-heading"
+            className="mt-6 space-y-4 border-t pt-6"
+          >
+            <div className="space-y-1">
+              <h2 id="demo-heading" className="text-sm font-semibold">
+                Class project demo
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                PayCore is a class project demo. Try it using either demo account below.
+              </p>
+            </div>
+
+            {[
+              { role: "Manager", email: "johnsmith@paycore.com", password: "manager123" },
+              { role: "Employee", email: "emilydavis@paycore.com", password: "employee123" },
+            ].map((account) => (
+              <div key={account.role} className="space-y-2 rounded-md bg-muted p-4">
+                <h3 className="text-sm font-medium">{account.role}</h3>
+                <dl className="space-y-1 text-sm">
+                  <div className="flex gap-2">
+                    <dt className="shrink-0 text-muted-foreground">Email:</dt>
+                    <dd className="min-w-0 select-text break-all">{account.email}</dd>
+                  </div>
+                  <div className="flex gap-2">
+                    <dt className="shrink-0 text-muted-foreground">Password:</dt>
+                    <dd className="min-w-0 select-text break-all">{account.password}</dd>
+                  </div>
+                </dl>
+              </div>
+            ))}
+          </section>
         </CardContent>
 
       </Card>

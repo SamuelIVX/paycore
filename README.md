@@ -25,6 +25,10 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Log in as a Manager or Employee — the app routes you to the correct dashboard automatically based on your role.
 
+PayCore is a class project demo. The login page displays public Manager and Employee
+demo credentials beneath the form so visitors can try both roles. See the
+[demo login notice spec](docs/specs/02-login-demo-credentials.md).
+
 ### Environment Variables
 
 Create a `.env.local` file in the project root:
