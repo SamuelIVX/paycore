@@ -23,6 +23,9 @@ import { runPayroll } from "@/lib/supabase/payroll-actions";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
+const formatPayrollAmount = (amount: number): string =>
+    `$${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
 /**
  * Payroll Section presentational component.
  */
@@ -146,13 +149,13 @@ function PayrollStatusContent() {
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <PayrollSection
                                         title="Total Gross Pay"
-                                        value={`$${results.total_gross.toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
+                                        value={formatPayrollAmount(results.total_gross)}
                                         icon={<FileText className="w-4 h-4 text-muted-foreground" />}
                                     />
 
                                     <PayrollSection
                                         title="Total Deductions"
-                                        value={`-$${results.total_taxes.toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
+                                        value={`-${formatPayrollAmount(results.total_taxes)}`}
                                         icon={<FileText className="w-4 h-4 text-muted-foreground" />}
                                         color="text-rose-500 dark:text-rose-400"
                                     />
@@ -161,7 +164,7 @@ function PayrollStatusContent() {
 
                                     <PayrollSection
                                         title="Total Net Pay"
-                                        value={`$${results.total_net.toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
+                                        value={formatPayrollAmount(results.total_net)}
                                         icon={<DollarSign className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
                                         color="text-emerald-600 dark:text-emerald-400"
                                     />

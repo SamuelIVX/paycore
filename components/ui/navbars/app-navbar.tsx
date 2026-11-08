@@ -5,7 +5,8 @@
  */
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { createClient } from "@/utils/supabase/client"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes"
 import {
@@ -110,10 +111,25 @@ export const AppNavbar = React.forwardRef<HTMLElement, AppNavbarProps>(
     ref,
   ) => {
     const pathname = usePathname()
+    const router = useRouter()
     const [isMobile, setIsMobile] = useState(false)
     const [mobileOpen, setMobileOpen] = useState(false)
     const containerRef = useRef<HTMLElement>(null)
     const { setTheme } = useTheme()
+
+    const handleLogout = async (e: React.MouseEvent) => {
+      e.preventDefault()
+      try {
+        const supabase = createClient()
+        await supabase.auth.signOut()
+      } catch {
+        // Fallback if supabase client fails
+      }
+      if (onLogoutClick) {
+        onLogoutClick()
+      }
+      router.push(logoutHref)
+    }
 
     useEffect(() => {
       const checkWidth = () => {
@@ -124,6 +140,8 @@ export const AppNavbar = React.forwardRef<HTMLElement, AppNavbarProps>(
       }
 
       checkWidth()
+
+      if (typeof ResizeObserver === "undefined") return
 
       const resizeObserver = new ResizeObserver(checkWidth)
       if (containerRef.current) {
@@ -288,11 +306,7 @@ export const AppNavbar = React.forwardRef<HTMLElement, AppNavbarProps>(
 
             <Button
               className="text-sm font-medium hover:bg-accent hover:text-accent-foreground border border-border rounded-md cursor-pointer"
-              onClick={() => {
-                if (onLogoutClick) {
-                  onLogoutClick()
-                }
-              }}
+              onClick={handleLogout}
               size="sm"
               variant="ghost"
               asChild

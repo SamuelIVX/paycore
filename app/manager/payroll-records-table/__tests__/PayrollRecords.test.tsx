@@ -567,9 +567,8 @@ describe('PayrollTable Component', () => {
                 expect(screen.getByText('Process payroll for selected period')).toBeInTheDocument();
             });
 
-            // Verify Pay Period label and notes exist
+            // Verify Pay Period label exists
             expect(screen.getByText('Pay Period')).toBeInTheDocument();
-            expect(screen.getByText('Notes (Optional)')).toBeInTheDocument();
         });
     });
 

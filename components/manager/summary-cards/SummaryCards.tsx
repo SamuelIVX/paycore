@@ -52,7 +52,7 @@ export default function SummaryCards({
       <BenefitSummaryCard
         title="Average Monthly Deductions"
         icon={<DollarSign className="h-5 w-5 text-purple-500 dark:text-purple-400" />}
-        count={avgDeductions ? formatCurrency(avgDeductions) : "—"}
+        count={avgDeductions != null ? formatCurrency(avgDeductions) : "—"}
         description="Per enrolled employee"
       />
     </div>

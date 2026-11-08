@@ -25,20 +25,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 
 export interface RunPayrollDialogProps {
   trigger?: React.ReactNode
 }
 
+/**
+ * Run Payroll Dialog modal with period selection and link navigation.
+ * @param props - Custom trigger node or default Run Payroll button.
+ * @returns Dialog modal component for selecting payroll periods.
+ * @example
+ * <RunPayrollDialog trigger={<Button>Run</Button>} />
+ */
 export function RunPayrollDialog({ trigger }: RunPayrollDialogProps) {
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
+  const [open, setOpen] = useState(false)
+  const [period, setPeriod] = useState("")
 
+  const [startDate, endDate] = period ? period.split("_") : ["", ""]
   const isValidPeriod = Boolean(startDate && endDate)
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen)
+    if (!nextOpen) {
+      setPeriod("")
+    }
+  }
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button className="cursor-pointer">
@@ -57,13 +71,7 @@ export function RunPayrollDialog({ trigger }: RunPayrollDialogProps) {
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="payPeriod">Pay Period</Label>
-            <Select
-              onValueChange={(value) => {
-                const [start, end] = value.split("_")
-                setStartDate(start || "")
-                setEndDate(end || "")
-              }}
-            >
+            <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger id="payPeriod">
                 <SelectValue placeholder="Select pay period..." />
               </SelectTrigger>
@@ -77,10 +85,6 @@ export function RunPayrollDialog({ trigger }: RunPayrollDialogProps) {
                 <SelectItem value="2026-03-26_2026-04-08">Mar 26 - Apr 8, 2026</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="payrollNotes">Notes (Optional)</Label>
-            <Textarea id="payrollNotes" placeholder="Add any payroll processing notes..." />
           </div>
         </div>
         <DialogFooter>

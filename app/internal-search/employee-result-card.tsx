@@ -33,7 +33,7 @@ interface Props {
 export function EmployeeResultCard({ employee }: Props) {
     const fullName = `${employee.first_name ?? ""} ${employee.last_name ?? ""}`.trim() || "Unknown Employee";
     const payRate = hasPayInfo(employee) && employee.pay_rate != null
-        ? `$${employee.pay_rate.toLocaleString("en-US", { minimumFractionDigits: 2 })}`
+        ? `$${employee.pay_rate.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
         : null;
 
     const mailtoHref = employee.email

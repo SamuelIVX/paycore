@@ -31,6 +31,13 @@ export interface AddEmployeeDialogProps {
   onSuccess?: () => void
 }
 
+/**
+ * Add Employee Dialog modal with form fields for profile and pay details.
+ * @param props - Trigger node and optional success callback.
+ * @returns Dialog component wrapping useAddEmployee hook.
+ * @example
+ * <AddEmployeeDialog onSuccess={refreshEmployees} />
+ */
 export function AddEmployeeDialog({ trigger, onSuccess }: AddEmployeeDialogProps) {
   const {
     firstName,

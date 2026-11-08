@@ -69,7 +69,12 @@ export default function PayrollTrendChart() {
               cursor={false}
               content={
                 <ChartTooltipContent
-                  formatter={(value) => [`$${value}k`, "Total Payroll"]}
+                  formatter={(value) => (
+                    <div className="flex w-full items-center justify-between gap-4">
+                      <span className="text-muted-foreground">Total Payroll</span>
+                      <span className="font-mono font-medium tabular-nums">${value}k</span>
+                    </div>
+                  )}
                 />
               }
             />
