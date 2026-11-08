@@ -55,12 +55,6 @@ const mockTimeEntries = [
     { id: 'entry-4', employee_id: 'emp-1', hours_worked: 8, work_date: '2026-01-18', status: 'APPROVED', clock_in: null, clock_out: null, approved_at: null, approved_by: null, created_at: null },
 ];
 
-function chainable(terminal: any) {
-    const fn = vi.fn().mockReturnThis();
-    Object.assign(fn, { terminal });
-    return fn;
-}
-
 describe('runPayroll', () => {
     beforeEach(() => {
         vi.clearAllMocks();

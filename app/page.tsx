@@ -1,4 +1,5 @@
 'use client'
+
 /**
  * Login page: email/password sign-in, then routes by profiles.role (MANAGER/EMPLOYEE).
  * SECURITY: auth credentials handled by Supabase Auth — never log passwords.
@@ -6,7 +7,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/animate-ui/components/buttons/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { UserCircle2, Lock } from "lucide-react";
+import { UserCircle2, Lock, Sparkles } from "lucide-react";
 import PayCoreLogo from "../public/logo.png";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
@@ -26,112 +27,107 @@ import SplitText from "@/components/SplitText";
 /**
  * Email/password login; routes by profiles.role after sign-in.
  * @returns The rendered LoginPage UI.
- * @example
- * // Routed page component (LoginPage)
  */
 export default function LoginPage() {
   const supabase = createClient();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.SubmitEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    // Authenticate with Supabase Auth (using signInWithPassword for simplicity)
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    try {
+      // Authenticate with Supabase Auth
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
-    if (authError || !data.user) {
-      alert("Invalid credentials.");
-      return;
-    }
+      if (authError || !data.user) {
+        alert("Invalid credentials.");
+        return;
+      }
 
-    // Fetch user profile to determine role
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", data.user.id)
-      .single();
+      // Fetch user profile to determine role
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
 
-    if (profileError) {
-      alert("Error fetching user profile.");
+      if (profileError) {
+        alert("Error fetching user profile.");
+        await supabase.auth.signOut();
+        return;
+      }
+
+      const role = canonicalizeAuthRole(profile.role);
+
+      if (role === "MANAGER") {
+        router.push("/manager/dashboard");
+        return;
+      }
+      if (role === "EMPLOYEE") {
+        router.push("/employee/dashboard");
+        return;
+      }
       await supabase.auth.signOut();
-      return;
+      alert("Unauthorized role.");
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const role = canonicalizeAuthRole(profile.role);
-
-    if (role === "MANAGER") {
-      router.push("/manager/dashboard");
-      return;
-    }
-    if (role === "EMPLOYEE") {
-      router.push("/employee/dashboard");
-      return;
-    }
-    await supabase.auth.signOut();
-    alert("Unauthorized role.");
+  const handleAutoFill = (demoEmail: string, demoPass: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPass);
   };
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "var(--background)" }}
-    >
-      <Card className="w-full max-w-md shadow-lg">
-
-        <CardHeader>
-
-          <div className="mx-auto relative size-32 rounded-full mb-2 overflow-hidden">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
+      <Card className="w-full max-w-md shadow-md border-border">
+        <CardHeader className="text-center pb-4">
+          <div className="mx-auto relative size-16 rounded-full mb-3 overflow-hidden ring-1 ring-border shadow-xs">
             <Image
               src={PayCoreLogo}
               alt="PayCore Logo"
               fill
               className="object-cover"
+              priority
             />
           </div>
 
-
-          <CardTitle
-            className="text-center text-2xl font-bold"
-            style={{ color: "var(--foreground)" }}
-          >
+          <CardTitle className="text-center text-2xl font-bold tracking-tight text-foreground">
             <SplitText
               text="PayCore Login"
-              delay={50}
-              duration={1.25}
-              ease="power3.out"
+              delay={20}
+              duration={0.4}
+              ease="power2.out"
               splitType="chars"
-              from={{ opacity: 0, y: 40 }}
+              from={{ opacity: 0, y: 15 }}
               to={{ opacity: 1, y: 0 }}
               threshold={0.1}
-              rootMargin="-100px"
               textAlign="center"
             />
           </CardTitle>
 
-          <CardDescription
-            className="text-center"
-            style={{ color: "var(--muted-foreground)" }}
-          >
+          <CardDescription className="text-center text-sm text-muted-foreground mt-1">
             Enter your credentials to access your account.
           </CardDescription>
-
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="space-y-6">
           <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-
+            <div className="flex flex-col gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <div className="relative" style={{ color: "var(--muted-foreground)" }}>
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5">
-                    <UserCircle2 />
+                <div className="relative text-muted-foreground">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                    <UserCircle2 className="h-4 w-4" />
                   </span>
                   <Input
                     id="email"
@@ -140,16 +136,16 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
+                    className="pl-9"
                   />
                 </div>
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-                <div className="relative" style={{ color: "var(--muted-foreground)" }}>
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5">
-                    <Lock />
+                <div className="relative text-muted-foreground">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                    <Lock className="h-4 w-4" />
                   </span>
                   <Input
                     id="password"
@@ -157,7 +153,7 @@ export default function LoginPage() {
                     placeholder="Enter password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
+                    className="pl-9"
                   />
                 </div>
               </div>
@@ -165,30 +161,30 @@ export default function LoginPage() {
               <Button
                 variant="default"
                 type="submit"
-                className="w-full"
+                disabled={isLoading}
+                className="w-full mt-2 cursor-pointer font-medium"
               >
-                Login
+                {isLoading ? "Signing in..." : "Login"}
               </Button>
 
-              <div className="mt-4 text-center">
+              <div className="text-center pt-1">
                 <Link
                   href="/internal-search"
-                  className="text-sm font-medium text-slate-600 underline hover:text-slate-900"
+                  className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors underline hover:underline"
                 >
                   Searching for someone?
                 </Link>
               </div>
-
             </div>
-
           </form>
 
           <section
             aria-labelledby="demo-heading"
-            className="mt-6 space-y-4 border-t pt-6"
+            className="space-y-4 border-t pt-5"
           >
             <div className="space-y-1">
-              <h2 id="demo-heading" className="text-sm font-semibold">
+              <h2 id="demo-heading" className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-1.5">
+                <Sparkles className="h-4 w-4 text-primary" />
                 Class project demo
               </h2>
               <p className="text-sm text-muted-foreground">
@@ -196,28 +192,41 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {[
-              { role: "Manager", email: "johnsmith@paycore.com", password: "manager123" },
-              { role: "Employee", email: "emilydavis@paycore.com", password: "employee123" },
-            ].map((account) => (
-              <div key={account.role} className="space-y-2 rounded-md bg-muted p-4">
-                <h3 className="text-sm font-medium">{account.role}</h3>
-                <dl className="space-y-1 text-sm">
-                  <div className="flex gap-2">
-                    <dt className="shrink-0 text-muted-foreground">Email:</dt>
-                    <dd className="min-w-0 select-text break-all">{account.email}</dd>
-                  </div>
-                  <div className="flex gap-2">
-                    <dt className="shrink-0 text-muted-foreground">Password:</dt>
-                    <dd className="min-w-0 select-text break-all">{account.password}</dd>
-                  </div>
-                </dl>
-              </div>
-            ))}
+            <div className="grid gap-3">
+              {[
+                { role: "Manager", email: "johnsmith@paycore.com", password: "manager123" },
+                { role: "Employee", email: "emilydavis@paycore.com", password: "employee123" },
+              ].map((account) => (
+                <div
+                  key={account.role}
+                  className="relative space-y-2 rounded-lg border border-border bg-muted/50 p-4 transition-colors hover:bg-muted/80"
+                >
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="outline"
+                    className="absolute top-3.5 right-3.5 cursor-pointer text-[11px] h-6 px-2.5 font-medium"
+                    onClick={() => handleAutoFill(account.email, account.password)}
+                  >
+                    Auto Fill
+                  </Button>
+                  <h3 className="text-sm font-semibold text-foreground pr-20">{account.role}</h3>
+                  <dl className="space-y-1 text-sm">
+                    <div className="flex gap-2">
+                      <dt className="shrink-0 text-muted-foreground">Email:</dt>
+                      <dd className="min-w-0 select-text break-all font-mono text-xs text-foreground">{account.email}</dd>
+                    </div>
+                    <div className="flex gap-2">
+                      <dt className="shrink-0 text-muted-foreground">Password:</dt>
+                      <dd className="min-w-0 select-text break-all font-mono text-xs text-foreground">{account.password}</dd>
+                    </div>
+                  </dl>
+                </div>
+              ))}
+            </div>
           </section>
         </CardContent>
-
       </Card>
-    </div >
-  )
+    </div>
+  );
 }

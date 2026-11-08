@@ -7,8 +7,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button as BaseButton } from "@/components/ui/button";
-import { Button } from "@/components/animate-ui/components/buttons/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog, DialogTrigger, DialogContent, DialogHeader,
   DialogTitle, DialogDescription, DialogFooter,
@@ -20,8 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, Edit } from "lucide-react";
-import { useAddEmployee } from "@/hooks/use-add-employee";
+import { Edit } from "lucide-react";
+import { AddEmployeeDialog } from "@/components/manager/dialogs/add-employee-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getEmployees, updateEmployee, deleteEmployee } from "@/lib/supabase/employee";
 import { Tables } from "@/lib/interfaces/database.types";
@@ -67,9 +66,9 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
     <div className="text-right">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <BaseButton variant="ghost" size="sm">
+          <Button variant="ghost" size="sm">
             <Edit className="w-4 h-4" />
-          </BaseButton>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <Dialog open={editOpen} onOpenChange={(open) => {
@@ -120,7 +119,7 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
                 </div>
               </div>
               <DialogFooter>
-                <BaseButton
+                <Button
                   disabled={isSubmitting}
                   onClick={async () => {
                     setIsSubmitting(true);
@@ -135,7 +134,7 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
                   }}
                 >
                   {isSubmitting ? "Updating..." : "Update"}
-                </BaseButton>
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -150,8 +149,8 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
                 <DialogDescription>Confirm deletion of employee from the system</DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <BaseButton variant="default" onClick={() => setDeleteOpen(false)}>Cancel</BaseButton>
-                <BaseButton
+                <Button variant="default" onClick={() => setDeleteOpen(false)}>Cancel</Button>
+                <Button
                   variant="destructive"
                   disabled={isSubmitting}
                   onClick={async () => {
@@ -167,7 +166,7 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
                   }}
                 >
                   {isSubmitting ? "Deleting..." : "Delete"}
-                </BaseButton>
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -184,17 +183,6 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
  * // Routed page component (EmployeeTable)
  */
 export default function EmployeeTable() {
-  const {
-    firstName, setFirstName,
-    lastName, setLastName,
-    position, setPosition,
-    payFrequency, setPayFrequency,
-    payRate, setPayRate,
-    loading,
-    open, setOpen,
-    handleAddEmployee,
-  } = useAddEmployee();
-
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -276,67 +264,17 @@ export default function EmployeeTable() {
   ], []);
 
   const addEmployeeButton = (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <UserPlus className="w-4 h-4" />
-          Add Employee
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add New Employee</DialogTitle>
-          <DialogDescription>Enter employee details to add them to the system</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="addEmpFirstName">First Name</Label>
-            <Input id="addEmpFirstName" placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="addEmpLastName">Last Name</Label>
-            <Input id="addEmpLastName" placeholder="Smith" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="addEmpPosition">Position</Label>
-            <Input id="addEmpPosition" placeholder="Software Engineer" value={position} onChange={(e) => setPosition(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="addEmpPayFrequency">Pay Frequency</Label>
-            <Select value={payFrequency} onValueChange={setPayFrequency}>
-              <SelectTrigger><SelectValue placeholder="Choose..." /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="HOURLY">Hourly</SelectItem>
-                <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
-                <SelectItem value="SALARY">Salary</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Pay Rate</Label>
-            <Input type="number" placeholder="75000" value={payRate} onChange={(e) => setPayRate(Number(e.target.value))} />
-          </div>
-        </div>
-        <DialogFooter>
-          <BaseButton
-            onClick={async () => {
-              const success = await handleAddEmployee();
-              if (!success) return;
-              try {
-                const updated = await getEmployees();
-                setEmployees(updated ?? []);
-                setError(null);
-              } catch {
-                setError("Employee was added, but failed to refresh table.");
-              }
-            }}
-            disabled={loading}
-          >
-            {loading ? "Adding..." : "Add Employee"}
-          </BaseButton>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <AddEmployeeDialog
+      onSuccess={async () => {
+        try {
+          const updated = await getEmployees();
+          setEmployees(updated ?? []);
+          setError(null);
+        } catch {
+          setError("Employee was added, but failed to refresh table.");
+        }
+      }}
+    />
   );
 
   return (
