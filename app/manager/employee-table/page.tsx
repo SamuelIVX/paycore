@@ -62,12 +62,18 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
     pay_rate: employee.pay_rate ?? 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const employeeName = `${employee.first_name ?? ""} ${employee.last_name ?? ""}`.trim();
 
   return (
     <div className="text-right">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <BaseButton variant="ghost" size="sm">
+          <BaseButton
+            variant="ghost"
+            size="sm"
+            aria-label={employeeName ? `Actions for ${employeeName}` : "Employee actions"}
+            className="min-h-[44px] min-w-[44px]"
+          >
             <Edit className="w-4 h-4" />
           </BaseButton>
         </DropdownMenuTrigger>
@@ -225,7 +231,10 @@ export default function EmployeeTable() {
     {
       accessorKey: "hire_date",
       header: ({ column }) => <SortableHeader column={column} label="Hire Date" />,
-      cell: ({ row }) => row.original.hire_date ?? "—",
+      cell: ({ row }) =>
+        row.original.hire_date
+          ? <span className="tabular-nums">{row.original.hire_date}</span>
+          : "—",
     },
     {
       accessorKey: "pay_frequency",
@@ -241,7 +250,7 @@ export default function EmployeeTable() {
       cell: ({ row }) =>
         row.original.pay_rate == null
           ? "—"
-          : `$${row.original.pay_rate.toLocaleString()}`,
+          : <span className="tabular-nums">${row.original.pay_rate.toLocaleString()}</span>,
     },
     {
       accessorKey: "employment_status",
