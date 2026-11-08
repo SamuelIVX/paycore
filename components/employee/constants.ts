@@ -1,36 +1,19 @@
 /**
  * Employee-facing UI: constants.
  */
-import type { LucideIcon } from "lucide-react";
-import {
-    BadgeCheck,
-    Heart,
-    Info,
-    Shield,
-    Smile,
-    Stethoscope,
-} from "lucide-react"
+import { BENEFIT_ICONS } from "@/lib/constants/benefits"
 
 /**
  * Benefit type/interface.
  */
 export type Benefit = {
-    title: string
-    description: string
-    provider: string
-    coverage: string
-    type: string
-    tag: "Company Provided" | "Optional"
-    monthlyCost?: number
+  title: string
+  description: string
+  provider: string
+  coverage: string
+  type: string
+  tag: "Company Provided" | "Optional"
+  monthlyCost?: number
 }
 
-export const BENEFIT_ICONS: Record<string, LucideIcon> = {
-    Health: Heart,
-    Dental: Smile,
-    Retirement: BadgeCheck,
-    Life: Shield,
-    Disability: Stethoscope,
-    Vision: Stethoscope,
-    Wellness: Heart,
-    Other: Info,
-};
+export { BENEFIT_ICONS }

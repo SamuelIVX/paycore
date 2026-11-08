@@ -79,7 +79,6 @@ const setupFromCalls = (handler: (callCount: number) => unknown) => {
         return handler(callCount) as ReturnType<typeof mockFrom>;
     });
 };
-
 describe('runPayroll', () => {
     beforeEach(() => {
         vi.clearAllMocks();

@@ -10,11 +10,12 @@ import { getAuthenticatedUserRoleAction } from "./actions";
 type AuthenticatedRoleState = {
     role: string;
     userId: string | null;
+    loading: boolean;
 };
 
 /**
  * Client hook that loads the signed-in profiles.role via server action.
- * @returns `{ role, loading, error }` for directory UI gating.
+ * @returns `{ role, userId, loading }` for directory UI gating.
  * @example
  * const { role, loading } = useAuthenticatedRole();
  */
@@ -22,6 +23,7 @@ export function useAuthenticatedRole(): AuthenticatedRoleState {
     const [authState, setAuthState] = useState<AuthenticatedRoleState>({
         role: 'visitor',
         userId: null,
+        loading: true,
     });
 
     useEffect(() => {
@@ -32,19 +34,19 @@ export function useAuthenticatedRole(): AuthenticatedRoleState {
         const handleSession = async (userId: string | null) => {
             const currentRequestId = ++requestId;
             if (!userId) {
-                if (mounted) setAuthState({ role: 'visitor', userId: null });
+                if (mounted) setAuthState({ role: 'visitor', userId: null, loading: false });
                 return;
             }
 
             try {
                 const next = await getAuthenticatedUserRoleAction();
                 if (mounted && currentRequestId === requestId) {
-                    setAuthState({ role: next, userId });
+                    setAuthState({ role: next, userId, loading: false });
                 }
             } catch (err) {
                 console.error("Error loading user role:", err);
                 if (mounted && currentRequestId === requestId) {
-                    setAuthState({ role: 'visitor', userId: null });
+                    setAuthState({ role: 'visitor', userId: null, loading: false });
                 }
             }
         };

@@ -7,17 +7,10 @@
 import { useMemo, useState, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button as BaseButton } from "@/components/ui/button";
-import { Button } from "@/components/animate-ui/components/buttons/button";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { DollarSign, ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { Textarea } from "@/components/ui/textarea";
 import { getPayrollRecords } from "@/lib/supabase/payroll";
 import { PayrollRecordType } from "./types";
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
+import { RunPayrollDialog } from "@/components/manager/dialogs/run-payroll-dialog";
 
 function hoursValue(record: PayrollRecordType, field: "regular_hours" | "overtime_hours"): number | null {
   if (record.employees?.pay_frequency === "HOURLY" || record.employees == null) {
@@ -37,8 +30,6 @@ function formatHours(value: number | null): string {
  * // Routed page component (PayrollTable)
  */
 export default function PayrollTable() {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [payrollRecords, setPayrollRecords] = useState<PayrollRecordType[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -125,62 +116,7 @@ export default function PayrollTable() {
     },
   ], []);
 
-  const runPayrollButton = (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button>
-          <DollarSign className="w-4 h-4 mr-2" />
-          Run Payroll
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Run Payroll</DialogTitle>
-          <DialogDescription>Process payroll for selected period</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="payPeriod">Pay Period</Label>
-            <Select onValueChange={(value) => {
-              const [start, end] = value.split("_");
-              setStartDate(start);
-              setEndDate(end);
-            }}>
-              <SelectTrigger><SelectValue placeholder="Select period" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2026-01-01_2026-01-14">Jan 1 - Jan 14, 2026</SelectItem>
-                <SelectItem value="2026-01-15_2026-01-28">Jan 15 - Jan 28, 2026</SelectItem>
-                <SelectItem value="2026-01-29_2026-02-11">Jan 29 - Feb 11, 2026</SelectItem>
-                <SelectItem value="2026-02-12_2026-02-25">Feb 12 - Feb 25, 2026</SelectItem>
-                <SelectItem value="2026-02-26_2026-03-11">Feb 26 - Mar 11, 2026</SelectItem>
-                <SelectItem value="2026-03-12_2026-03-25">Mar 12 - Mar 25, 2026</SelectItem>
-                <SelectItem value="2026-03-26_2026-04-08">Mar 26 - Apr 8, 2026</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes (Optional)</Label>
-            <Textarea id="notes" placeholder="Add any notes..." />
-          </div>
-        </div>
-        <DialogFooter>
-          {(!startDate || !endDate) ? (
-            <BaseButton disabled aria-disabled="true">
-              Run Payroll
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </BaseButton>
-          ) : (
-            <BaseButton asChild>
-              <Link href={`/manager/payroll-status?startDate=${startDate}&endDate=${endDate}`}>
-                Run Payroll
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </BaseButton>
-          )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+  const runPayrollButton = <RunPayrollDialog />;
 
   return (
     <Card className="m-6">
