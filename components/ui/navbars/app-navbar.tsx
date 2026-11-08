@@ -146,7 +146,9 @@ export const AppNavbar = React.forwardRef<HTMLElement, AppNavbarProps>(
 
       if (typeof ResizeObserver === "undefined") return
 
-      const resizeObserver = new ResizeObserver(() => {
+      const resizeObserver = new ResizeObserver((entries, observer) => {
+        void entries
+        void observer
         checkWidth()
       })
       if (containerRef.current) {
