@@ -15,18 +15,22 @@ const mockSetPayRate = vi.fn();
 
 let mockLoading = false;
 let mockOpen = true;
+let mockFirstName = 'Jane';
+let mockLastName = 'Doe';
+let mockPayFrequency = 'HOURLY';
+let mockPayRate = 60000;
 
 vi.mock('@/hooks/use-add-employee', () => ({
   useAddEmployee: () => ({
-    firstName: 'Jane',
+    firstName: mockFirstName,
     setFirstName: mockSetFirstName,
-    lastName: 'Doe',
+    lastName: mockLastName,
     setLastName: mockSetLastName,
     position: 'Engineer',
     setPosition: mockSetPosition,
-    payFrequency: 'HOURLY',
+    payFrequency: mockPayFrequency,
     setPayFrequency: vi.fn(),
-    payRate: 60000,
+    payRate: mockPayRate,
     setPayRate: mockSetPayRate,
     loading: mockLoading,
     open: mockOpen,
@@ -40,6 +44,10 @@ describe('AddEmployeeDialog component', () => {
     vi.clearAllMocks();
     mockLoading = false;
     mockOpen = true;
+    mockFirstName = 'Jane';
+    mockLastName = 'Doe';
+    mockPayFrequency = 'HOURLY';
+    mockPayRate = 60000;
   });
 
   it('renders form inputs and handles changes', () => {
@@ -78,6 +86,31 @@ describe('AddEmployeeDialog component', () => {
       expect(mockHandleAddEmployee).toHaveBeenCalledTimes(1);
       expect(onSuccess).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('does not invoke onSuccess when handleAddEmployee fails', async () => {
+    mockHandleAddEmployee.mockResolvedValue(false);
+    const onSuccess = vi.fn();
+
+    render(<AddEmployeeDialog onSuccess={onSuccess} />);
+
+    const submitBtn = screen.getByRole('button', { name: 'Add Employee' });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(mockHandleAddEmployee).toHaveBeenCalledTimes(1);
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+  });
+
+  it('disables submit button when required form fields are missing or invalid', () => {
+    mockFirstName = '   ';
+    render(<AddEmployeeDialog />);
+
+    const submitBtn = screen.getByRole('button', { name: 'Add Employee' });
+    expect(submitBtn).toBeDisabled();
+    fireEvent.click(submitBtn);
+    expect(mockHandleAddEmployee).not.toHaveBeenCalled();
   });
 
   it('shows loading state and disables submit button when loading', () => {

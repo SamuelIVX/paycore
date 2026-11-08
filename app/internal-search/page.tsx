@@ -43,7 +43,10 @@ function createSearchState(sessionKey: string): SearchState {
 /**
  * Renders the role-appropriate navigation bar for the search view.
  */
-function SearchHeaderNavbar({ role }: { role: string }) {
+function SearchHeaderNavbar({ role, loading }: { role: string; loading?: boolean }) {
+  if (loading) {
+    return <ExternalSearchNavbar />;
+  }
   if (role === "manager") {
     return <ManagerNavbar />;
   }
@@ -58,7 +61,7 @@ function SearchHeaderNavbar({ role }: { role: string }) {
  * @returns Search UI for looking up coworkers by name.
  */
 export default function ExternalEmployeeSearchPage() {
-  const { role, userId } = useAuthenticatedRole();
+  const { role, userId, loading: roleLoading } = useAuthenticatedRole();
   const sessionKey = userId ?? "visitor";
   const latestSessionKey = useRef(sessionKey);
 
@@ -126,15 +129,15 @@ export default function ExternalEmployeeSearchPage() {
     handleSearchQuery(query);
   };
 
-  const isVisitor = role === "visitor";
+  const isVisitor = !roleLoading && role === "visitor";
   const visibleResults = isVisitor ? [] : results;
   const visibleHasSearched = isVisitor ? false : hasSearched;
-  const showEmptyState = visibleHasSearched && !error && !isSearching && visibleResults.length === 0;
+  const showEmptyState = !roleLoading && visibleHasSearched && !error && !isSearching && visibleResults.length === 0;
   const showResults = visibleResults.length > 0;
 
   return (
     <>
-      <SearchHeaderNavbar role={role} />
+      <SearchHeaderNavbar role={role} loading={roleLoading} />
 
       <div className="min-h-[calc(100vh-4rem)] bg-background px-4 pb-16 pt-8 text-foreground">
         <div className="mx-auto w-full max-w-2xl space-y-6">
@@ -192,8 +195,14 @@ export default function ExternalEmployeeSearchPage() {
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="external-search"
-                      placeholder={isVisitor ? "Sign in to search employees" : "Type a name (e.g. John, Emily, Sarah)..."}
-                      disabled={isVisitor}
+                      placeholder={
+                        roleLoading
+                          ? "Checking permissions..."
+                          : isVisitor
+                            ? "Sign in to search employees"
+                            : "Type a name (e.g. John, Emily, Sarah)..."
+                      }
+                      disabled={roleLoading || isVisitor}
                       value={query}
                       onChange={(e) =>
                         setSearchState({

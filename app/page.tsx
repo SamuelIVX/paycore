@@ -65,7 +65,7 @@ export default function LoginPage() {
         return;
       }
 
-      const role = canonicalizeAuthRole(profile.role);
+      const role = canonicalizeAuthRole(profile?.role);
 
       if (role === "MANAGER") {
         router.push("/manager/dashboard");
@@ -77,6 +77,8 @@ export default function LoginPage() {
       }
       await supabase.auth.signOut();
       alert("Unauthorized role.");
+    } catch {
+      alert("Sign-in failed. Please try again.");
     } finally {
       setIsLoading(false);
     }

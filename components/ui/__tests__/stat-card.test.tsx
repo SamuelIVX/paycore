@@ -23,10 +23,12 @@ describe('StatCard component', () => {
     expect(screen.getByText('+12% from last month')).toBeInTheDocument();
     expect(screen.getByTestId('stat-icon')).toBeInTheDocument();
     expect(screen.getByTestId('stat-card')).toHaveClass('custom-stat-card');
+    expect(screen.getByTestId('stat-card')).toHaveClass('transition-all');
+    expect(screen.getByTestId('stat-card')).toHaveClass('hover:shadow-xs');
   });
 
   it('renders without optional icon and description', () => {
-    render(
+    const { container } = render(
       <StatCard
         title="Active Employees"
         value="48"
@@ -35,5 +37,7 @@ describe('StatCard component', () => {
 
     expect(screen.getByText('Active Employees')).toBeInTheDocument();
     expect(screen.getByText('48')).toBeInTheDocument();
+    expect(container.querySelector('.text-xs')).toBeNull();
+    expect(container.querySelector('.shrink-0')).toBeNull();
   });
 });

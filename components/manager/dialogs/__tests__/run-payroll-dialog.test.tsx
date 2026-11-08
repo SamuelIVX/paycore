@@ -3,7 +3,18 @@
  */
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { RunPayrollDialog } from '@/components/manager/dialogs/run-payroll-dialog';
+import { RunPayrollDialog, generatePayPeriods } from '@/components/manager/dialogs/run-payroll-dialog';
+
+describe('generatePayPeriods helper', () => {
+  it('generates correct sequential bi-weekly pay periods', () => {
+    const periods = generatePayPeriods(2, '2026-01-01');
+    expect(periods).toHaveLength(2);
+    expect(periods[0].value).toBe('2026-01-01_2026-01-14');
+    expect(periods[0].label).toContain('Jan 1 - Jan 14, 2026');
+    expect(periods[1].value).toBe('2026-01-15_2026-01-28');
+    expect(periods[1].label).toContain('Jan 15 - Jan 28, 2026');
+  });
+});
 
 describe('RunPayrollDialog component', () => {
   beforeEach(() => {

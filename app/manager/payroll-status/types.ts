@@ -17,6 +17,7 @@ export interface StatusCardProps {
     }
     icon: React.ReactNode
     children?: React.ReactNode
+    showDashboardLink?: boolean
 }
 
 /**

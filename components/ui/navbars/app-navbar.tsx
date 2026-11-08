@@ -115,15 +115,18 @@ export const AppNavbar = React.forwardRef<HTMLElement, AppNavbarProps>(
     const [isMobile, setIsMobile] = useState(false)
     const [mobileOpen, setMobileOpen] = useState(false)
     const containerRef = useRef<HTMLElement>(null)
-    const { setTheme } = useTheme()
+    const { resolvedTheme, setTheme } = useTheme()
 
     const handleLogout = async (e: React.MouseEvent) => {
       e.preventDefault()
       try {
         const supabase = createClient()
-        await supabase.auth.signOut()
-      } catch {
-        // Fallback if supabase client fails
+        const { error } = await supabase.auth.signOut()
+        if (error) {
+          console.error("Sign-out failed:", error)
+        }
+      } catch (error) {
+        console.error("Sign-out failed:", error)
       }
       if (onLogoutClick) {
         onLogoutClick()
@@ -166,7 +169,7 @@ export const AppNavbar = React.forwardRef<HTMLElement, AppNavbarProps>(
     )
 
     const switchTheme = () => {
-      setTheme((prev) => (prev === "light" ? "dark" : "light"))
+      setTheme(resolvedTheme === "dark" ? "light" : "dark")
     }
 
     const isLinkActive = (link: AppNavbarNavLink) => {

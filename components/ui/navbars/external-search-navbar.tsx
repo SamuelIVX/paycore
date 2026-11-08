@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
  * <ExternalSearchNavbar />
  */
 export function ExternalSearchNavbar() {
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
 
   return (
     <header
@@ -51,7 +51,7 @@ export function ExternalSearchNavbar() {
 
         <div className="flex items-center gap-2">
           <Button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             variant="outline"
             size="icon"
             aria-label="Toggle color theme"

@@ -44,7 +44,7 @@ export function PayrollSection({ title, value, icon, color }: PayrollSectionProp
 /**
  * Status Card presentational component.
  */
-export function StatusCard({ text, icon, color, children }: StatusCardProps) {
+export function StatusCard({ text, icon, color, children, showDashboardLink = true }: StatusCardProps) {
     return (
         <Card className={`border ${color.border || "border-border"} ${color.bg || "bg-card"} shadow-sm`}>
             <CardContent className="p-8 sm:p-12">
@@ -63,14 +63,16 @@ export function StatusCard({ text, icon, color, children }: StatusCardProps) {
                         </div>
                     )}
 
-                    <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                        <Button className="cursor-pointer" asChild>
-                            <Link href="/manager/dashboard" className="flex items-center gap-2 no-underline">
-                                <Home className="w-4 h-4" />
-                                <span>Back To Dashboard</span>
-                            </Link>
-                        </Button>
-                    </div>
+                    {showDashboardLink && (
+                        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                            <Button className="cursor-pointer" asChild>
+                                <Link href="/manager/dashboard" className="flex items-center gap-2 no-underline">
+                                    <Home className="w-4 h-4" />
+                                    <span>Back To Dashboard</span>
+                                </Link>
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>
@@ -127,6 +129,7 @@ function PayrollStatusContent() {
                             border: "border-border",
                             bg: "bg-card",
                         }}
+                        showDashboardLink={false}
                     />
                 )}
 
@@ -220,6 +223,7 @@ export default function PayrollStatusPage() {
                             border: "border-border",
                             bg: "bg-card",
                         }}
+                        showDashboardLink={false}
                     />
                 </div>
             </div>

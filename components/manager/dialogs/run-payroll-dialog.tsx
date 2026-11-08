@@ -30,6 +30,54 @@ export interface RunPayrollDialogProps {
   trigger?: React.ReactNode
 }
 
+export interface PayPeriodOption {
+  value: string
+  label: string
+}
+
+/**
+ * Generates sequential bi-weekly pay periods starting from a base date.
+ * @param count - Number of 14-day periods to generate (defaults to 26).
+ * @param startDateStr - ISO start date string (defaults to "2026-01-01").
+ * @returns Array of PayPeriodOption with value and formatted display label.
+ */
+export function generatePayPeriods(count = 26, startDateStr = "2026-01-01"): PayPeriodOption[] {
+  const periods: PayPeriodOption[] = []
+  const [yearStr, monthStr, dayStr] = startDateStr.split("-")
+  const startYear = parseInt(yearStr, 10)
+  const startMonth = parseInt(monthStr, 10) - 1
+  const startDay = parseInt(dayStr, 10)
+
+  for (let i = 0; i < count; i++) {
+    const periodStart = new Date(Date.UTC(startYear, startMonth, startDay + i * 14))
+    const periodEnd = new Date(Date.UTC(startYear, startMonth, startDay + i * 14 + 13))
+
+    const startISO = periodStart.toISOString().slice(0, 10)
+    const endISO = periodEnd.toISOString().slice(0, 10)
+
+    const startFormatted = periodStart.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    })
+    const endFormatted = periodEnd.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC",
+    })
+
+    periods.push({
+      value: `${startISO}_${endISO}`,
+      label: `${startFormatted} - ${endFormatted}`,
+    })
+  }
+
+  return periods
+}
+
+const DEFAULT_PAY_PERIODS = generatePayPeriods(26, "2026-01-01")
+
 /**
  * Run Payroll Dialog modal with period selection and link navigation.
  * @param props - Custom trigger node or default Run Payroll button.
@@ -76,13 +124,11 @@ export function RunPayrollDialog({ trigger }: RunPayrollDialogProps) {
                 <SelectValue placeholder="Select pay period..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="2026-01-01_2026-01-14">Jan 1 - Jan 14, 2026</SelectItem>
-                <SelectItem value="2026-01-15_2026-01-28">Jan 15 - Jan 28, 2026</SelectItem>
-                <SelectItem value="2026-01-29_2026-02-11">Jan 29 - Feb 11, 2026</SelectItem>
-                <SelectItem value="2026-02-12_2026-02-25">Feb 12 - Feb 25, 2026</SelectItem>
-                <SelectItem value="2026-02-26_2026-03-11">Feb 26 - Mar 11, 2026</SelectItem>
-                <SelectItem value="2026-03-12_2026-03-25">Mar 12 - Mar 25, 2026</SelectItem>
-                <SelectItem value="2026-03-26_2026-04-08">Mar 26 - Apr 8, 2026</SelectItem>
+                {DEFAULT_PAY_PERIODS.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

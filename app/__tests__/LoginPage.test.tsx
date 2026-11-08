@@ -2,7 +2,7 @@
  * Login page coverage for the public class-project demo notice and accounts.
  */
 import { describe, expect, it, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, fireEvent, waitFor } from "@testing-library/react";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
@@ -48,5 +48,24 @@ describe("LoginPage demo accounts", () => {
       .toHaveAttribute("href", "/internal-search");
     expect(screen.getByLabelText("Email")).toHaveValue("");
     expect(screen.getByLabelText("Password")).toHaveValue("");
+
+    // Test Auto Fill functionality
+    const autoFillButtons = screen.getAllByRole("button", { name: "Auto Fill" });
+    expect(autoFillButtons.length).toBe(2);
+    fireEvent.click(autoFillButtons[0]);
+    expect(screen.getByLabelText("Email")).toHaveValue("johnsmith@paycore.com");
+    expect(screen.getByLabelText("Password")).toHaveValue("manager123");
+  });
+
+  it("handles form submission error gracefully with alert", async () => {
+    window.alert = vi.fn();
+    render(<LoginPage />);
+
+    const form = screen.getByRole("button", { name: "Login" }).closest("form")!;
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith("Sign-in failed. Please try again.");
+    });
   });
 });

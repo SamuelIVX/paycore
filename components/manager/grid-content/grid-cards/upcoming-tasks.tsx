@@ -45,31 +45,16 @@ export default function UpcomingTasksCard() {
             title="Payroll Submission"
             description="Due: February 15, 2026"
             icon={<Calendar className="w-4 h-4 text-primary" />}
-            color={{
-              bg: "",
-              border: "",
-              text: "",
-            }}
           />
           <TaskCard
             title="Tax Filing Deadline"
             description="Due: February 28, 2026"
             icon={<FileCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
-            color={{
-              bg: "",
-              border: "",
-              text: "",
-            }}
           />
           <TaskCard
             title="Benefits Open Enrollment"
             description="Starts: March 1, 2026"
             icon={<Heart className="w-4 h-4 text-rose-500 dark:text-rose-400" />}
-            color={{
-              bg: "",
-              border: "",
-              text: "",
-            }}
           />
         </div>
       </CardContent>

@@ -56,7 +56,15 @@ export function AddEmployeeDialog({ trigger, onSuccess }: AddEmployeeDialogProps
     handleAddEmployee,
   } = useAddEmployee()
 
+  const isFormValid = Boolean(
+    firstName.trim() &&
+    lastName.trim() &&
+    payFrequency &&
+    payRate > 0,
+  )
+
   const handleSubmit = async () => {
+    if (!isFormValid) return
     const success = await handleAddEmployee()
     if (success && onSuccess) {
       onSuccess()
@@ -126,6 +134,7 @@ export function AddEmployeeDialog({ trigger, onSuccess }: AddEmployeeDialogProps
             <Input
               id="addEmpPayRate"
               type="number"
+              min={0}
               placeholder="75000"
               value={payRate || ""}
               onChange={(e) => setPayRate(Number(e.target.value))}
@@ -135,7 +144,7 @@ export function AddEmployeeDialog({ trigger, onSuccess }: AddEmployeeDialogProps
         <DialogFooter>
           <Button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || !isFormValid}
             className="cursor-pointer"
           >
             {loading ? "Adding..." : "Add Employee"}
