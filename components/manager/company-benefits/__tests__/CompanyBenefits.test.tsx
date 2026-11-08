@@ -342,6 +342,54 @@ describe('CompanyBenefitsGrid Component', () => {
             });
         });
 
+        it('shows error if update fails', async () => {
+            const benefit = makeBenefit({ id: 'benefit-1', benefit: 'Health Insurance' });
+            mockGetCompanyBenefits.mockResolvedValue([benefit]);
+            mockUpdateBenefit.mockRejectedValue(new Error('Update failed'));
+
+            render(<CompanyBenefitsGrid />);
+
+            await waitFor(() => {
+                expect(screen.getByText('Health Insurance')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Health Insurance'));
+
+            await waitFor(() => {
+                expect(screen.getByText('Update Benefit')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Update Benefit'));
+
+            await waitFor(() => {
+                expect(screen.getByText('Failed to update benefit.')).toBeInTheDocument();
+            });
+        });
+
+        it('shows loading state during update', async () => {
+            const benefit = makeBenefit({ id: 'benefit-1', benefit: 'Health Insurance' });
+            mockGetCompanyBenefits.mockResolvedValue([benefit]);
+            mockUpdateBenefit.mockImplementation(() => new Promise(() => { }));
+
+            render(<CompanyBenefitsGrid />);
+
+            await waitFor(() => {
+                expect(screen.getByText('Health Insurance')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Health Insurance'));
+
+            await waitFor(() => {
+                expect(screen.getByText('Update Benefit')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Update Benefit'));
+
+            await waitFor(() => {
+                expect(screen.getByText('Updating...')).toBeInTheDocument();
+            });
+        });
+
         it('cancels deletion without removing benefit', async () => {
             const benefit = makeBenefit({ id: 'benefit-1', benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);

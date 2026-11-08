@@ -258,5 +258,13 @@ describe('calculatePayRollForEmployee', () => {
             expect(result.employee_id).toBe('emp-42');
             expect(result.payroll_run_id).toBe('run-99');
         });
+
+        it('handles unrecognized pay frequency by leaving gross pay at 0', () => {
+            const employee = makeEmployee({ pay_rate: 100, pay_frequency: 'CUSTOM' as unknown as Tables<'employees'>['pay_frequency'] });
+            const result = calculatePayRollForEmployee(employee, [makeTimeEntry({ hours_worked: 10 })], makePayrollRun());
+            expect(result.gross_pay).toBe(0);
+            expect(result.regular_hours).toBe(0);
+            expect(result.overtime_hours).toBe(0);
+        });
     });
 });

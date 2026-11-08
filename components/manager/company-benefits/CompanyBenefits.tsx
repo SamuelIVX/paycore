@@ -279,7 +279,7 @@ export default function CompanyBenefitsGrid() {
                                     <Card className="hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-600 transition-all hover:cursor-pointer">
                                         <CardContent>
                                             <div className="flex items-start gap-4">
-                                                <div className="shrink-0 w-12 h-12 rounded-lg bg-blue-500 dark:bg-blue-700 flex items-center justify-center">
+                                                <div data-testid={`benefit-icon-${b.tag.toLowerCase()}`} className="shrink-0 w-12 h-12 rounded-lg bg-blue-500 dark:bg-blue-700 flex items-center justify-center">
                                                     <Icon className="w-6 h-6 text-white" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">

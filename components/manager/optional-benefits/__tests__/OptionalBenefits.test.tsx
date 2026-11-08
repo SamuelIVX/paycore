@@ -409,6 +409,54 @@ describe('OptionalBenefitsGrid Component', () => {
                 expect(costInput).toBeInTheDocument();
             });
         });
+
+        it('shows error if update fails', async () => {
+            const benefit = makeBenefit({ id: 'benefit-1', benefit: 'Life Insurance' });
+            mockGetOptionalBenefits.mockResolvedValue([benefit]);
+            mockUpdateBenefit.mockRejectedValue(new Error('Update failed'));
+
+            render(<OptionalBenefitsGrid />);
+
+            await waitFor(() => {
+                expect(screen.getByText('Life Insurance')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Life Insurance'));
+
+            await waitFor(() => {
+                expect(screen.getByText('Update Benefit')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Update Benefit'));
+
+            await waitFor(() => {
+                expect(screen.getByText('Failed to update benefit.')).toBeInTheDocument();
+            });
+        });
+
+        it('shows loading state during update', async () => {
+            const benefit = makeBenefit({ id: 'benefit-1', benefit: 'Life Insurance' });
+            mockGetOptionalBenefits.mockResolvedValue([benefit]);
+            mockUpdateBenefit.mockImplementation(() => new Promise(() => { }));
+
+            render(<OptionalBenefitsGrid />);
+
+            await waitFor(() => {
+                expect(screen.getByText('Life Insurance')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Life Insurance'));
+
+            await waitFor(() => {
+                expect(screen.getByText('Update Benefit')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Update Benefit'));
+
+            await waitFor(() => {
+                expect(screen.getByText('Updating...')).toBeInTheDocument();
+            });
+        });
     });
 
     describe('Delete Optional Benefit', () => {
@@ -652,7 +700,7 @@ describe('OptionalBenefitsGrid Component', () => {
             ];
             mockGetOptionalBenefits.mockResolvedValue(benefits);
 
-            const { container } = render(<OptionalBenefitsGrid />);
+            render(<OptionalBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Life Benefit')).toBeInTheDocument();
@@ -660,9 +708,9 @@ describe('OptionalBenefitsGrid Component', () => {
                 expect(screen.getByText('Wellness Benefit')).toBeInTheDocument();
             });
 
-            expect(container.querySelector('svg.lucide-shield')).toBeInTheDocument();
-            expect(container.querySelector('svg.lucide-umbrella')).toBeInTheDocument();
-            expect(container.querySelector('svg.lucide-heart')).toBeInTheDocument();
+            expect(screen.getByTestId('benefit-icon-life')).toBeInTheDocument();
+            expect(screen.getByTestId('benefit-icon-disability')).toBeInTheDocument();
+            expect(screen.getByTestId('benefit-icon-wellness')).toBeInTheDocument();
         });
     });
 

@@ -289,7 +289,7 @@ export default function OptionalBenefitsGrid() {
                                     <Card className="hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:border-purple-300 dark:hover:border-purple-600 transition-all hover:cursor-pointer">
                                         <CardContent>
                                             <div className="flex items-start gap-4">
-                                                <div className="shrink-0 w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
+                                                <div data-testid={`benefit-icon-${b.tag.toLowerCase()}`} className="shrink-0 w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
                                                     <Icon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
