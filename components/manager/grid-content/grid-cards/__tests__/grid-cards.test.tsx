@@ -34,10 +34,14 @@ describe('Manager Grid Cards', () => {
     window.HTMLElement.prototype.hasPointerCapture = vi.fn();
     window.HTMLElement.prototype.releasePointerCapture = vi.fn();
     global.ResizeObserver = class {
+      callback?: unknown;
+      constructor(callback?: unknown) {
+        this.callback = callback;
+      }
       observe() {}
       unobserve() {}
       disconnect() {}
-    };
+    } as unknown as typeof ResizeObserver;
   });
 
   describe('PayrollTrendChart', () => {
