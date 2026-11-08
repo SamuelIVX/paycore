@@ -354,34 +354,40 @@ describe('PayrollTable Component', () => {
         });
 
         it('sorts by created date', async () => {
+            const date1Str = '2026-01-30T12:00:00Z';
+            const date2Str = '2026-01-15T12:00:00Z';
+            const date3Str = '2026-01-01T12:00:00Z';
+            const date1 = new Date(date1Str).toLocaleDateString();
+            const date3 = new Date(date3Str).toLocaleDateString();
+
             const records = [
-                makePayrollRecord({ id: 'payroll-1', created_at: '2026-01-30T12:00:00Z' }),
-                makePayrollRecord({ id: 'payroll-2', created_at: '2026-01-15T12:00:00Z' }),
-                makePayrollRecord({ id: 'payroll-3', created_at: '2026-01-01T12:00:00Z' }),
+                makePayrollRecord({ id: 'payroll-1', created_at: date1Str }),
+                makePayrollRecord({ id: 'payroll-2', created_at: date2Str }),
+                makePayrollRecord({ id: 'payroll-3', created_at: date3Str }),
             ];
             mockGetPayrollRecords.mockResolvedValue(records);
 
             render(<PayrollTable />);
 
             await waitFor(() => {
-                expect(screen.getByText('1/30/2026')).toBeInTheDocument();
+                expect(screen.getByText(date1)).toBeInTheDocument();
             });
 
             const dateButton = screen.getAllByText('Created At')[0];
             fireEvent.click(dateButton);
 
-            // Verify sorted ascending (oldest date first: 1/1/2026)
+            // Verify sorted ascending (oldest date first)
             await waitFor(() => {
                 const rows = screen.getAllByRole('row');
-                expect(rows[1]).toHaveTextContent('1/1/2026');
+                expect(rows[1]).toHaveTextContent(date3);
             });
 
-            // Click again for descending (newest date first: 1/30/2026)
+            // Click again for descending (newest date first)
             fireEvent.click(dateButton);
 
             await waitFor(() => {
                 const rows = screen.getAllByRole('row');
-                expect(rows[1]).toHaveTextContent('1/30/2026');
+                expect(rows[1]).toHaveTextContent(date1);
             });
         });
 

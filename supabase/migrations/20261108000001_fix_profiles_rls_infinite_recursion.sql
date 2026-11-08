@@ -31,6 +31,9 @@ $$;
 comment on function public.is_manager() is
   'Evaluates whether the current authenticated user is a MANAGER without triggering RLS recursion.';
 
+revoke execute on function public.is_manager() from public, anon;
+grant execute on function public.is_manager() to authenticated;
+
 -- 2. Fix public.profiles RLS
 alter table public.profiles enable row level security;
 
@@ -51,7 +54,7 @@ create policy "profiles_select_manager"
     for select
     to authenticated
     using (
-        public.is_manager()
+        (select public.is_manager())
     );
 
 comment on policy "profiles_select_own" on public.profiles is

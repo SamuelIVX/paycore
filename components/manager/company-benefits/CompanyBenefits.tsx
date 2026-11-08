@@ -3,7 +3,7 @@
 /**
  * Manager-facing UI: CompanyBenefits.
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, CircleMinus, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,8 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { useAddBenefit } from "@/hooks/use-add-benefit";
+
+const LOAD_ERROR = 'Failed to load benefits';
 
 /**
  * Company Benefit Details component.
@@ -71,15 +73,25 @@ export default function CompanyBenefitsGrid() {
         handleAddBenefit,
     } = useAddBenefit()
 
-    useEffect(() => {
+    const fetchBenefits = useCallback(() => {
         getCompanyBenefits()
             .then(setCompanyBenefits)
             .catch((err) => {
                 console.error('Failed to fetch company benefits:', err);
-                setError('Failed to load benefits');
+                setError(LOAD_ERROR);
             })
             .finally(() => setIsLoading(false));
     }, []);
+
+    const loadBenefits = useCallback(() => {
+        setIsLoading(true);
+        setError(null);
+        fetchBenefits();
+    }, [fetchBenefits]);
+
+    useEffect(() => {
+        fetchBenefits();
+    }, [fetchBenefits]);
 
     return (
         <Card className="bg-blue-100 dark:bg-blue-950/40 border-blue-400 dark:border-blue-800">
@@ -191,23 +203,15 @@ export default function CompanyBenefitsGrid() {
                 {error && (
                     <div role="alert" className="flex items-center gap-2 text-sm text-destructive">
                         <span>{error}</span>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                setIsLoading(true);
-                                setError(null);
-                                getCompanyBenefits()
-                                    .then(setCompanyBenefits)
-                                    .catch((err) => {
-                                        console.error('Failed to fetch company benefits:', err);
-                                        setError('Failed to load benefits');
-                                    })
-                                    .finally(() => setIsLoading(false));
-                            }}
-                        >
-                            Retry
-                        </Button>
+                        {error === LOAD_ERROR && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={loadBenefits}
+                            >
+                                Retry
+                            </Button>
+                        )}
                     </div>
                 )}
 

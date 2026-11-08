@@ -243,6 +243,7 @@ describe('CompanyBenefitsGrid Component', () => {
             await waitFor(() => {
                 expect(mockHandleAddBenefit).toHaveBeenCalled();
                 expect(mockGetCompanyBenefits).toHaveBeenCalledTimes(2);
+                expect(screen.getByText('New Benefit')).toBeInTheDocument();
             });
             mockAddBenefitOpen = false;
         });
@@ -258,7 +259,7 @@ describe('CompanyBenefitsGrid Component', () => {
             });
         });
 
-        it('closes dialog after successful addition', async () => {
+        it('opens add benefit dialog when trigger is clicked', async () => {
             mockGetCompanyBenefits.mockResolvedValue([]);
 
             render(<CompanyBenefitsGrid />);
@@ -345,15 +346,15 @@ describe('CompanyBenefitsGrid Component', () => {
             const benefit = makeBenefit({ id: 'benefit-1', benefit: 'Health Insurance' });
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
 
-            const { container } = render(<CompanyBenefitsGrid />);
+            render(<CompanyBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Health Insurance')).toBeInTheDocument();
             });
 
-            const deleteTrigger = container.querySelector('button.text-red-400');
+            const deleteTrigger = screen.getByRole('button', { name: 'Delete Health Insurance' });
             expect(deleteTrigger).toBeInTheDocument();
-            fireEvent.click(deleteTrigger!);
+            fireEvent.click(deleteTrigger);
 
             await waitFor(() => {
                 expect(screen.getByText('Delete Benefit')).toBeInTheDocument();
@@ -373,14 +374,14 @@ describe('CompanyBenefitsGrid Component', () => {
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
             mockDeleteBenefit.mockRejectedValue(new Error('Delete failed'));
 
-            const { container } = render(<CompanyBenefitsGrid />);
+            render(<CompanyBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Health Insurance')).toBeInTheDocument();
             });
 
-            const deleteTrigger = container.querySelector('button.text-red-400');
-            fireEvent.click(deleteTrigger!);
+            const deleteTrigger = screen.getByRole('button', { name: 'Delete Health Insurance' });
+            fireEvent.click(deleteTrigger);
 
             await waitFor(() => {
                 expect(screen.getByText('Delete')).toBeInTheDocument();
@@ -398,14 +399,14 @@ describe('CompanyBenefitsGrid Component', () => {
             mockGetCompanyBenefits.mockResolvedValue([benefit]);
             mockDeleteBenefit.mockImplementation(() => new Promise(() => { }));
 
-            const { container } = render(<CompanyBenefitsGrid />);
+            render(<CompanyBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Health Insurance')).toBeInTheDocument();
             });
 
-            const deleteTrigger = container.querySelector('button.text-red-400');
-            fireEvent.click(deleteTrigger!);
+            const deleteTrigger = screen.getByRole('button', { name: 'Delete Health Insurance' });
+            fireEvent.click(deleteTrigger);
 
             await waitFor(() => {
                 expect(screen.getByText('Delete')).toBeInTheDocument();
@@ -455,6 +456,8 @@ describe('CompanyBenefitsGrid Component', () => {
             fireEvent.click(screen.getByText('Retry'));
 
             await waitFor(() => {
+                expect(mockGetCompanyBenefits).toHaveBeenCalledTimes(2);
+                expect(screen.getByText('Health Insurance')).toBeInTheDocument();
                 expect(screen.queryByText('Failed to load benefits')).not.toBeInTheDocument();
             });
         });

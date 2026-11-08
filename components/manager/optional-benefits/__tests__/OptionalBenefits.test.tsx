@@ -281,7 +281,7 @@ describe('OptionalBenefitsGrid Component', () => {
             });
         });
 
-        it('closes dialog after successful addition', async () => {
+        it('opens add benefit dialog when trigger is clicked', async () => {
             mockGetOptionalBenefits.mockResolvedValue([]);
 
             render(<OptionalBenefitsGrid />);
@@ -416,13 +416,13 @@ describe('OptionalBenefitsGrid Component', () => {
             const benefit = makeBenefit({ benefit: 'Life Insurance' });
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
 
-            const { container } = render(<OptionalBenefitsGrid />);
+            render(<OptionalBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Life Insurance')).toBeInTheDocument();
             });
 
-            const deleteTrigger = container.querySelector('button.text-red-400');
+            const deleteTrigger = screen.getByRole('button', { name: 'Delete Life Insurance' });
             expect(deleteTrigger).toBeInTheDocument();
         });
 
@@ -430,14 +430,14 @@ describe('OptionalBenefitsGrid Component', () => {
             const benefit = makeBenefit({ benefit: 'Life Insurance' });
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
 
-            const { container } = render(<OptionalBenefitsGrid />);
+            render(<OptionalBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Life Insurance')).toBeInTheDocument();
             });
 
-            const deleteTrigger = container.querySelector('button.text-red-400');
-            fireEvent.click(deleteTrigger!);
+            const deleteTrigger = screen.getByRole('button', { name: 'Delete Life Insurance' });
+            fireEvent.click(deleteTrigger);
 
             await waitFor(() => {
                 expect(screen.getByText('Delete Benefit')).toBeInTheDocument();
@@ -449,14 +449,14 @@ describe('OptionalBenefitsGrid Component', () => {
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
             mockDeleteBenefit.mockResolvedValue({ id: benefit.id });
 
-            const { container } = render(<OptionalBenefitsGrid />);
+            render(<OptionalBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Life Insurance')).toBeInTheDocument();
             });
 
-            const deleteTrigger = container.querySelector('button.text-red-400');
-            fireEvent.click(deleteTrigger!);
+            const deleteTrigger = screen.getByRole('button', { name: 'Delete Life Insurance' });
+            fireEvent.click(deleteTrigger);
 
             await waitFor(() => {
                 expect(screen.getByText('Delete Benefit')).toBeInTheDocument();
@@ -475,14 +475,14 @@ describe('OptionalBenefitsGrid Component', () => {
             const benefit = makeBenefit({ id: 'benefit-1', benefit: 'Life Insurance' });
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
 
-            const { container } = render(<OptionalBenefitsGrid />);
+            render(<OptionalBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Life Insurance')).toBeInTheDocument();
             });
 
-            const deleteTrigger = container.querySelector('button.text-red-400');
-            fireEvent.click(deleteTrigger!);
+            const deleteTrigger = screen.getByRole('button', { name: 'Delete Life Insurance' });
+            fireEvent.click(deleteTrigger);
 
             await waitFor(() => {
                 expect(screen.getByText('Delete Benefit')).toBeInTheDocument();
@@ -502,14 +502,14 @@ describe('OptionalBenefitsGrid Component', () => {
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
             mockDeleteBenefit.mockRejectedValue(new Error('Delete failed'));
 
-            const { container } = render(<OptionalBenefitsGrid />);
+            render(<OptionalBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Life Insurance')).toBeInTheDocument();
             });
 
-            const deleteTrigger = container.querySelector('button.text-red-400');
-            fireEvent.click(deleteTrigger!);
+            const deleteTrigger = screen.getByRole('button', { name: 'Delete Life Insurance' });
+            fireEvent.click(deleteTrigger);
 
             await waitFor(() => {
                 expect(screen.getByText('Delete')).toBeInTheDocument();
@@ -527,14 +527,14 @@ describe('OptionalBenefitsGrid Component', () => {
             mockGetOptionalBenefits.mockResolvedValue([benefit]);
             mockDeleteBenefit.mockImplementation(() => new Promise(() => { }));
 
-            const { container } = render(<OptionalBenefitsGrid />);
+            render(<OptionalBenefitsGrid />);
 
             await waitFor(() => {
                 expect(screen.getByText('Life Insurance')).toBeInTheDocument();
             });
 
-            const deleteTrigger = container.querySelector('button.text-red-400');
-            fireEvent.click(deleteTrigger!);
+            const deleteTrigger = screen.getByRole('button', { name: 'Delete Life Insurance' });
+            fireEvent.click(deleteTrigger);
 
             await waitFor(() => {
                 expect(screen.getByText('Delete')).toBeInTheDocument();
@@ -584,6 +584,8 @@ describe('OptionalBenefitsGrid Component', () => {
             fireEvent.click(screen.getByText('Retry'));
 
             await waitFor(() => {
+                expect(mockGetOptionalBenefits).toHaveBeenCalledTimes(2);
+                expect(screen.getByText('Life Insurance')).toBeInTheDocument();
                 expect(screen.queryByText('Failed to load benefits')).not.toBeInTheDocument();
             });
         });
@@ -658,8 +660,9 @@ describe('OptionalBenefitsGrid Component', () => {
                 expect(screen.getByText('Wellness Benefit')).toBeInTheDocument();
             });
 
-            const icons = container.querySelectorAll('svg.lucide');
-            expect(icons.length).toBeGreaterThanOrEqual(3);
+            expect(container.querySelector('svg.lucide-shield')).toBeInTheDocument();
+            expect(container.querySelector('svg.lucide-umbrella')).toBeInTheDocument();
+            expect(container.querySelector('svg.lucide-heart')).toBeInTheDocument();
         });
     });
 

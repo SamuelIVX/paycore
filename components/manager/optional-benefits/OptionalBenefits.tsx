@@ -3,7 +3,7 @@
 /**
  * Manager-facing UI: OptionalBenefits.
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { BenefitDetailsProps } from "../types";
@@ -24,6 +24,8 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { useAddBenefit } from "@/hooks/use-add-benefit";
+
+const LOAD_ERROR = 'Failed to load benefits';
 
 /**
  * Optional Benefit Details component.
@@ -71,15 +73,25 @@ export default function OptionalBenefitsGrid() {
         handleAddBenefit,
     } = useAddBenefit("OPTIONAL")
 
-    useEffect(() => {
+    const fetchBenefits = useCallback(() => {
         getOptionalBenefits()
             .then(setOptionalBenefits)
             .catch((err) => {
                 console.error('Failed to fetch optional benefits:', err);
-                setError('Failed to load benefits');
+                setError(LOAD_ERROR);
             })
             .finally(() => setIsLoading(false));
     }, []);
+
+    const loadBenefits = useCallback(() => {
+        setIsLoading(true);
+        setError(null);
+        fetchBenefits();
+    }, [fetchBenefits]);
+
+    useEffect(() => {
+        fetchBenefits();
+    }, [fetchBenefits]);
 
     return (
         <Card className="mt-8 bg-purple-100 dark:bg-purple-950/40 border-purple-400 dark:border-purple-800">
@@ -201,23 +213,15 @@ export default function OptionalBenefitsGrid() {
                 {error && (
                     <div role="alert" className="flex items-center gap-2 text-sm text-destructive">
                         <span>{error}</span>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                setIsLoading(true);
-                                setError(null);
-                                getOptionalBenefits()
-                                    .then(setOptionalBenefits)
-                                    .catch((err) => {
-                                        console.error('Failed to fetch optional benefits:', err);
-                                        setError('Failed to load benefits');
-                                    })
-                                    .finally(() => setIsLoading(false));
-                            }}
-                        >
-                            Retry
-                        </Button>
+                        {error === LOAD_ERROR && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={loadBenefits}
+                            >
+                                Retry
+                            </Button>
+                        )}
                     </div>
                 )}
 

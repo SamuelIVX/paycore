@@ -62,6 +62,7 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
     pay_rate: employee.pay_rate ?? 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const employeeName = `${employee.first_name ?? ""} ${employee.last_name ?? ""}`.trim();
 
   return (
     <div className="text-right">
@@ -70,7 +71,7 @@ function ActionsCell({ employee, onUpdate, onDelete, onError }: {
           <BaseButton
             variant="ghost"
             size="sm"
-            aria-label={`Actions for ${employee.first_name ?? ""} ${employee.last_name ?? ""}`.trim() || "Employee actions"}
+            aria-label={employeeName ? `Actions for ${employeeName}` : "Employee actions"}
             className="min-h-[44px] min-w-[44px]"
           >
             <Edit className="w-4 h-4" />

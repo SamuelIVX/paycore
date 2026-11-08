@@ -1,6 +1,7 @@
 /**
  * Vitest coverage for app/manager/employee-table.
  */
+import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -43,22 +44,28 @@ const mockSetOpen = vi.fn();
 
 // Mock the custom hook
 vi.mock('@/hooks/use-add-employee', () => ({
-    useAddEmployee: () => ({
-        firstName: 'John',
-        setFirstName: vi.fn(),
-        lastName: 'Doe',
-        setLastName: vi.fn(),
-        position: 'Engineer',
-        setPosition: vi.fn(),
-        payFrequency: 'HOURLY',
-        setPayFrequency: vi.fn(),
-        payRate: 75000,
-        setPayRate: vi.fn(),
-        loading: false,
-        open: false,
-        setOpen: mockSetOpen,
-        handleAddEmployee: vi.fn().mockResolvedValue(true),
-    }),
+    useAddEmployee: () => {
+        const [open, setOpen] = React.useState(false);
+        return {
+            firstName: 'John',
+            setFirstName: vi.fn(),
+            lastName: 'Doe',
+            setLastName: vi.fn(),
+            position: 'Engineer',
+            setPosition: vi.fn(),
+            payFrequency: 'HOURLY',
+            setPayFrequency: vi.fn(),
+            payRate: 75000,
+            setPayRate: vi.fn(),
+            loading: false,
+            open,
+            setOpen: (val: boolean) => {
+                mockSetOpen(val);
+                setOpen(val);
+            },
+            handleAddEmployee: vi.fn().mockResolvedValue(true),
+        };
+    },
 }));
 
 // Import after mocks
@@ -244,10 +251,11 @@ describe('EmployeeTable Component', () => {
             const payButton = screen.getAllByText('Pay')[0];
             fireEvent.click(payButton);
 
-            // After sorting by pay, employees should be ordered by pay rate
+            // After sorting by pay, employees should be ordered by pay rate (ascending: Bob $55,000 first)
             await waitFor(() => {
                 const rows = screen.getAllByRole('row');
-                expect(rows.length).toBeGreaterThan(1);
+                expect(rows[1]).toHaveTextContent('Bob');
+                expect(rows[1]).toHaveTextContent('$55,000');
             });
         });
 
@@ -495,6 +503,7 @@ describe('EmployeeTable Component', () => {
             fireEvent.click(addButton);
 
             expect(mockSetOpen).toHaveBeenCalledWith(true);
+            expect(await screen.findByText('Add New Employee')).toBeInTheDocument();
         });
     });
 

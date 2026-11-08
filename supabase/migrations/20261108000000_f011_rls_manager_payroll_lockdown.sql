@@ -20,7 +20,10 @@ as $$
   );
 $$;
 
--- 1. payroll_runs: only managers can view, insert, or update company payroll runs.
+revoke execute on function public.is_manager() from public, anon;
+grant execute on function public.is_manager() to authenticated;
+
+-- 1. payroll_runs: managers can view all runs; employees can view runs containing their own paystubs.
 alter table public.payroll_runs enable row level security;
 
 drop policy if exists "Anyone can view payroll runs" on public.payroll_runs;
@@ -31,7 +34,21 @@ create policy "payroll_runs_select_manager"
     for select
     to authenticated
     using (
-        public.is_manager()
+        (select public.is_manager())
+    );
+
+drop policy if exists "payroll_runs_select_own_run" on public.payroll_runs;
+create policy "payroll_runs_select_own_run"
+    on public.payroll_runs
+    for select
+    to authenticated
+    using (
+        id in (
+            select pr.payroll_run_id
+            from public.payroll_records pr
+            join public.employees e on e.id = pr.employee_id
+            where e.profile_id = (select auth.uid())
+        )
     );
 
 drop policy if exists "payroll_runs_insert_manager" on public.payroll_runs;
