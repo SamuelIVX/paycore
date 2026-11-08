@@ -199,7 +199,26 @@ export default function OptionalBenefitsGrid() {
 
 
                 {error && (
-                    <div role="alert" className="text-sm text-destructive">{error}</div>
+                    <div role="alert" className="flex items-center gap-2 text-sm text-destructive">
+                        <span>{error}</span>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                                setIsLoading(true);
+                                setError(null);
+                                getOptionalBenefits()
+                                    .then(setOptionalBenefits)
+                                    .catch((err) => {
+                                        console.error('Failed to fetch optional benefits:', err);
+                                        setError('Failed to load benefits');
+                                    })
+                                    .finally(() => setIsLoading(false));
+                            }}
+                        >
+                            Retry
+                        </Button>
+                    </div>
                 )}
 
                 {optional_benefits.map((b) => {
@@ -280,7 +299,8 @@ export default function OptionalBenefitsGrid() {
                                                             </div>
                                                             <button
                                                                 type="button"
-                                                                className="text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 transition-colors"
+                                                                aria-label={`Delete ${b.benefit}`}
+                                                                className="text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 transition-colors p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
                                                                 onClick={(e) => { e.stopPropagation(); setDeleteOpenId(b.id); }}
                                                             >
                                                                 <CircleMinus className="w-4 h-4" />

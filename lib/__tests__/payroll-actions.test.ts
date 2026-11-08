@@ -55,11 +55,22 @@ const mockTimeEntries = [
     { id: 'entry-4', employee_id: 'emp-1', hours_worked: 8, work_date: '2026-01-18', status: 'APPROVED', clock_in: null, clock_out: null, approved_at: null, approved_by: null, created_at: null },
 ];
 
-function chainable(terminal: any) {
-    const fn = vi.fn().mockReturnThis();
-    Object.assign(fn, { terminal });
-    return fn;
-}
+const setupFromCalls = (handler: (callCount: number) => unknown) => {
+    let callCount = 0;
+    mockFrom.mockImplementation((table: string) => {
+        if (table === 'profiles') {
+            return {
+                select: vi.fn().mockReturnValue({
+                    eq: vi.fn().mockReturnValue({
+                        maybeSingle: vi.fn().mockResolvedValue({ data: { role: 'MANAGER' }, error: null }),
+                    }),
+                }),
+            };
+        }
+        callCount++;
+        return handler(callCount) as ReturnType<typeof mockFrom>;
+    });
+};
 
 describe('runPayroll', () => {
     beforeEach(() => {
@@ -72,6 +83,36 @@ describe('runPayroll', () => {
         await expect(runPayroll('2026-01-15', '2026-01-28')).rejects.toThrow('User must be authenticated');
     });
 
+    it('throws if user is not a manager', async () => {
+        mockFrom.mockImplementation((table: string) => {
+            if (table === 'profiles') {
+                return {
+                    select: vi.fn().mockReturnValue({
+                        eq: vi.fn().mockReturnValue({
+                            maybeSingle: vi.fn().mockResolvedValue({ data: { role: 'EMPLOYEE' }, error: null }),
+                        }),
+                    }),
+                };
+            }
+        });
+        await expect(runPayroll('2026-01-15', '2026-01-28')).rejects.toThrow('Unauthorized: Only managers');
+    });
+
+    it('throws if profile lookup fails', async () => {
+        mockFrom.mockImplementation((table: string) => {
+            if (table === 'profiles') {
+                return {
+                    select: vi.fn().mockReturnValue({
+                        eq: vi.fn().mockReturnValue({
+                            maybeSingle: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } }),
+                        }),
+                    }),
+                };
+            }
+        });
+        await expect(runPayroll('2026-01-15', '2026-01-28')).rejects.toThrow('Unauthorized: Only managers');
+    });
+
     it('throws on invalid dates', async () => {
         await expect(runPayroll('not-a-date', '2026-01-28')).rejects.toThrow('Invalid pay period dates');
     });
@@ -81,9 +122,7 @@ describe('runPayroll', () => {
     });
 
     it('throws if payroll for this period already exists', async () => {
-        let callCount = 0;
-        mockFrom.mockImplementation(() => {
-            callCount++;
+        setupFromCalls((callCount) => {
             if (callCount === 1) {
                 return {
                     update: vi.fn().mockReturnThis(),
@@ -116,13 +155,11 @@ describe('runPayroll', () => {
     });
 
     it('reconciles stale PROCESSING runs older than 30 minutes to FAILED (F-005)', async () => {
-        let callCount = 0;
         const mockReconcileUpdate = vi.fn().mockReturnThis();
         const mockReconcileEq = vi.fn().mockReturnThis();
         const mockReconcileLt = vi.fn().mockResolvedValue({ error: null });
 
-        mockFrom.mockImplementation(() => {
-            callCount++;
+        setupFromCalls((callCount) => {
             if (callCount === 1) {
                 return { update: mockReconcileUpdate, eq: mockReconcileEq, lt: mockReconcileLt };
             }
@@ -155,10 +192,7 @@ describe('runPayroll', () => {
     });
 
     it('rejects a second run within 5 minutes for the same user (F-006)', async () => {
-        let callCount = 0;
-
-        mockFrom.mockImplementation(() => {
-            callCount++;
+        setupFromCalls((callCount) => {
             if (callCount === 1) {
                 return {
                     update: vi.fn().mockReturnThis(),
@@ -180,7 +214,6 @@ describe('runPayroll', () => {
     });
 
     it('returns totals on a successful payroll run', async () => {
-        let callCount = 0;
         const mockOptionalBenefit = {
             id: 'employee-benefit-1',
             employee_id: 'emp-1',
@@ -194,8 +227,7 @@ describe('runPayroll', () => {
         };
         const mockInsertPayrollRecords = vi.fn().mockResolvedValue({ data: null, error: null });
 
-        mockFrom.mockImplementation(() => {
-            callCount++;
+        setupFromCalls((callCount) => {
             if (callCount === 1) {
                 return {
                     update: vi.fn().mockReturnThis(),
@@ -269,10 +301,8 @@ describe('runPayroll', () => {
     it('marks the payroll run as FAILED when an error occurs mid-run', async () => {
         const mockUpdate = vi.fn().mockReturnThis();
         const mockEq = vi.fn().mockResolvedValue({ data: null, error: null });
-        let callCount = 0;
 
-        mockFrom.mockImplementation(() => {
-            callCount++;
+        setupFromCalls((callCount) => {
             if (callCount === 1) {
                 return {
                     update: vi.fn().mockReturnThis(),
