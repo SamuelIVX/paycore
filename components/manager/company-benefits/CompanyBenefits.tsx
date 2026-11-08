@@ -3,7 +3,7 @@
 /**
  * Manager-facing UI: CompanyBenefits.
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, CircleMinus, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,8 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { useAddBenefit } from "@/hooks/use-add-benefit";
+
+const LOAD_ERROR = 'Failed to load benefits';
 
 /**
  * Company Benefit Details component.
@@ -71,15 +73,25 @@ export default function CompanyBenefitsGrid() {
         handleAddBenefit,
     } = useAddBenefit()
 
-    useEffect(() => {
+    const fetchBenefits = useCallback(() => {
         getCompanyBenefits()
             .then(setCompanyBenefits)
             .catch((err) => {
                 console.error('Failed to fetch company benefits:', err);
-                setError('Failed to load benefits');
+                setError(LOAD_ERROR);
             })
             .finally(() => setIsLoading(false));
     }, []);
+
+    const loadBenefits = useCallback(() => {
+        setIsLoading(true);
+        setError(null);
+        fetchBenefits();
+    }, [fetchBenefits]);
+
+    useEffect(() => {
+        fetchBenefits();
+    }, [fetchBenefits]);
 
     return (
         <Card className="bg-blue-100 dark:bg-blue-950/40 border-blue-400 dark:border-blue-800">
@@ -189,7 +201,18 @@ export default function CompanyBenefitsGrid() {
 
 
                 {error && (
-                    <div role="alert" className="text-sm text-destructive">{error}</div>
+                    <div role="alert" className="flex items-center gap-2 text-sm text-destructive">
+                        <span>{error}</span>
+                        {error === LOAD_ERROR && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={loadBenefits}
+                            >
+                                Retry
+                            </Button>
+                        )}
+                    </div>
                 )}
 
                 {company_benefits.map((b) => {
@@ -256,7 +279,7 @@ export default function CompanyBenefitsGrid() {
                                     <Card className="hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-600 transition-all hover:cursor-pointer">
                                         <CardContent>
                                             <div className="flex items-start gap-4">
-                                                <div className="shrink-0 w-12 h-12 rounded-lg bg-blue-500 dark:bg-blue-700 flex items-center justify-center">
+                                                <div data-testid={`benefit-icon-${b.tag.toLowerCase()}`} className="shrink-0 w-12 h-12 rounded-lg bg-blue-500 dark:bg-blue-700 flex items-center justify-center">
                                                     <Icon className="w-6 h-6 text-white" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -269,7 +292,8 @@ export default function CompanyBenefitsGrid() {
                                                             </Badge>
                                                             <button
                                                                 type="button"
-                                                                className="text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 transition-colors"
+                                                                aria-label={`Delete ${b.benefit}`}
+                                                                className="text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 transition-colors p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-md"
                                                                 onClick={(e) => { e.stopPropagation(); setDeleteOpenId(b.id); }}
                                                             >
                                                                 <CircleMinus className="w-5 h-5" />

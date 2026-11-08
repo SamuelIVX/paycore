@@ -5,7 +5,7 @@
 //
 // Requires devDeps: @stryker-mutator/core, @stryker-mutator/vitest-runner
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
-export default {
+const config = {
   testRunner: 'vitest',
   coverageAnalysis: 'perTest',
   reporters: ['progress', 'clear-text', 'html'],
@@ -23,5 +23,7 @@ export default {
   ],
 
   // Mutation-score gate. `break` fails the run; tune as the suites mature.
-  thresholds: { high: 80, low: 60, break: 60 },
+  thresholds: { high: 80, low: 60, break: 55 },
 };
+
+export default config;

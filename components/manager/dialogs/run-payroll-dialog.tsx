@@ -51,7 +51,7 @@ export function RunPayrollDialog({ trigger }: RunPayrollDialogProps) {
         <DialogHeader>
           <DialogTitle>Run Payroll</DialogTitle>
           <DialogDescription>
-            Process and calculate payroll for the selected pay period.
+            Process payroll for selected period
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">

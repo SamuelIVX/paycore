@@ -20,7 +20,7 @@ export function SummaryCard({ title, value, color, description }: SummaryCardPro
     return (
         <div className="rounded-md border bg-background dark:bg-blue-950/40 border-none p-4 text-center">
             <div className="text-md text-muted-foreground mb-1">{title}</div>
-            <div className={`text-2xl font-bold ${color}`}>{value}</div>
+            <div className={`text-2xl font-bold tabular-nums ${color}`}>{value}</div>
             <div className="text-xs text-muted-foreground mt-1">{description}</div>
         </div>
     )

@@ -14,6 +14,7 @@ import { getActiveOptionalEmployeeBenefits } from "@/lib/supabase/benefits";
 import { shouldApplyOptionalDeductions } from "@/lib/benefits/eligibility";
 import { getWeekStartKey } from "@/lib/utils/date-helpers";
 import { roundMoney } from "@/lib/money";
+import { canonicalizeAuthRole } from "@/lib/auth/roles";
 
 type EmployeeBenefitRow = Tables<"employee_benefits"> & {
     benefit?: Pick<Tables<"benefits">, "id" | "type" | "monthly_cost"> | null;
@@ -206,6 +207,17 @@ export const runPayroll = async (payPeriodStart: string, payPeriodEnd: string) =
     }
     if (startDate > endDate) {
         throw new Error("Pay period start date must be before or equal to end date.");
+    }
+
+    // F-SEC-01: Manager role enforcement. Non-managers cannot execute payroll runs.
+    const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .maybeSingle();
+
+    if (profileError || canonicalizeAuthRole(profile?.role) !== "MANAGER") {
+        throw new Error("Unauthorized: Only managers can execute payroll runs.");
     }
 
     // F-005: on-run-start reconciler — reset stale PROCESSING runs older than 30 minutes

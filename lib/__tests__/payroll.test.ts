@@ -221,6 +221,35 @@ describe('calculatePayRollForEmployee', () => {
         });
     });
 
+    describe('benefits and negative pay boundaries', () => {
+        it('deducts prorated bi-weekly benefit amount when gross exceeds deduction', () => {
+            const employee = makeEmployee({ pay_rate: 30, pay_frequency: 'HOURLY', federal_tax_rate: 0, state_tax_rate: 0, social_security_tax_rate: 0 });
+            const entries = [makeTimeEntry({ hours_worked: 10 })];
+            const result = calculatePayRollForEmployee(employee, entries, makePayrollRun(), 65);
+            expect(result.gross_pay).toBe(300);
+            expect(result.benefit_deductions).toBe(30);
+            expect(result.net_pay).toBe(270);
+        });
+
+        it('clamps voluntary benefit deductions so net pay is never negative', () => {
+            const employee = makeEmployee({ pay_rate: 10, pay_frequency: 'HOURLY', federal_tax_rate: 0.10, state_tax_rate: 0.05, social_security_tax_rate: 0.05 });
+            const entries = [makeTimeEntry({ hours_worked: 5 })];
+            const result = calculatePayRollForEmployee(employee, entries, makePayrollRun(), 500);
+            expect(result.gross_pay).toBe(50);
+            expect(result.federal_tax + result.state_tax + result.social_security).toBe(10);
+            expect(result.benefit_deductions).toBe(40);
+            expect(result.net_pay).toBe(0);
+        });
+
+        it('does not deduct benefits when gross pay is 0', () => {
+            const employee = makeEmployee({ pay_rate: 30, pay_frequency: 'HOURLY' });
+            const result = calculatePayRollForEmployee(employee, [], makePayrollRun(), 200);
+            expect(result.gross_pay).toBe(0);
+            expect(result.benefit_deductions).toBe(0);
+            expect(result.net_pay).toBe(0);
+        });
+    });
+
     describe('output shape', () => {
         it('returns the correct employee_id and payroll_run_id', () => {
             const employee = makeEmployee({ id: 'emp-42' });
@@ -228,6 +257,14 @@ describe('calculatePayRollForEmployee', () => {
             const result = calculatePayRollForEmployee(employee, [], run);
             expect(result.employee_id).toBe('emp-42');
             expect(result.payroll_run_id).toBe('run-99');
+        });
+
+        it('handles unrecognized pay frequency by leaving gross pay at 0', () => {
+            const employee = makeEmployee({ pay_rate: 100, pay_frequency: 'CUSTOM' as unknown as Tables<'employees'>['pay_frequency'] });
+            const result = calculatePayRollForEmployee(employee, [makeTimeEntry({ hours_worked: 10 })], makePayrollRun());
+            expect(result.gross_pay).toBe(0);
+            expect(result.regular_hours).toBe(0);
+            expect(result.overtime_hours).toBe(0);
         });
     });
 });

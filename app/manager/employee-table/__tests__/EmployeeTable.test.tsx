@@ -1,6 +1,7 @@
 /**
  * Vitest coverage for app/manager/employee-table.
  */
+import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -39,24 +40,32 @@ vi.mock('@/lib/supabase/employee', () => ({
     deleteEmployee: mockDeleteEmployee,
 }));
 
+const mockSetOpen = vi.fn();
+
 // Mock the custom hook
 vi.mock('@/hooks/use-add-employee', () => ({
-    useAddEmployee: () => ({
-        firstName: 'John',
-        setFirstName: vi.fn(),
-        lastName: 'Doe',
-        setLastName: vi.fn(),
-        position: 'Engineer',
-        setPosition: vi.fn(),
-        payFrequency: 'HOURLY',
-        setPayFrequency: vi.fn(),
-        payRate: 75000,
-        setPayRate: vi.fn(),
-        loading: false,
-        open: false,
-        setOpen: vi.fn(),
-        handleAddEmployee: vi.fn().mockResolvedValue(true),
-    }),
+    useAddEmployee: () => {
+        const [open, setOpen] = React.useState(false);
+        return {
+            firstName: 'John',
+            setFirstName: vi.fn(),
+            lastName: 'Doe',
+            setLastName: vi.fn(),
+            position: 'Engineer',
+            setPosition: vi.fn(),
+            payFrequency: 'HOURLY',
+            setPayFrequency: vi.fn(),
+            payRate: 75000,
+            setPayRate: vi.fn(),
+            loading: false,
+            open,
+            setOpen: (val: boolean) => {
+                mockSetOpen(val);
+                setOpen(val);
+            },
+            handleAddEmployee: vi.fn().mockResolvedValue(true),
+        };
+    },
 }));
 
 // Import after mocks
@@ -113,7 +122,7 @@ describe('EmployeeTable Component', () => {
             expect(screen.getByText('Status')).toBeInTheDocument();
         });
 
-        it.skip('displays employee data correctly', async () => {
+        it('displays employee data correctly', async () => {
             const employee = makeEmployee({
                 id: 'emp-1',
                 first_name: 'John',
@@ -133,7 +142,7 @@ describe('EmployeeTable Component', () => {
                 expect(screen.getByText('Senior Engineer')).toBeInTheDocument();
                 expect(screen.getByText('2023-01-15')).toBeInTheDocument();
                 expect(screen.getByText('Salary')).toBeInTheDocument();
-                expect(screen.getByText('$120000')).toBeInTheDocument();
+                expect(screen.getByText('$120,000')).toBeInTheDocument();
                 expect(screen.getByText('ACTIVE')).toBeInTheDocument();
             });
         });
@@ -223,7 +232,7 @@ describe('EmployeeTable Component', () => {
             });
         });
 
-        it.skip('sorts by pay rate', async () => {
+        it('sorts by pay rate', async () => {
             const employees = [
                 makeEmployee({ id: 'emp-1', first_name: 'John', pay_rate: 75000 }),
                 makeEmployee({ id: 'emp-2', first_name: 'Jane', pay_rate: 95000 }),
@@ -234,18 +243,19 @@ describe('EmployeeTable Component', () => {
             render(<EmployeeTable />);
 
             await waitFor(() => {
-                expect(screen.getByText('$75000')).toBeInTheDocument();
-                expect(screen.getByText('$95000')).toBeInTheDocument();
-                expect(screen.getByText('$55000')).toBeInTheDocument();
+                expect(screen.getByText('$75,000')).toBeInTheDocument();
+                expect(screen.getByText('$95,000')).toBeInTheDocument();
+                expect(screen.getByText('$55,000')).toBeInTheDocument();
             });
 
             const payButton = screen.getAllByText('Pay')[0];
             fireEvent.click(payButton);
 
-            // After sorting by pay, employees should be ordered by pay rate
+            // After sorting by pay, employees should be ordered by pay rate (ascending: Bob $55,000 first)
             await waitFor(() => {
                 const rows = screen.getAllByRole('row');
-                expect(rows.length).toBeGreaterThan(1);
+                expect(rows[1]).toHaveTextContent('Bob');
+                expect(rows[1]).toHaveTextContent('$55,000');
             });
         });
 
@@ -301,7 +311,7 @@ describe('EmployeeTable Component', () => {
             });
         });
 
-        it.skip('filters employees by position', async () => {
+        it('filters employees by position', async () => {
             const employees = [
                 makeEmployee({ id: 'emp-1', position: 'Engineer' }),
                 makeEmployee({ id: 'emp-2', position: 'Manager' }),
@@ -312,7 +322,7 @@ describe('EmployeeTable Component', () => {
             render(<EmployeeTable />);
 
             await waitFor(() => {
-                expect(screen.getByText('Engineer')).toBeInTheDocument();
+                expect(screen.getAllByText('Engineer')).toHaveLength(2);
             });
 
             const searchInput = screen.getByPlaceholderText('Search employees...');
@@ -320,6 +330,7 @@ describe('EmployeeTable Component', () => {
 
             await waitFor(() => {
                 expect(screen.getByText('Manager')).toBeInTheDocument();
+                expect(screen.queryByText('Engineer')).not.toBeInTheDocument();
             });
         });
 
@@ -344,10 +355,10 @@ describe('EmployeeTable Component', () => {
             });
         });
 
-        it.skip('clears results when search is empty', async () => {
+        it('clears results when search is empty', async () => {
             const employees = [
                 makeEmployee({ id: 'emp-1', first_name: 'John' }),
-                makeEmployee({ id: 'emp-2', first_name: 'Jane' }),
+                makeEmployee({ id: 'emp-2', first_name: 'Jane', last_name: 'Doe' }),
             ];
             mockGetEmployees.mockResolvedValue(employees);
 
@@ -478,7 +489,7 @@ describe('EmployeeTable Component', () => {
             });
         });
 
-        it.skip('opens dialog when Add Employee button clicked', async () => {
+        it('opens dialog when Add Employee button clicked', async () => {
             mockGetEmployees.mockResolvedValue([]);
 
             render(<EmployeeTable />);
@@ -488,22 +499,22 @@ describe('EmployeeTable Component', () => {
                 expect(addButton).toBeInTheDocument();
             });
 
-            // TODO(#187): Implement dialog trigger verification
-            // Requires: userEvent.click(addButton) + verify dialog content
+            const addButton = screen.getByText('Add Employee');
+            fireEvent.click(addButton);
+
+            expect(mockSetOpen).toHaveBeenCalledWith(true);
+            expect(await screen.findByText('Add New Employee')).toBeInTheDocument();
         });
     });
 
     describe('Error Handling', () => {
-        it.skip('displays error message when employee operations fail', async () => {
-            // TODO(#187): Requires mocking failed API call, triggering error state
-            mockGetEmployees.mockResolvedValue([
-                makeEmployee({ id: 'emp-1' }),
-            ]);
+        it('displays error message when employee operations fail', async () => {
+            mockGetEmployees.mockRejectedValue(new Error('Network failure'));
 
             render(<EmployeeTable />);
 
             await waitFor(() => {
-                expect(screen.getByText('John Smith')).toBeInTheDocument();
+                expect(screen.getByText('Failed to load employees.')).toBeInTheDocument();
             });
         });
 

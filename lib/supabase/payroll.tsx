@@ -154,12 +154,16 @@ export const calculatePayRollForEmployee = (
     const social_security_tax = roundMoney(gross_pay * (social_security_tax_rate ?? 0));
 
     // Calculate benefits deduction (convert monthly to bi-weekly)
-    const perPeriodBenefitDeduction = gross_pay > 0
+    // Taxes take statutory precedence; voluntary deductions cannot exceed remaining pay (clamped so net pay is never negative)
+    const rawPeriodBenefitDeduction = gross_pay > 0
         ? roundMoney((benefitDeduction * 12) / BI_WEEKLY_PAY_PERIODS)
         : 0;  // Only deduct benefits when a run is actually paying the employee
 
-    // Calculate net pay
-    const net_pay = roundMoney(gross_pay - federal_tax - state_tax - social_security_tax - perPeriodBenefitDeduction);
+    const maxAllowableDeduction = Math.max(0, roundMoney(gross_pay - federal_tax - state_tax - social_security_tax));
+    const perPeriodBenefitDeduction = Math.min(rawPeriodBenefitDeduction, maxAllowableDeduction);
+
+    // Calculate net pay (non-negative invariant)
+    const net_pay = Math.max(0, roundMoney(gross_pay - federal_tax - state_tax - social_security_tax - perPeriodBenefitDeduction));
 
     return {
         employee_id: employee.id,

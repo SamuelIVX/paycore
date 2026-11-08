@@ -353,35 +353,41 @@ describe('PayrollTable Component', () => {
             });
         });
 
-        it.skip('sorts by created date', async () => {
+        it('sorts by created date', async () => {
+            const date1Str = '2026-01-30T12:00:00Z';
+            const date2Str = '2026-01-15T12:00:00Z';
+            const date3Str = '2026-01-01T12:00:00Z';
+            const date1 = new Date(date1Str).toLocaleDateString();
+            const date3 = new Date(date3Str).toLocaleDateString();
+
             const records = [
-                makePayrollRecord({ id: 'payroll-1', created_at: '2026-01-30' }),
-                makePayrollRecord({ id: 'payroll-2', created_at: '2026-01-15' }),
-                makePayrollRecord({ id: 'payroll-3', created_at: '2026-01-01' }),
+                makePayrollRecord({ id: 'payroll-1', created_at: date1Str }),
+                makePayrollRecord({ id: 'payroll-2', created_at: date2Str }),
+                makePayrollRecord({ id: 'payroll-3', created_at: date3Str }),
             ];
             mockGetPayrollRecords.mockResolvedValue(records);
 
             render(<PayrollTable />);
 
             await waitFor(() => {
-                expect(screen.getByText('1/30/2026')).toBeInTheDocument();
+                expect(screen.getByText(date1)).toBeInTheDocument();
             });
 
             const dateButton = screen.getAllByText('Created At')[0];
             fireEvent.click(dateButton);
 
-            // Verify sorted ascending (oldest date first: 1/1/2026)
+            // Verify sorted ascending (oldest date first)
             await waitFor(() => {
                 const rows = screen.getAllByRole('row');
-                expect(rows[1]).toHaveTextContent('1/1/2026');
+                expect(rows[1]).toHaveTextContent(date3);
             });
 
-            // Click again for descending (newest date first: 1/30/2026)
+            // Click again for descending (newest date first)
             fireEvent.click(dateButton);
 
             await waitFor(() => {
                 const rows = screen.getAllByRole('row');
-                expect(rows[1]).toHaveTextContent('1/30/2026');
+                expect(rows[1]).toHaveTextContent(date1);
             });
         });
 
@@ -419,7 +425,7 @@ describe('PayrollTable Component', () => {
     });
 
     describe('Filtering & Search', () => {
-        it.skip('filters by employee name', async () => {
+        it('filters by employee name', async () => {
             const records = [
                 makePayrollRecord({
                     employees: makeEmployee({ first_name: 'John', last_name: 'Smith' }),
@@ -438,9 +444,18 @@ describe('PayrollTable Component', () => {
             await waitFor(() => {
                 expect(screen.getByText('John Smith')).toBeInTheDocument();
             });
+
+            const searchInput = screen.getByPlaceholderText('Search records...');
+            await userEvent.type(searchInput, 'Jane');
+
+            await waitFor(() => {
+                expect(screen.getByText('Jane Doe')).toBeInTheDocument();
+                expect(screen.queryByText('John Smith')).not.toBeInTheDocument();
+                expect(screen.queryByText('Bob Wilson')).not.toBeInTheDocument();
+            });
         });
 
-        it.skip('clears filter when search is empty', async () => {
+        it('clears filter when search is empty', async () => {
             const records = [
                 makePayrollRecord({
                     employees: makeEmployee({ first_name: 'John', last_name: 'Smith' }),
@@ -457,9 +472,12 @@ describe('PayrollTable Component', () => {
                 expect(screen.getByText('John Smith')).toBeInTheDocument();
             });
 
-            const searchInput = screen.getByPlaceholderText('Search payroll records...');
+            const searchInput = screen.getByPlaceholderText('Search records...');
             await userEvent.type(searchInput, 'xyz');
-            expect(screen.getByText('No results found.')).toBeInTheDocument();
+
+            await waitFor(() => {
+                expect(screen.getByText('No results found.')).toBeInTheDocument();
+            });
 
             await userEvent.clear(searchInput);
 
@@ -531,7 +549,7 @@ describe('PayrollTable Component', () => {
             });
         });
 
-        it.skip('displays date period selector in dialog', async () => {
+        it('displays date period selector in dialog', async () => {
             mockGetPayrollRecords.mockResolvedValue([]);
 
             render(<PayrollTable />);
@@ -544,13 +562,14 @@ describe('PayrollTable Component', () => {
             const runButton = screen.getByText('Run Payroll');
             fireEvent.click(runButton);
 
-            // Wait for dialog to appear - verify Cancel button appears
+            // Wait for dialog to appear - verify description and form fields
             await waitFor(() => {
-                expect(screen.getByText('Cancel')).toBeInTheDocument();
+                expect(screen.getByText('Process payroll for selected period')).toBeInTheDocument();
             });
 
-            // Verify Pay Period label exists (from Label htmlFor="payPeriod")
+            // Verify Pay Period label and notes exist
             expect(screen.getByText('Pay Period')).toBeInTheDocument();
+            expect(screen.getByText('Notes (Optional)')).toBeInTheDocument();
         });
     });
 

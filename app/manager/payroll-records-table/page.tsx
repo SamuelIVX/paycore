@@ -61,33 +61,33 @@ export default function PayrollTable() {
       id: "regular_hours",
       accessorFn: (row) => hoursValue(row, "regular_hours"),
       header: ({ column }) => <SortableHeader column={column} label="Hours Worked" />,
-      cell: ({ row }) => formatHours(hoursValue(row.original, "regular_hours")),
+      cell: ({ row }) => <span className="tabular-nums">{formatHours(hoursValue(row.original, "regular_hours"))}</span>,
     },
     {
       id: "overtime_hours",
       accessorFn: (row) => hoursValue(row, "overtime_hours"),
       header: ({ column }) => <SortableHeader column={column} label="Overtime Hours" />,
-      cell: ({ row }) => formatHours(hoursValue(row.original, "overtime_hours")),
+      cell: ({ row }) => <span className="tabular-nums">{formatHours(hoursValue(row.original, "overtime_hours"))}</span>,
     },
     {
       accessorKey: "gross_pay",
       header: ({ column }) => <SortableHeader column={column} label="Gross Pay" />,
-      cell: ({ row }) => `$${(row.original.gross_pay ?? 0).toFixed(2)}`,
+      cell: ({ row }) => <span className="tabular-nums">${(row.original.gross_pay ?? 0).toFixed(2)}</span>,
     },
     {
       accessorKey: "federal_tax",
       header: ({ column }) => <SortableHeader column={column} label="Federal Tax" />,
-      cell: ({ row }) => <span className="text-red-600 dark:text-red-400">-${(row.original.federal_tax ?? 0).toFixed(2)}</span>,
+      cell: ({ row }) => <span className="tabular-nums text-red-600 dark:text-red-400">-${(row.original.federal_tax ?? 0).toFixed(2)}</span>,
     },
     {
       accessorKey: "state_tax",
       header: ({ column }) => <SortableHeader column={column} label="State Tax" />,
-      cell: ({ row }) => <span className="text-red-600 dark:text-red-400">-${(row.original.state_tax ?? 0).toFixed(2)}</span>,
+      cell: ({ row }) => <span className="tabular-nums text-red-600 dark:text-red-400">-${(row.original.state_tax ?? 0).toFixed(2)}</span>,
     },
     {
       accessorKey: "social_security",
       header: ({ column }) => <SortableHeader column={column} label="Social Security" />,
-      cell: ({ row }) => <span className="text-red-600 dark:text-red-400">-${(row.original.social_security ?? 0).toFixed(2)}</span>,
+      cell: ({ row }) => <span className="tabular-nums text-red-600 dark:text-red-400">-${(row.original.social_security ?? 0).toFixed(2)}</span>,
     },
     {
       accessorKey: "benefit_deductions",
@@ -95,13 +95,13 @@ export default function PayrollTable() {
       cell: ({ row }) =>
         row.original.benefit_deductions == null
           ? "—"
-          : <span className="text-red-600 dark:text-red-400">-${row.original.benefit_deductions.toFixed(2)}</span>,
+          : <span className="tabular-nums text-red-600 dark:text-red-400">-${row.original.benefit_deductions.toFixed(2)}</span>,
     },
     {
       accessorKey: "net_pay",
       header: ({ column }) => <SortableHeader column={column} label="Net Pay" />,
       cell: ({ row }) => (
-        <span className={`font-semibold ${(row.original.net_pay ?? 0) > 0 ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
+        <span className={`tabular-nums font-semibold ${(row.original.net_pay ?? 0) > 0 ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
           ${(row.original.net_pay ?? 0).toFixed(2)}
         </span>
       ),
@@ -111,7 +111,7 @@ export default function PayrollTable() {
       header: ({ column }) => <SortableHeader column={column} label="Created At" />,
       cell: ({ row }) =>
         row.original.created_at
-          ? new Date(row.original.created_at).toLocaleDateString()
+          ? <span className="tabular-nums">{new Date(row.original.created_at).toLocaleDateString()}</span>
           : "—",
     },
   ], []);
